@@ -24,6 +24,12 @@ public class ServiceManager extends Service {
 		public int get() throws RemoteException {
 			return 1;
 		}
+
+		@Override
+		public MobObject getAnObject() throws RemoteException {
+			// TODO Auto-generated method stub
+			return null;
+		}
     };
     
     private final iMobService.Stub mMobServiceBinderImpl2 = new iMobService.Stub() {
@@ -31,6 +37,12 @@ public class ServiceManager extends Service {
     	@Override
 		public int get() throws RemoteException {
 			return 2;
+		}
+
+		@Override
+		public MobObject getAnObject() throws RemoteException {
+			MobObject mobObject = new MobObject(314);
+			return mobObject;
 		}
     };
 

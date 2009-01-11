@@ -56,6 +56,20 @@ reply.writeNoException();
 reply.writeInt(_result);
 return true;
 }
+case TRANSACTION_getAnObject:
+{
+data.enforceInterface(DESCRIPTOR);
+thesis.mobilis.services.MobObject _result = this.getAnObject();
+reply.writeNoException();
+if ((_result!=null)) {
+reply.writeInt(1);
+_result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+}
+else {
+reply.writeInt(0);
+}
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -91,8 +105,32 @@ _data.recycle();
 }
 return _result;
 }
+public thesis.mobilis.services.MobObject getAnObject() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+thesis.mobilis.services.MobObject _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getAnObject, _data, _reply, 0);
+_reply.readException();
+if ((0!=_reply.readInt())) {
+_result = thesis.mobilis.services.MobObject.CREATOR.createFromParcel(_reply);
+}
+else {
+_result = null;
+}
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
 }
 static final int TRANSACTION_get = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_getAnObject = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
 public int get() throws android.os.RemoteException;
+public thesis.mobilis.services.MobObject getAnObject() throws android.os.RemoteException;
 }
