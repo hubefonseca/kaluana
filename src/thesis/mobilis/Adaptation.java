@@ -1,6 +1,6 @@
 package thesis.mobilis;
 
-import thesis.mobilis.services.MobObject;
+import thesis.mobilis.objects.MobObject;
 import thesis.mobilis.services.iMobService;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -21,8 +21,8 @@ public class Adaptation extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		bindService(new Intent(iMobService.class.getName()),
-                mConnection, Context.BIND_AUTO_CREATE);
+		Intent intent = new Intent(iMobService.class.getName());
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -31,6 +31,9 @@ public class Adaptation extends Activity {
 
 			mService = iMobService.Stub.asInterface(service);
 			try {
+				
+				Log.d(this.getClass().getName(), "The service is provided by " + className);
+				
 				int i = mService.get();
 				Log.d(this.getClass().getName(), "Service answered: " + i);
 				

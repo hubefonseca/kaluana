@@ -8,7 +8,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<service android:name=".services.ServiceManager">
+		<service android:name=".services.mobService.MobService">
 			<intent-filter>
 				<action android:name="thesis.mobilis.services.iMobService"></action>
 			</intent-filter>

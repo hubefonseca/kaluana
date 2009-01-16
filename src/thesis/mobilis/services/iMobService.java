@@ -3,6 +3,7 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\services\\iMobService.aidl
  */
 package thesis.mobilis.services;
+import thesis.mobilis.objects.MobObject;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
@@ -59,7 +60,7 @@ return true;
 case TRANSACTION_getAnObject:
 {
 data.enforceInterface(DESCRIPTOR);
-thesis.mobilis.services.MobObject _result = this.getAnObject();
+thesis.mobilis.objects.MobObject _result = this.getAnObject();
 reply.writeNoException();
 if ((_result!=null)) {
 reply.writeInt(1);
@@ -105,17 +106,17 @@ _data.recycle();
 }
 return _result;
 }
-public thesis.mobilis.services.MobObject getAnObject() throws android.os.RemoteException
+public thesis.mobilis.objects.MobObject getAnObject() throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
-thesis.mobilis.services.MobObject _result;
+thesis.mobilis.objects.MobObject _result;
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 mRemote.transact(Stub.TRANSACTION_getAnObject, _data, _reply, 0);
 _reply.readException();
 if ((0!=_reply.readInt())) {
-_result = thesis.mobilis.services.MobObject.CREATOR.createFromParcel(_reply);
+_result = thesis.mobilis.objects.MobObject.CREATOR.createFromParcel(_reply);
 }
 else {
 _result = null;
@@ -132,5 +133,5 @@ static final int TRANSACTION_get = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_getAnObject = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
 public int get() throws android.os.RemoteException;
-public thesis.mobilis.services.MobObject getAnObject() throws android.os.RemoteException;
+public thesis.mobilis.objects.MobObject getAnObject() throws android.os.RemoteException;
 }
