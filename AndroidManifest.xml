@@ -8,10 +8,13 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<service android:name=".services.mobService.MobService">
+		<!--  <service android:name=".services.mobService.MobService">
 			<intent-filter>
 				<action android:name="thesis.mobilis.services.iMobService"></action>
 			</intent-filter>
-		</service>
-	</application>
+		</service>-->
+	<service android:name=".services.adapter.AdapterService"><intent-filter><action android:name="thesis.mobilis.services.iAdapter"></action>
+</intent-filter>
+</service>
+</application>
 </manifest> 
