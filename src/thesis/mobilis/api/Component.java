@@ -64,9 +64,9 @@ case TRANSACTION_getService:
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-thesis.mobilis.api.Service _result = this.getService(_arg0);
+java.lang.String _result = this.getService(_arg0);
 reply.writeNoException();
-reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
+reply.writeString(_result);
 return true;
 }
 case TRANSACTION_startup:
@@ -116,17 +116,17 @@ _reply.recycle();
 _data.recycle();
 }
 }
-public thesis.mobilis.api.Service getService(java.lang.String serviceName) throws android.os.RemoteException
+public java.lang.String getService(java.lang.String serviceName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
-thesis.mobilis.api.Service _result;
+java.lang.String _result;
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeString(serviceName);
 mRemote.transact(Stub.TRANSACTION_getService, _data, _reply, 0);
 _reply.readException();
-_result = thesis.mobilis.api.Service.Stub.asInterface(_reply.readStrongBinder());
+_result = _reply.readString();
 }
 finally {
 _reply.recycle();
@@ -169,7 +169,7 @@ static final int TRANSACTION_startup = (IBinder.FIRST_CALL_TRANSACTION + 2);
 static final int TRANSACTION_shutdown = (IBinder.FIRST_CALL_TRANSACTION + 3);
 }
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException;
-public thesis.mobilis.api.Service getService(java.lang.String serviceName) throws android.os.RemoteException;
+public java.lang.String getService(java.lang.String serviceName) throws android.os.RemoteException;
 public void startup() throws android.os.RemoteException;
 public void shutdown() throws android.os.RemoteException;
 }

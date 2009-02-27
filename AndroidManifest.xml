@@ -8,12 +8,15 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<service android:name=".api.examples.helloworld.services.AdapterService">
+		<service android:name=".examples.helloworld.services.AdapterService">
 			<intent-filter>
 				<action android:name="thesis.mobilis.services.iMobService"></action>
 			</intent-filter>
 		</service>
-	<service android:name=".api.examples.helloworld.services.AdapterService"><intent-filter><action android:name="thesis.mobilis.services.iAdapter"></action>
+	<service android:name=".examples.helloworld.services.MobService"><intent-filter><action android:name="thesis.mobilis.examples.helloworld.services.iMobService"></action>
+</intent-filter>
+</service>
+<service android:name=".api.impl.loader.ComponentLoader"><intent-filter><action android:name="thesis.mobilis.api.impl.loader.ComponentLoader"></action>
 </intent-filter>
 </service>
 </application>
