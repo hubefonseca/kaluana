@@ -1,6 +1,6 @@
 package thesis.mobilis.api.impl.loader;
 
-import thesis.mobilis.api.Component;
+import thesis.mobilis.api.impl.Component;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -18,15 +18,17 @@ public class ComponentLoader extends Service {
 		return mComponentLoader;
 	}
 
-	private final thesis.mobilis.api.loader.ComponentLoader.Stub mComponentLoader = new thesis.mobilis.api.loader.ComponentLoader.Stub() {
+	private final thesis.mobilis.api.loader.IComponentLoader.Stub mComponentLoader = new thesis.mobilis.api.loader.IComponentLoader.Stub() {
 
 		@Override
 		public Component getComponent(String componentName)
 				throws RemoteException {
-			if (componentName.equals("ping"))
-				return new thesis.mobilis.examples.helloworld.PingComponent();
-			else 
-				return new thesis.mobilis.examples.helloworld.PongComponent();
+//			if (componentName.equals("ping"))
+//				return new thesis.mobilis.examples.helloworld.PingComponent();
+//			else 
+//				return new thesis.mobilis.examples.helloworld.PongComponent();
+			
+			return null;
 		}
 
 		@Override
