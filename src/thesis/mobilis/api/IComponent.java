@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\IComponent.aidl
  */
 package thesis.mobilis.api;
+import java.util.List;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
-import java.util.List;
 public interface IComponent extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
@@ -58,6 +58,15 @@ this.registerService(_arg0);
 reply.writeNoException();
 return true;
 }
+case TRANSACTION_registerReceptacle:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+this.registerReceptacle(_arg0);
+reply.writeNoException();
+return true;
+}
 case TRANSACTION_getServiceNames:
 {
 data.enforceInterface(DESCRIPTOR);
@@ -68,14 +77,34 @@ reply.writeNoException();
 reply.writeStringList(_arg0);
 return true;
 }
+case TRANSACTION_getReceptacleNames:
+{
+data.enforceInterface(DESCRIPTOR);
+java.util.List<java.lang.String> _arg0;
+_arg0 = new java.util.ArrayList<java.lang.String>();
+this.getReceptacleNames(_arg0);
+reply.writeNoException();
+reply.writeStringList(_arg0);
+return true;
+}
 case TRANSACTION_getService:
 {
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-java.lang.String _result = this.getService(_arg0);
+android.os.IBinder _result = this.getService(_arg0);
 reply.writeNoException();
-reply.writeString(_result);
+reply.writeStrongBinder(_result);
+return true;
+}
+case TRANSACTION_getReceptacle:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+thesis.mobilis.api.IReceptacle _result = this.getReceptacle(_arg0);
+reply.writeNoException();
+reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
 return true;
 }
 case TRANSACTION_startup:
@@ -125,6 +154,21 @@ _reply.recycle();
 _data.recycle();
 }
 }
+public void registerReceptacle(java.lang.String receptacleName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(receptacleName);
+mRemote.transact(Stub.TRANSACTION_registerReceptacle, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -140,17 +184,50 @@ _reply.recycle();
 _data.recycle();
 }
 }
-public java.lang.String getService(java.lang.String serviceName) throws android.os.RemoteException
+public void getReceptacleNames(java.util.List<java.lang.String> receptacleNames) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
-java.lang.String _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_getReceptacleNames, _data, _reply, 0);
+_reply.readException();
+_reply.readStringList(receptacleNames);
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public android.os.IBinder getService(java.lang.String serviceName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+android.os.IBinder _result;
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeString(serviceName);
 mRemote.transact(Stub.TRANSACTION_getService, _data, _reply, 0);
 _reply.readException();
-_result = _reply.readString();
+_result = _reply.readStrongBinder();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+return _result;
+}
+public thesis.mobilis.api.IReceptacle getReceptacle(java.lang.String receptacleName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+thesis.mobilis.api.IReceptacle _result;
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(receptacleName);
+mRemote.transact(Stub.TRANSACTION_getReceptacle, _data, _reply, 0);
+_reply.readException();
+_result = thesis.mobilis.api.IReceptacle.Stub.asInterface(_reply.readStrongBinder());
 }
 finally {
 _reply.recycle();
@@ -188,14 +265,20 @@ _data.recycle();
 }
 }
 static final int TRANSACTION_registerService = (IBinder.FIRST_CALL_TRANSACTION + 0);
-static final int TRANSACTION_getServiceNames = (IBinder.FIRST_CALL_TRANSACTION + 1);
-static final int TRANSACTION_getService = (IBinder.FIRST_CALL_TRANSACTION + 2);
-static final int TRANSACTION_startup = (IBinder.FIRST_CALL_TRANSACTION + 3);
-static final int TRANSACTION_shutdown = (IBinder.FIRST_CALL_TRANSACTION + 4);
+static final int TRANSACTION_registerReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_getServiceNames = (IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_getReceptacleNames = (IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_getService = (IBinder.FIRST_CALL_TRANSACTION + 4);
+static final int TRANSACTION_getReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 5);
+static final int TRANSACTION_startup = (IBinder.FIRST_CALL_TRANSACTION + 6);
+static final int TRANSACTION_shutdown = (IBinder.FIRST_CALL_TRANSACTION + 7);
 }
 public void registerService(java.lang.String serviceName) throws android.os.RemoteException;
+public void registerReceptacle(java.lang.String receptacleName) throws android.os.RemoteException;
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException;
-public java.lang.String getService(java.lang.String serviceName) throws android.os.RemoteException;
+public void getReceptacleNames(java.util.List<java.lang.String> receptacleNames) throws android.os.RemoteException;
+public android.os.IBinder getService(java.lang.String serviceName) throws android.os.RemoteException;
+public thesis.mobilis.api.IReceptacle getReceptacle(java.lang.String receptacleName) throws android.os.RemoteException;
 public void startup() throws android.os.RemoteException;
 public void shutdown() throws android.os.RemoteException;
 }
