@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\examples\\helloworld\\services\\iMobService.aidl
  */
 package thesis.mobilis.examples.helloworld.services;
+import thesis.mobilis.impl.object.SharedObject;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
-import thesis.mobilis.api.impl.object.Object;
 public interface iMobService extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
@@ -60,7 +60,7 @@ return true;
 case TRANSACTION_getAnObject:
 {
 data.enforceInterface(DESCRIPTOR);
-thesis.mobilis.api.impl.object.Object _result = this.getAnObject();
+thesis.mobilis.impl.object.SharedObject _result = this.getAnObject();
 reply.writeNoException();
 if ((_result!=null)) {
 reply.writeInt(1);
@@ -106,17 +106,17 @@ _data.recycle();
 }
 return _result;
 }
-public thesis.mobilis.api.impl.object.Object getAnObject() throws android.os.RemoteException
+public thesis.mobilis.impl.object.SharedObject getAnObject() throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
-thesis.mobilis.api.impl.object.Object _result;
+thesis.mobilis.impl.object.SharedObject _result;
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 mRemote.transact(Stub.TRANSACTION_getAnObject, _data, _reply, 0);
 _reply.readException();
 if ((0!=_reply.readInt())) {
-_result = thesis.mobilis.api.impl.object.Object.CREATOR.createFromParcel(_reply);
+_result = thesis.mobilis.impl.object.SharedObject.CREATOR.createFromParcel(_reply);
 }
 else {
 _result = null;
@@ -133,5 +133,5 @@ static final int TRANSACTION_get = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_getAnObject = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
 public int get() throws android.os.RemoteException;
-public thesis.mobilis.api.impl.object.Object getAnObject() throws android.os.RemoteException;
+public thesis.mobilis.impl.object.SharedObject getAnObject() throws android.os.RemoteException;
 }

@@ -1,27 +1,27 @@
-package thesis.mobilis.api.impl.object;
-
+package thesis.mobilis.impl.object;
+ 
 import android.os.Parcel;
 import android.os.Parcelable;
  
-public class Object implements Parcelable {
+public class SharedObject implements Parcelable {
  
   private int id;
  
-  public static final Parcelable.Creator<Object> CREATOR = new Parcelable.Creator<Object>() {
-        public Object createFromParcel(Parcel in) {
-            return new Object(in);
+  public static final Parcelable.Creator<SharedObject> CREATOR = new Parcelable.Creator<SharedObject>() {
+        public SharedObject createFromParcel(Parcel in) {
+            return new SharedObject(in);
         }
         
-        public Object[] newArray(int size) {
-            return new Object[size];
+        public SharedObject[] newArray(int size) {
+            return new SharedObject[size];
         }
     };
  
-    public Object(int id) {
+    public SharedObject(int id) {
       this.id = id;
     }
     
-    public Object(Parcel in) {
+    public SharedObject(Parcel in) {
       readFromParcel(in);
     }
     

@@ -5,7 +5,7 @@ import thesis.mobilis.examples.helloworld.services.iMobService;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class PingComponent extends thesis.mobilis.api.impl.Component {
+public class PingComponent extends thesis.mobilis.impl.Component {
 
 	public PingComponent(IBinderCallbackListener bindListener) {
 		super(bindListener);

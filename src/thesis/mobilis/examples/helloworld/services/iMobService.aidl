@@ -1,11 +1,11 @@
 package thesis.mobilis.examples.helloworld.services;
 
-import thesis.mobilis.api.impl.object.Object;
+import thesis.mobilis.impl.object.SharedObject;
 
 interface iMobService {
 	
 	int get();
-	
-	Object getAnObject();
+	 
+	SharedObject getAnObject();
 
 }

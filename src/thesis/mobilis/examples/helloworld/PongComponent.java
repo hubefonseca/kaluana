@@ -1,12 +1,11 @@
 package thesis.mobilis.examples.helloworld;
 
 import thesis.mobilis.api.IBinderCallbackListener;
-import thesis.mobilis.api.IReceptacle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class PongComponent extends thesis.mobilis.api.impl.Component {
+public class PongComponent extends thesis.mobilis.impl.Component {
 
 	public PongComponent(IBinderCallbackListener bindListener) {
 		super(bindListener);

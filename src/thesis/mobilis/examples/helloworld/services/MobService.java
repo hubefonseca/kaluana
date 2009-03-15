@@ -1,6 +1,6 @@
 package thesis.mobilis.examples.helloworld.services;
 
-import thesis.mobilis.api.impl.object.Object;
+import thesis.mobilis.impl.object.SharedObject;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -23,9 +23,9 @@ public class MobService extends Service {
 		}
 
 		@Override
-		public Object getAnObject() throws RemoteException {
+		public SharedObject getAnObject() throws RemoteException {
 			// TODO Auto-generated method stub
-			return new Object(2);
+			return new SharedObject(2);
 		}
     };
     
@@ -39,9 +39,9 @@ public class MobService extends Service {
 		}
 
 		@Override
-		public Object getAnObject() throws RemoteException {
+		public SharedObject getAnObject() throws RemoteException {
 			// TODO Auto-generated method stub
-			return new Object(3);
+			return new SharedObject(3);
 		}
 		
 		@Override

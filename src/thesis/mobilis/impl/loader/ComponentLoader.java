@@ -1,6 +1,6 @@
-package thesis.mobilis.api.impl.loader;
+package thesis.mobilis.impl.loader;
 
-import thesis.mobilis.api.impl.Component;
+import thesis.mobilis.impl.Component;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

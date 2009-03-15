@@ -1,4 +1,4 @@
-package thesis.mobilis.api.impl;
+package thesis.mobilis.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
