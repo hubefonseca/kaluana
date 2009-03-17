@@ -63,7 +63,9 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 	
 	@Override
 	public IBinder getService(String serviceName) throws RemoteException {
-		return services.get(serviceName);
+		IBinder service = services.get(serviceName);
+		
+		return service;
 	}
 
 	@Override

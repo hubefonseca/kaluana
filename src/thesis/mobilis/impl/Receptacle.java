@@ -3,9 +3,8 @@ package thesis.mobilis.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import thesis.mobilis.api.IBinderCallbackListener;
+import thesis.mobilis.api.IBindListener;
 import thesis.mobilis.api.IReceptacle;
-import thesis.mobilis.examples.pingpong.IPingService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -30,7 +29,7 @@ public class Receptacle implements IReceptacle {
 	 * Binder callback is used to notify the caller about
 	 * the asynchronous binding operation end
 	 */
-	private IBinderCallbackListener listener;
+	private IBindListener listener;
 	
 	@Override
 	public void setClassName(String className) throws RemoteException { 
@@ -41,7 +40,8 @@ public class Receptacle implements IReceptacle {
 		this.contextWrapper = contextWrapper;
 	}
 	
-	public void setBinderCallbackListener(IBinderCallbackListener listener) {
+	// O listener deve ser a aplicação ou o componente??
+	public void setBindListener(IBindListener listener) {
 		this.listener = listener;
 	}
 	
@@ -79,36 +79,18 @@ public class Receptacle implements IReceptacle {
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className,
 				IBinder service) {
-			
 			try {
-				if (service == null) {
-					Log.d(this.getClass().getName(), "null service!!!");
-				}
 				
 				Class clazz = Class.forName(interfaceName);
 				Class[] clazzes = clazz.getDeclaredClasses();
-
 				/**
 				 * It's expected that the first declared class inside the interface
 				 * is its Stub.
 				 */
 				Method m = clazzes[0].getMethod("asInterface", new Class[]{android.os.IBinder.class});
-
 				Object[] obj = new Object[]{service};
-
 				serviceImpl = (IBinder)m.invoke(m, obj);
 				
-				Log.d(this.getClass().getName(), receptacleName + " invoked!");
-				
-				if (receptacleName.equals("ping")) {
-					Log.d(this.getClass().getName(), "Ping");
-					try {
-						Log.d(this.getClass().getName(), ((IPingService)serviceImpl).ping() + "");
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
@@ -128,28 +110,16 @@ public class Receptacle implements IReceptacle {
 				e.printStackTrace();
 			}
 			
-			Log.d(this.getClass().getName(), "Service connected");
-			Log.d(this.getClass().getName(), "Service provided by " + className);	
-			
-			
 			/**
 			 * Notify the caller that process has ended
 			 */
 			try {
-				listener.bound(receptacleName);
+				listener.connected(receptacleName);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-//			try {
-						
-			//			} catch (RemoteException e) {
-			// In this case the service has crashed before we could even
-			// do anything with it; we can count on soon being
-			// disconnected (and then reconnected if it can be restarted)
-			// so there is no need to do anything here.
-			//			}
 		}
 
 		@Override

@@ -1,8 +1,8 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\loader\\IComponentLoader.aidl
+ * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\control\\IComponentLoader.aidl
  */
-package thesis.mobilis.api.loader;
+package thesis.mobilis.api.control;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
@@ -13,9 +13,9 @@ import thesis.mobilis.api.IComponent;
 public interface IComponentLoader extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
-public static abstract class Stub extends android.os.Binder implements thesis.mobilis.api.loader.IComponentLoader
+public static abstract class Stub extends android.os.Binder implements thesis.mobilis.api.control.IComponentLoader
 {
-private static final java.lang.String DESCRIPTOR = "thesis.mobilis.api.loader.IComponentLoader";
+private static final java.lang.String DESCRIPTOR = "thesis.mobilis.api.control.IComponentLoader";
 /** Construct the stub at attach it to the interface. */
 public Stub()
 {
@@ -25,16 +25,16 @@ this.attachInterface(this, DESCRIPTOR);
  * Cast an IBinder object into an IComponentLoader interface,
  * generating a proxy if needed.
  */
-public static thesis.mobilis.api.loader.IComponentLoader asInterface(android.os.IBinder obj)
+public static thesis.mobilis.api.control.IComponentLoader asInterface(android.os.IBinder obj)
 {
 if ((obj==null)) {
 return null;
 }
-thesis.mobilis.api.loader.IComponentLoader in = (thesis.mobilis.api.loader.IComponentLoader)obj.queryLocalInterface(DESCRIPTOR);
+thesis.mobilis.api.control.IComponentLoader in = (thesis.mobilis.api.control.IComponentLoader)obj.queryLocalInterface(DESCRIPTOR);
 if ((in!=null)) {
 return in;
 }
-return new thesis.mobilis.api.loader.IComponentLoader.Stub.Proxy(obj);
+return new thesis.mobilis.api.control.IComponentLoader.Stub.Proxy(obj);
 }
 public android.os.IBinder asBinder()
 {
@@ -74,7 +74,7 @@ return true;
 }
 return super.onTransact(code, data, reply, flags);
 }
-private static class Proxy implements thesis.mobilis.api.loader.IComponentLoader
+private static class Proxy implements thesis.mobilis.api.control.IComponentLoader
 {
 private android.os.IBinder mRemote;
 Proxy(android.os.IBinder remote)

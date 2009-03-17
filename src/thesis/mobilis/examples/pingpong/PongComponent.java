@@ -1,7 +1,6 @@
 package thesis.mobilis.examples.pingpong;
 
 import thesis.mobilis.api.IReceptacle;
-import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -30,7 +29,7 @@ public class PongComponent extends thesis.mobilis.impl.Component {
 	@Override
 	public void start() throws RemoteException {
 		
-		Log.d(this.getClass().getName(), "startup");
+		Log.d(this.getClass().getName(), "Pong component started");
 		
 		IReceptacle r = this.getReceptacle("ping");
 		
@@ -39,6 +38,15 @@ public class PongComponent extends thesis.mobilis.impl.Component {
 		int a = pingService.ping();
 		
 		Log.d(this.getClass().getName(), "the result is " + a);
+
+		a = pingService.ping();
+
+		Log.d(this.getClass().getName(), "the result is " + a);
+
+		a = pingService.ping();
+
+		Log.d(this.getClass().getName(), "the result is " + a);
+
 	}
 
 	@Override

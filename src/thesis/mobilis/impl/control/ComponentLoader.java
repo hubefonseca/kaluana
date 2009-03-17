@@ -1,7 +1,7 @@
-package thesis.mobilis.impl.loader;
+package thesis.mobilis.impl.control;
 
 import thesis.mobilis.api.IComponent;
-import thesis.mobilis.api.loader.IComponentLoader;
+import thesis.mobilis.api.control.IComponentLoader;
 import thesis.mobilis.examples.pingpong.PingComponent;
 import thesis.mobilis.examples.pingpong.PongComponent;
 import android.app.Service;

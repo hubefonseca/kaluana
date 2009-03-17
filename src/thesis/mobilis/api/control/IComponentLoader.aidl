@@ -1,7 +1,6 @@
-package thesis.mobilis.api.loader;
+package thesis.mobilis.api.control;
 
 import thesis.mobilis.api.IComponent;
-import thesis.mobilis.api.IBinderCallbackListener;
 
 interface IComponentLoader {
 
@@ -9,4 +8,4 @@ interface IComponentLoader {
 
 	IComponent getComponentVersioned(in String componentName, in String componentVersion);
 	
-} 
+}

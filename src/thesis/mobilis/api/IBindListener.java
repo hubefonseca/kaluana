@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\IBinderCallbackListener.aidl
+ * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\IBindListener.aidl
  */
 package thesis.mobilis.api;
 import java.lang.String;
@@ -9,31 +9,31 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
-public interface IBinderCallbackListener extends android.os.IInterface
+public interface IBindListener extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
-public static abstract class Stub extends android.os.Binder implements thesis.mobilis.api.IBinderCallbackListener
+public static abstract class Stub extends android.os.Binder implements thesis.mobilis.api.IBindListener
 {
-private static final java.lang.String DESCRIPTOR = "thesis.mobilis.api.IBinderCallbackListener";
+private static final java.lang.String DESCRIPTOR = "thesis.mobilis.api.IBindListener";
 /** Construct the stub at attach it to the interface. */
 public Stub()
 {
 this.attachInterface(this, DESCRIPTOR);
 }
 /**
- * Cast an IBinder object into an IBinderCallbackListener interface,
+ * Cast an IBinder object into an IBindListener interface,
  * generating a proxy if needed.
  */
-public static thesis.mobilis.api.IBinderCallbackListener asInterface(android.os.IBinder obj)
+public static thesis.mobilis.api.IBindListener asInterface(android.os.IBinder obj)
 {
 if ((obj==null)) {
 return null;
 }
-thesis.mobilis.api.IBinderCallbackListener in = (thesis.mobilis.api.IBinderCallbackListener)obj.queryLocalInterface(DESCRIPTOR);
+thesis.mobilis.api.IBindListener in = (thesis.mobilis.api.IBindListener)obj.queryLocalInterface(DESCRIPTOR);
 if ((in!=null)) {
 return in;
 }
-return new thesis.mobilis.api.IBinderCallbackListener.Stub.Proxy(obj);
+return new thesis.mobilis.api.IBindListener.Stub.Proxy(obj);
 }
 public android.os.IBinder asBinder()
 {
@@ -48,28 +48,28 @@ case INTERFACE_TRANSACTION:
 reply.writeString(DESCRIPTOR);
 return true;
 }
-case TRANSACTION_bound:
+case TRANSACTION_connected:
 {
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-this.bound(_arg0);
+this.connected(_arg0);
 reply.writeNoException();
 return true;
 }
-case TRANSACTION_unbound:
+case TRANSACTION_disconnected:
 {
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-this.unbound(_arg0);
+this.disconnected(_arg0);
 reply.writeNoException();
 return true;
 }
 }
 return super.onTransact(code, data, reply, flags);
 }
-private static class Proxy implements thesis.mobilis.api.IBinderCallbackListener
+private static class Proxy implements thesis.mobilis.api.IBindListener
 {
 private android.os.IBinder mRemote;
 Proxy(android.os.IBinder remote)
@@ -84,14 +84,14 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
-public void bound(java.lang.String componentName) throws android.os.RemoteException
+public void connected(java.lang.String componentName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeString(componentName);
-mRemote.transact(Stub.TRANSACTION_bound, _data, _reply, 0);
+mRemote.transact(Stub.TRANSACTION_connected, _data, _reply, 0);
 _reply.readException();
 }
 finally {
@@ -99,14 +99,14 @@ _reply.recycle();
 _data.recycle();
 }
 }
-public void unbound(java.lang.String componentName) throws android.os.RemoteException
+public void disconnected(java.lang.String componentName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeString(componentName);
-mRemote.transact(Stub.TRANSACTION_unbound, _data, _reply, 0);
+mRemote.transact(Stub.TRANSACTION_disconnected, _data, _reply, 0);
 _reply.readException();
 }
 finally {
@@ -115,9 +115,9 @@ _data.recycle();
 }
 }
 }
-static final int TRANSACTION_bound = (IBinder.FIRST_CALL_TRANSACTION + 0);
-static final int TRANSACTION_unbound = (IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_connected = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_disconnected = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
-public void bound(java.lang.String componentName) throws android.os.RemoteException;
-public void unbound(java.lang.String componentName) throws android.os.RemoteException;
+public void connected(java.lang.String componentName) throws android.os.RemoteException;
+public void disconnected(java.lang.String componentName) throws android.os.RemoteException;
 }

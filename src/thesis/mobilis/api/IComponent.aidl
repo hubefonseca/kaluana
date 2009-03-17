@@ -4,6 +4,13 @@ import thesis.mobilis.api.IReceptacle;
 
 interface IComponent {
 	
+	
+	// tem que oferecer métodos para que o component manager
+	// registre as facetas e receptáculos ao chamar o componente
+	
+	// fazer o bind no Receptacle impede receptáculos múltiplos?
+	
+	
 	void registerService(String serviceName, String interfaceName);
 	
 	void registerReceptacle(String receptacleName, String interfaceName);

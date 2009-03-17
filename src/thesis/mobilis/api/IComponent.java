@@ -143,6 +143,10 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
+// tem que oferecer métodos para que o component manager
+// registre as facetas e receptáculos ao chamar o componente
+// fazer o bind no Receptacle impede receptáculos múltiplos?
+
 public void registerService(java.lang.String serviceName, java.lang.String interfaceName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -279,6 +283,10 @@ static final int TRANSACTION_getReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 5
 static final int TRANSACTION_start = (IBinder.FIRST_CALL_TRANSACTION + 6);
 static final int TRANSACTION_stop = (IBinder.FIRST_CALL_TRANSACTION + 7);
 }
+// tem que oferecer métodos para que o component manager
+// registre as facetas e receptáculos ao chamar o componente
+// fazer o bind no Receptacle impede receptáculos múltiplos?
+
 public void registerService(java.lang.String serviceName, java.lang.String interfaceName) throws android.os.RemoteException;
 public void registerReceptacle(java.lang.String receptacleName, java.lang.String interfaceName) throws android.os.RemoteException;
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException;

@@ -17,7 +17,7 @@
 </intent-filter>
 </service>
 
-<service android:name=".impl.loader.ComponentLoader"><intent-filter><action android:name="thesis.mobilis.api.loader.IComponentLoader"></action>
+<service android:name=".impl.control.ComponentLoader"><intent-filter><action android:name="thesis.mobilis.api.control.IComponentLoader"></action>
 </intent-filter>
 </service>
 <service android:name=".examples.pingpong.PingService"><intent-filter><action android:name="thesis.mobilis.examples.pingpong.IPingService"></action>
