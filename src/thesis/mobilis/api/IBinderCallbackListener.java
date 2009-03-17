@@ -51,7 +51,18 @@ return true;
 case TRANSACTION_bound:
 {
 data.enforceInterface(DESCRIPTOR);
-this.bound();
+java.lang.String _arg0;
+_arg0 = data.readString();
+this.bound(_arg0);
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_unbound:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+this.unbound(_arg0);
 reply.writeNoException();
 return true;
 }
@@ -73,13 +84,29 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
-public void bound() throws android.os.RemoteException
+public void bound(java.lang.String componentName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(componentName);
 mRemote.transact(Stub.TRANSACTION_bound, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void unbound(java.lang.String componentName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(componentName);
+mRemote.transact(Stub.TRANSACTION_unbound, _data, _reply, 0);
 _reply.readException();
 }
 finally {
@@ -89,6 +116,8 @@ _data.recycle();
 }
 }
 static final int TRANSACTION_bound = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_unbound = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
-public void bound() throws android.os.RemoteException;
+public void bound(java.lang.String componentName) throws android.os.RemoteException;
+public void unbound(java.lang.String componentName) throws android.os.RemoteException;
 }

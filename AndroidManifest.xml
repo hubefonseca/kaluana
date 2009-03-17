@@ -16,7 +16,14 @@
 	<service android:name=".examples.helloworld.services.MobService"><intent-filter><action android:name="thesis.mobilis.examples.helloworld.services.iMobService"></action>
 </intent-filter>
 </service>
-<service android:name=".impl.loader.ComponentLoader"><intent-filter><action android:name="thesis.mobilis.impl.loader.ComponentLoader"></action>
+
+<service android:name=".impl.loader.ComponentLoader"><intent-filter><action android:name="thesis.mobilis.api.loader.IComponentLoader"></action>
+</intent-filter>
+</service>
+<service android:name=".examples.pingpong.PingService"><intent-filter><action android:name="thesis.mobilis.examples.pingpong.IPingService"></action>
+</intent-filter>
+</service>
+<service android:name=".examples.pingpong.PongService"><intent-filter><action android:name="thesis.mobilis.examples.pingpong.IPongService"></action>
 </intent-filter>
 </service>
 </application>

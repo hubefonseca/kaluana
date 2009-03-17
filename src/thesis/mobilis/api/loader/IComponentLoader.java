@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\loader\\IComponentLoader.aidl
  */
 package thesis.mobilis.api.loader;
-import thesis.mobilis.api.IComponent;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
+import thesis.mobilis.api.IComponent;
 public interface IComponentLoader extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */

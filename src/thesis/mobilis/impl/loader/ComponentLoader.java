@@ -1,6 +1,9 @@
 package thesis.mobilis.impl.loader;
 
-import thesis.mobilis.impl.Component;
+import thesis.mobilis.api.IComponent;
+import thesis.mobilis.api.loader.IComponentLoader;
+import thesis.mobilis.examples.pingpong.PingComponent;
+import thesis.mobilis.examples.pingpong.PongComponent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -12,31 +15,32 @@ import android.os.RemoteException;
  *
  */
 public class ComponentLoader extends Service {
-
-	@Override
-	public IBinder onBind(Intent arg0) {		
-		return mComponentLoader;
-	}
-
-	private final thesis.mobilis.api.loader.IComponentLoader.Stub mComponentLoader = new thesis.mobilis.api.loader.IComponentLoader.Stub() {
+		
+	private final IComponentLoader.Stub mComponentLoader = new IComponentLoader.Stub() {
 
 		@Override
-		public Component getComponent(String componentName)
+		public IComponent getComponent(String componentName)
 				throws RemoteException {
-//			if (componentName.equals("ping"))
-//				return new thesis.mobilis.examples.helloworld.PingComponent();
-//			else 
-//				return new thesis.mobilis.examples.helloworld.PongComponent();
 			
-			return null;
+			if (componentName.equals("PingComponent"))
+				return new PingComponent();
+			else
+				return new PongComponent();
 		}
 
 		@Override
-		public Component getComponentVersioned(String componentName,
+		public IComponent getComponentVersioned(String componentName,
 				String componentVersion) throws RemoteException {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
     };
 
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mComponentLoader;
+	}
+	
 }
+
