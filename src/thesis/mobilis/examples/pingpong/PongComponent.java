@@ -8,17 +8,6 @@ import android.util.Log;
 public class PongComponent extends thesis.mobilis.impl.Component {
 
 	IPingService pingService;
-	
-	public PongComponent() {
-		try {
-			setName("PongComponent");
-			registerService("pong", "thesis.mobilis.examples.pingpong.IPongService");
-			registerReceptacle("ping", "thesis.mobilis.examples.pingpong.IPingService");
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public void stop() throws RemoteException {
@@ -53,6 +42,21 @@ public class PongComponent extends thesis.mobilis.impl.Component {
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void registerReceptacles() throws RemoteException {
+		registerReceptacle("ping", "thesis.mobilis.examples.pingpong.IPingService");
+	}
+
+	@Override
+	public void registerServices() throws RemoteException {
+		registerService("pong", "thesis.mobilis.examples.pingpong.IPongService");
+	}
+
+	@Override
+	public void registerDependencies() throws RemoteException {
+		// no dependencies
 	}
 
 }

@@ -42,17 +42,13 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 		servicesInterfaces = new HashMap<String, String>();
 	}
 	
-	/**
-	 * Supposed to be called by the component developer
-	 */
+	
+	
 	@Override
 	public void registerService(String serviceName, String interfaceName) throws RemoteException {
 		servicesInterfaces.put(serviceName, interfaceName);
 	}
 
-	/**
-	 * Supposed to be used by the component developer
-	 */
 	@Override
 	public void registerReceptacle(String receptacleName, String interfaceName) throws RemoteException {
 		Receptacle receptacle = new Receptacle();
@@ -95,12 +91,6 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	@Override
-	public IBinder asBinder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -109,6 +99,30 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public void registerDependency(String componentName) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public IBinder asBinder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * Methods to be implemented by component developer
+	 */
+	@Override
+	public abstract void registerReceptacles() throws RemoteException;
+
+	@Override
+	public abstract void registerServices() throws RemoteException;
+
+	@Override
+	public abstract void registerDependencies() throws RemoteException;
 	
 	@Override
 	public abstract void start() throws RemoteException;

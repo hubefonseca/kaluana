@@ -40,7 +40,15 @@ public class ComponentManager implements IComponentManager {
 
 	@Override
 	public IComponent getComponent(String componentName) throws RemoteException {
-		return componentLoader.getComponent(componentName);
+		IComponent component = componentLoader.getComponent(componentName);
+		component.registerReceptacles();
+		component.registerServices();
+		
+		// Manage component dependencies before deliver it to caller
+		
+		// Manage which components are already started
+		
+		return component;
 	}
 
 	@Override

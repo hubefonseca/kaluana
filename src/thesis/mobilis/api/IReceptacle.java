@@ -109,6 +109,8 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
+// mais de uma implementação (className) pode oferecer o serviço
+
 public void setName(java.lang.String name) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -195,6 +197,8 @@ static final int TRANSACTION_connectToService = (IBinder.FIRST_CALL_TRANSACTION 
 static final int TRANSACTION_setClassName = (IBinder.FIRST_CALL_TRANSACTION + 3);
 static final int TRANSACTION_getConnection = (IBinder.FIRST_CALL_TRANSACTION + 4);
 }
+// mais de uma implementação (className) pode oferecer o serviço
+
 public void setName(java.lang.String name) throws android.os.RemoteException;
 public java.lang.String getName() throws android.os.RemoteException;
 public void connectToService(android.os.IBinder service) throws android.os.RemoteException;

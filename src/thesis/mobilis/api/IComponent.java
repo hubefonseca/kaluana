@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\IComponent.aidl
  */
 package thesis.mobilis.api;
+import java.util.List;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
-import java.util.List;
 public interface IComponent extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
@@ -49,6 +49,41 @@ case INTERFACE_TRANSACTION:
 reply.writeString(DESCRIPTOR);
 return true;
 }
+case TRANSACTION_registerServices:
+{
+data.enforceInterface(DESCRIPTOR);
+this.registerServices();
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_registerReceptacles:
+{
+data.enforceInterface(DESCRIPTOR);
+this.registerReceptacles();
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_registerDependencies:
+{
+data.enforceInterface(DESCRIPTOR);
+this.registerDependencies();
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_start:
+{
+data.enforceInterface(DESCRIPTOR);
+this.start();
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_stop:
+{
+data.enforceInterface(DESCRIPTOR);
+this.stop();
+reply.writeNoException();
+return true;
+}
 case TRANSACTION_registerService:
 {
 data.enforceInterface(DESCRIPTOR);
@@ -68,6 +103,15 @@ _arg0 = data.readString();
 java.lang.String _arg1;
 _arg1 = data.readString();
 this.registerReceptacle(_arg0, _arg1);
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_registerDependency:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+this.registerDependency(_arg0);
 reply.writeNoException();
 return true;
 }
@@ -111,20 +155,6 @@ reply.writeNoException();
 reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
 return true;
 }
-case TRANSACTION_start:
-{
-data.enforceInterface(DESCRIPTOR);
-this.start();
-reply.writeNoException();
-return true;
-}
-case TRANSACTION_stop:
-{
-data.enforceInterface(DESCRIPTOR);
-this.stop();
-reply.writeNoException();
-return true;
-}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -143,10 +173,83 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
-// tem que oferecer métodos para que o component manager
-// registre as facetas e receptáculos ao chamar o componente
 // fazer o bind no Receptacle impede receptáculos múltiplos?
-
+/*
+	 * Must be implemented by component developer
+	 */
+public void registerServices() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_registerServices, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void registerReceptacles() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_registerReceptacles, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void registerDependencies() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_registerDependencies, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void start() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_start, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void stop() throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+mRemote.transact(Stub.TRANSACTION_stop, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+/*
+	 * May be called by component developer
+	 */
 public void registerService(java.lang.String serviceName, java.lang.String interfaceName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -179,6 +282,24 @@ _reply.recycle();
 _data.recycle();
 }
 }
+public void registerDependency(java.lang.String componentName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(componentName);
+mRemote.transact(Stub.TRANSACTION_registerDependency, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+/*
+	 * May be called by component user
+	 */
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -245,54 +366,40 @@ _data.recycle();
 }
 return _result;
 }
-public void start() throws android.os.RemoteException
-{
-android.os.Parcel _data = android.os.Parcel.obtain();
-android.os.Parcel _reply = android.os.Parcel.obtain();
-try {
-_data.writeInterfaceToken(DESCRIPTOR);
-mRemote.transact(Stub.TRANSACTION_start, _data, _reply, 0);
-_reply.readException();
 }
-finally {
-_reply.recycle();
-_data.recycle();
+static final int TRANSACTION_registerServices = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_registerReceptacles = (IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_registerDependencies = (IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_start = (IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_stop = (IBinder.FIRST_CALL_TRANSACTION + 4);
+static final int TRANSACTION_registerService = (IBinder.FIRST_CALL_TRANSACTION + 5);
+static final int TRANSACTION_registerReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 6);
+static final int TRANSACTION_registerDependency = (IBinder.FIRST_CALL_TRANSACTION + 7);
+static final int TRANSACTION_getServiceNames = (IBinder.FIRST_CALL_TRANSACTION + 8);
+static final int TRANSACTION_getReceptacleNames = (IBinder.FIRST_CALL_TRANSACTION + 9);
+static final int TRANSACTION_getService = (IBinder.FIRST_CALL_TRANSACTION + 10);
+static final int TRANSACTION_getReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 11);
 }
-}
-public void stop() throws android.os.RemoteException
-{
-android.os.Parcel _data = android.os.Parcel.obtain();
-android.os.Parcel _reply = android.os.Parcel.obtain();
-try {
-_data.writeInterfaceToken(DESCRIPTOR);
-mRemote.transact(Stub.TRANSACTION_stop, _data, _reply, 0);
-_reply.readException();
-}
-finally {
-_reply.recycle();
-_data.recycle();
-}
-}
-}
-static final int TRANSACTION_registerService = (IBinder.FIRST_CALL_TRANSACTION + 0);
-static final int TRANSACTION_registerReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 1);
-static final int TRANSACTION_getServiceNames = (IBinder.FIRST_CALL_TRANSACTION + 2);
-static final int TRANSACTION_getReceptacleNames = (IBinder.FIRST_CALL_TRANSACTION + 3);
-static final int TRANSACTION_getService = (IBinder.FIRST_CALL_TRANSACTION + 4);
-static final int TRANSACTION_getReceptacle = (IBinder.FIRST_CALL_TRANSACTION + 5);
-static final int TRANSACTION_start = (IBinder.FIRST_CALL_TRANSACTION + 6);
-static final int TRANSACTION_stop = (IBinder.FIRST_CALL_TRANSACTION + 7);
-}
-// tem que oferecer métodos para que o component manager
-// registre as facetas e receptáculos ao chamar o componente
 // fazer o bind no Receptacle impede receptáculos múltiplos?
-
+/*
+	 * Must be implemented by component developer
+	 */
+public void registerServices() throws android.os.RemoteException;
+public void registerReceptacles() throws android.os.RemoteException;
+public void registerDependencies() throws android.os.RemoteException;
+public void start() throws android.os.RemoteException;
+public void stop() throws android.os.RemoteException;
+/*
+	 * May be called by component developer
+	 */
 public void registerService(java.lang.String serviceName, java.lang.String interfaceName) throws android.os.RemoteException;
 public void registerReceptacle(java.lang.String receptacleName, java.lang.String interfaceName) throws android.os.RemoteException;
+public void registerDependency(java.lang.String componentName) throws android.os.RemoteException;
+/*
+	 * May be called by component user
+	 */
 public void getServiceNames(java.util.List<java.lang.String> serviceNames) throws android.os.RemoteException;
 public void getReceptacleNames(java.util.List<java.lang.String> receptacleNames) throws android.os.RemoteException;
 public android.os.IBinder getService(java.lang.String serviceName) throws android.os.RemoteException;
 public thesis.mobilis.api.IReceptacle getReceptacle(java.lang.String receptacleName) throws android.os.RemoteException;
-public void start() throws android.os.RemoteException;
-public void stop() throws android.os.RemoteException;
 }
