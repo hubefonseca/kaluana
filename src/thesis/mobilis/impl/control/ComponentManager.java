@@ -54,7 +54,7 @@ public class ComponentManager implements IComponentManager, IComponentLoaderList
 
 
 	@Override
-	public void getComponent(String componentName, IComponentLoaderListener listener) throws RemoteException {
+	public void loadComponent(String componentName, IComponentLoaderListener listener) throws RemoteException {
 		this.componentLoaderListener = listener;
 		componentLoader.loadComponent(componentName, this);
 	}
@@ -87,6 +87,12 @@ public class ComponentManager implements IComponentManager, IComponentLoaderList
 	public void getLoadedComponents(List<String> componentNames)
 			throws RemoteException {
 		loadedComponents.list(componentNames);
+	}
+
+
+	@Override
+	public IComponent getComponent(String componentName) throws RemoteException {
+		return loadedComponents.getByName(componentName);
 	}
 
 }

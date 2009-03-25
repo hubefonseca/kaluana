@@ -8,7 +8,6 @@ import java.util.List;
 import thesis.mobilis.api.IReceptacle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 public abstract class Component implements thesis.mobilis.api.IComponent, 
 										thesis.mobilis.api.control.IReceptacleConnectionListener,
@@ -70,9 +69,9 @@ public abstract class Component implements thesis.mobilis.api.IComponent,
 		IReceptacle receptacle;
 		while (iterator.hasNext()) {
 			receptacle = iterator.next();
-			Log.d(this.getClass().getName(), receptacle.getName());
-			if (receptacle.getName().equals(receptacleName))
+			if (receptacle.getName().equals(receptacleName)) {
 				return receptacle;
+			}
 		}
 		return null;
 	}

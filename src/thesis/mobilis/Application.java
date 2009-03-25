@@ -49,33 +49,11 @@ public class Application extends Activity implements IComponentManagerListener, 
 	}
 
 	@Override
-	public void loaded(IComponent component) throws RemoteException {
+	public void loaded(IComponent component) throws RemoteException {		
 		IBinder b = null;
 		Receptacle r2 = null;
 		Receptacle r = null;
 		IBinder d = null;
-		
-		if (component.getName().equals("PingComponent")) {
-			
-			pingComponent = (PingComponent)component;
-			Log.d(this.getClass().getName(), component.getName() + " connected");
-			
-			b = pingComponent.getService("ping");
-			r2 = (Receptacle)pingComponent.getReceptacle("pong");
-			r2.setContextWrapper(this);
-			r2.setBindListener(pingComponent);
-			
-		} else if (component.getName().equals("PongComponent")) {
-			
-			pongComponent = (PongComponent)component;
-			Log.d(this.getClass().getName(), component.getName() + " connected");
-			
-			d = pongComponent.getService("pong");
-			r = (Receptacle)pongComponent.getReceptacle("ping");
-			r.setContextWrapper(this);
-			r.setBindListener(pongComponent);
-			
-		}
 		
 		List<String> loadedComponents = new ArrayList<String>();
 		componentManager.getLoadedComponents(loadedComponents);
@@ -83,11 +61,22 @@ public class Application extends Activity implements IComponentManagerListener, 
 		if (loadedComponents.contains("PongComponent") && loadedComponents.contains("PingComponent")) {
 			Log.d(this.getClass().getName(), "Connecting receptacles to services...");
 			
-			// ta com erro na linha comentada abaixo
-//			r.connectToService(b);
+			pingComponent = (PingComponent)componentManager.getComponent("PingComponent");
+			pongComponent = (PongComponent)componentManager.getComponent("PongComponent");
+			
+			b = pingComponent.getService("ping");
+			r2 = (Receptacle)pingComponent.getReceptacle("pong");
+			r2.setContextWrapper(this);
+			r2.setBindListener(pingComponent);
+			
+			d = pongComponent.getService("pong");
+			r = (Receptacle)pongComponent.getReceptacle("ping");
+			r.setContextWrapper(this);
+			r.setBindListener(pongComponent);
+						
+			r.connectToService(b);
 			r2.connectToService(d);
 		}
-		
 	}
 
 	@Override
@@ -98,8 +87,8 @@ public class Application extends Activity implements IComponentManagerListener, 
 
 	@Override
 	public void start() throws RemoteException {		
-		componentManager.getComponent("PongComponent", this);
-		componentManager.getComponent("PingComponent", this);
+		componentManager.loadComponent("PongComponent", this);
+		componentManager.loadComponent("PingComponent", this);
 	}
 	
 }
