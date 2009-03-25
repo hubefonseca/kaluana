@@ -1,6 +1,11 @@
 package thesis.mobilis;
 
-import thesis.mobilis.api.IBindListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import thesis.mobilis.api.IComponent;
+import thesis.mobilis.api.control.IComponentLoaderListener;
+import thesis.mobilis.api.control.IComponentManagerListener;
 import thesis.mobilis.examples.pingpong.PingComponent;
 import thesis.mobilis.examples.pingpong.PongComponent;
 import thesis.mobilis.impl.Receptacle;
@@ -13,24 +18,22 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class Application extends Activity implements IBindListener {
+public class Application extends Activity implements IComponentManagerListener, IComponentLoaderListener {
 
+	
 	private PingComponent pingComponent;
 	private PongComponent pongComponent;
 
 	private ComponentManager componentManager;
 
 	/** Called when the activity is first created. */
-	@Override
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		// Relacionar as classes com nome e versão do componente
 		// Component manager!!
-	
-
-		//		Intent intent = new Intent(thesis.mobilis.api.impl.loader.ComponentLoader.class.getName());
 
 		componentManager = new ComponentManager(this);
 		
@@ -40,45 +43,63 @@ public class Application extends Activity implements IBindListener {
 	}
 
 	@Override
-	public void connected(String name) throws RemoteException {
-		Log.d(this.getClass().getName(), "connected to: " + name + "!!!!");
-		if (name.equals("ComponentLoader")) {
-			try {
-				pongComponent = (PongComponent)componentManager.getComponent("PongComponent");
-				pingComponent = (PingComponent)componentManager.getComponent("PingComponent");
-			
-				IBinder b = pingComponent.getService("ping");
-				Receptacle r = (Receptacle)pongComponent.getReceptacle("ping");
-				r.setContextWrapper(this);
-				r.setBindListener(this);
-				r.connectToService(b);
-			
-				IBinder d = pongComponent.getService("pong");
-				Receptacle r2 = (Receptacle)pingComponent.getReceptacle("pong");
-				r2.setContextWrapper(this);
-				r2.setBindListener(this);
-				r2.connectToService(d);
-			
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else if (name.equals("ping")) {
-			pongComponent.start();
-		} else if (name.equals("pong")) {
-			pingComponent.start();
-		}
-	}
-	
-	@Override
-	public void disconnected(String name) throws RemoteException {
-		Log.d(this.getClass().getName(), "Component " + name + " released!");
-	}
-
-	@Override
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void loaded(IComponent component) throws RemoteException {
+		IBinder b = null;
+		Receptacle r2 = null;
+		Receptacle r = null;
+		IBinder d = null;
+		
+		if (component.getName().equals("PingComponent")) {
+			
+			pingComponent = (PingComponent)component;
+			Log.d(this.getClass().getName(), component.getName() + " connected");
+			
+			b = pingComponent.getService("ping");
+			r2 = (Receptacle)pingComponent.getReceptacle("pong");
+			r2.setContextWrapper(this);
+			r2.setBindListener(pingComponent);
+			
+		} else if (component.getName().equals("PongComponent")) {
+			
+			pongComponent = (PongComponent)component;
+			Log.d(this.getClass().getName(), component.getName() + " connected");
+			
+			d = pongComponent.getService("pong");
+			r = (Receptacle)pongComponent.getReceptacle("ping");
+			r.setContextWrapper(this);
+			r.setBindListener(pongComponent);
+			
+		}
+		
+		List<String> loadedComponents = new ArrayList<String>();
+		componentManager.getLoadedComponents(loadedComponents);
+		
+		if (loadedComponents.contains("PongComponent") && loadedComponents.contains("PingComponent")) {
+			Log.d(this.getClass().getName(), "Connecting receptacles to services...");
+			
+			// ta com erro na linha comentada abaixo
+//			r.connectToService(b);
+			r2.connectToService(d);
+		}
+		
+	}
+
+	@Override
+	public void unloaded(IComponent component) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void start() throws RemoteException {		
+		componentManager.getComponent("PongComponent", this);
+		componentManager.getComponent("PingComponent", this);
 	}
 	
 }

@@ -7,18 +7,16 @@ interface IComponent {
 	// fazer o bind no Receptacle impede receptáculos múltiplos?
 	
 	/*
+	* Internal
+	*/
+	String getName();
+	
+	/*
 	 * Must be implemented by component developer
 	 */
 	void registerServices();
 	
 	void registerReceptacles();
-	
-	void registerDependencies();
-	
-	void start();
-	
-	void stop();
-	
 	
 	/*
 	 * May be called by component developer
@@ -30,7 +28,7 @@ interface IComponent {
 	void registerDependency(String componentName);
 	
 	/*
-	 * May be called by component user
+	 * Should be called by component user
 	 */
 	void getServiceNames(out List<String> serviceNames);
 	

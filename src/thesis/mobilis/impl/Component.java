@@ -10,7 +10,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public abstract class Component implements thesis.mobilis.api.IComponent {
+public abstract class Component implements thesis.mobilis.api.IComponent, 
+										thesis.mobilis.api.control.IReceptacleConnectionListener,
+										thesis.mobilis.api.adaptation.IAdaptable {
 	
 	/** 
 	 * The component name
@@ -41,9 +43,7 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 		receptacles = new ArrayList<IReceptacle>();
 		servicesInterfaces = new HashMap<String, String>();
 	}
-	
-	
-	
+
 	@Override
 	public void registerService(String serviceName, String interfaceName) throws RemoteException {
 		servicesInterfaces.put(serviceName, interfaceName);
@@ -52,15 +52,14 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 	@Override
 	public void registerReceptacle(String receptacleName, String interfaceName) throws RemoteException {
 		Receptacle receptacle = new Receptacle();
-		receptacle.setClassName(interfaceName);
 		receptacle.setName(receptacleName);
+		receptacle.setClassName(interfaceName);
 		receptacles.add(receptacle);
 	}
 	
 	@Override
 	public IBinder getService(String serviceName) throws RemoteException {
 		IBinder service = services.get(serviceName);
-		
 		return service;
 	}
 
@@ -96,6 +95,7 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 		this.name = name;
 	}
 	
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -129,6 +129,12 @@ public abstract class Component implements thesis.mobilis.api.IComponent {
 
 	@Override
 	public abstract void stop() throws RemoteException;
+	
+	@Override
+	public abstract void connected(String receptacleName) throws RemoteException;
+
+	@Override
+	public abstract void disconnected(String receptacleName) throws RemoteException;
 	
 }
 

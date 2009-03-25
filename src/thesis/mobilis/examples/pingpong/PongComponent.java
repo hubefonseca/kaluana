@@ -20,21 +20,7 @@ public class PongComponent extends thesis.mobilis.impl.Component {
 		
 		Log.d(this.getClass().getName(), "Pong component started");
 		
-		IReceptacle r = this.getReceptacle("ping");
 		
-		pingService = (IPingService)r.getConnection();
-		
-		int a = pingService.ping();
-		
-		Log.d(this.getClass().getName(), "the result is " + a);
-
-		a = pingService.ping();
-
-		Log.d(this.getClass().getName(), "the result is " + a);
-
-		a = pingService.ping();
-
-		Log.d(this.getClass().getName(), "the result is " + a);
 
 	}
 
@@ -57,6 +43,34 @@ public class PongComponent extends thesis.mobilis.impl.Component {
 	@Override
 	public void registerDependencies() throws RemoteException {
 		// no dependencies
+	}
+
+	@Override
+	public void connected(String receptacleName) throws RemoteException {
+		// TODO Auto-generated method stub
+		Log.d(this.getClass().getName(), "Servico instanciado no pong component");
+		
+		IReceptacle r = this.getReceptacle("ping");
+		
+		pingService = (IPingService)r.getConnection();
+		
+		int a = pingService.ping();
+		
+		Log.d(this.getClass().getName(), "the result is " + a);
+
+		a = pingService.ping();
+
+		Log.d(this.getClass().getName(), "the result is " + a);
+
+		a = pingService.ping();
+
+		Log.d(this.getClass().getName(), "the result is " + a);
+	}
+
+	@Override
+	public void disconnected(String receptacleName) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

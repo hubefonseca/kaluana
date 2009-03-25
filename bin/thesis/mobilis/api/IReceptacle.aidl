@@ -1,8 +1,9 @@
 package thesis.mobilis.api;
 
-import thesis.mobilis.api.IBinderCallbackListener;
-
 interface IReceptacle {
+	
+	// mais de uma implementação (className) pode oferecer o serviço
+	
 	
 	void setName(String name);
 	

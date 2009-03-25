@@ -3,8 +3,8 @@ package thesis.mobilis.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import thesis.mobilis.api.IBindListener;
 import thesis.mobilis.api.IReceptacle;
+import thesis.mobilis.api.control.IReceptacleConnectionListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -29,7 +29,7 @@ public class Receptacle implements IReceptacle {
 	 * Binder callback is used to notify the caller about
 	 * the asynchronous binding operation end
 	 */
-	private IBindListener listener;
+	private IReceptacleConnectionListener listener;
 	
 	@Override
 	public void setClassName(String className) throws RemoteException { 
@@ -40,8 +40,7 @@ public class Receptacle implements IReceptacle {
 		this.contextWrapper = contextWrapper;
 	}
 	
-	// O listener deve ser a aplicação ou o componente??
-	public void setBindListener(IBindListener listener) {
+	public void setBindListener(IReceptacleConnectionListener listener) {
 		this.listener = listener;
 	}
 	
@@ -49,11 +48,10 @@ public class Receptacle implements IReceptacle {
 	public void connectToService(IBinder service) 
 			throws RemoteException {
 		
-		Log.d(this.getClass().getName(), "connect to " + interfaceName);
+		Log.d(this.getClass().getName(), "Connecting receptacle " + receptacleName + " to " + interfaceName);
 		
 		Intent intent = new Intent(interfaceName);
 		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		
 	}
 
 	@Override
@@ -128,4 +126,5 @@ public class Receptacle implements IReceptacle {
 			Log.d(this.getClass().getName(), "Service disconnected");
 		}
 	};
+
 }
