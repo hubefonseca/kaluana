@@ -6,6 +6,6 @@ interface IComponentLoaderListener {
 	
 	void loaded(IComponent component);
 	
-	void unloaded(IComponent component);
+	void unloaded(in String componentName);
 	
 }

@@ -50,25 +50,15 @@ case INTERFACE_TRANSACTION:
 reply.writeString(DESCRIPTOR);
 return true;
 }
-case TRANSACTION_loadComponent:
-{
-data.enforceInterface(DESCRIPTOR);
-java.lang.String _arg0;
-_arg0 = data.readString();
-thesis.mobilis.api.control.IComponentLoaderListener _arg1;
-_arg1 = thesis.mobilis.api.control.IComponentLoaderListener.Stub.asInterface(data.readStrongBinder());
-this.loadComponent(_arg0, _arg1);
-reply.writeNoException();
-return true;
-}
-case TRANSACTION_getLoadedComponents:
+case TRANSACTION_loadComponents:
 {
 data.enforceInterface(DESCRIPTOR);
 java.util.List<java.lang.String> _arg0;
-_arg0 = new java.util.ArrayList<java.lang.String>();
-this.getLoadedComponents(_arg0);
+_arg0 = data.createStringArrayList();
+long _arg1;
+_arg1 = data.readLong();
+this.loadComponents(_arg0, _arg1);
 reply.writeNoException();
-reply.writeStringList(_arg0);
 return true;
 }
 case TRANSACTION_getComponent:
@@ -99,31 +89,16 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
-public void loadComponent(java.lang.String componentName, thesis.mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException
+public void loadComponents(java.util.List<java.lang.String> componentNames, long callId) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
-_data.writeString(componentName);
-_data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
-mRemote.transact(Stub.TRANSACTION_loadComponent, _data, _reply, 0);
+_data.writeStringList(componentNames);
+_data.writeLong(callId);
+mRemote.transact(Stub.TRANSACTION_loadComponents, _data, _reply, 0);
 _reply.readException();
-}
-finally {
-_reply.recycle();
-_data.recycle();
-}
-}
-public void getLoadedComponents(java.util.List<java.lang.String> componentNames) throws android.os.RemoteException
-{
-android.os.Parcel _data = android.os.Parcel.obtain();
-android.os.Parcel _reply = android.os.Parcel.obtain();
-try {
-_data.writeInterfaceToken(DESCRIPTOR);
-mRemote.transact(Stub.TRANSACTION_getLoadedComponents, _data, _reply, 0);
-_reply.readException();
-_reply.readStringList(componentNames);
 }
 finally {
 _reply.recycle();
@@ -149,11 +124,9 @@ _data.recycle();
 return _result;
 }
 }
-static final int TRANSACTION_loadComponent = (IBinder.FIRST_CALL_TRANSACTION + 0);
-static final int TRANSACTION_getLoadedComponents = (IBinder.FIRST_CALL_TRANSACTION + 1);
-static final int TRANSACTION_getComponent = (IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_loadComponents = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_getComponent = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
-public void loadComponent(java.lang.String componentName, thesis.mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException;
-public void getLoadedComponents(java.util.List<java.lang.String> componentNames) throws android.os.RemoteException;
+public void loadComponents(java.util.List<java.lang.String> componentNames, long callId) throws android.os.RemoteException;
 public thesis.mobilis.api.IComponent getComponent(java.lang.String componentName) throws android.os.RemoteException;
 }

@@ -1,6 +1,9 @@
 package thesis.mobilis.impl.control;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import thesis.mobilis.api.IComponent;
 import thesis.mobilis.api.control.IComponentLoader;
@@ -19,11 +22,13 @@ public class ComponentManager implements IComponentManager, IComponentLoaderList
 	
 	private IComponentLoader componentLoader;
 	private IComponentManagerListener componentManagerListener;
-	private IComponentLoaderListener componentLoaderListener;
+	
+	private HashMap<Long, List<String>> callRequests;
 	
 	public ComponentManager(IComponentManagerListener listener) {
 		this.componentManagerListener = listener;
 		loadedComponents = new ComponentCollection();
+		callRequests = new HashMap<Long, List<String>>();
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -54,11 +59,15 @@ public class ComponentManager implements IComponentManager, IComponentLoaderList
 
 
 	@Override
-	public void loadComponent(String componentName, IComponentLoaderListener listener) throws RemoteException {
-		this.componentLoaderListener = listener;
-		componentLoader.loadComponent(componentName, this);
+	public void loadComponents(List<String> componentNames, long callId) throws RemoteException {
+		callRequests.put(callId, componentNames);
+		Iterator<String> iterator = componentNames.iterator();
+		String componentName;
+		while (iterator.hasNext()) {
+			componentName = iterator.next();
+			componentLoader.loadComponent(componentName, this);
+		}
 	}
-
 
 	@Override
 	public void loaded(IComponent component) throws RemoteException {
@@ -72,23 +81,35 @@ public class ComponentManager implements IComponentManager, IComponentLoaderList
 		// Manage which components are already started		
 		loadedComponents.add(component);
 		
-		// Deliver component to caller
-		componentLoaderListener.loaded(component);
+		Iterator<Entry<Long, List<String>>> iteratorCalls = callRequests.entrySet().iterator();
+		Entry<Long, List<String>> entry;
+		List<String> componentNames;
+		long callId;
+		while (iteratorCalls.hasNext()) {
+			entry = iteratorCalls.next();
+			componentNames = entry.getValue();
+			callId = entry.getKey();
+			Iterator<String> iteratorNames = componentNames.iterator();
+			String name;
+			boolean requestComplete = true;
+			while (iteratorNames.hasNext()) {
+				name = iteratorNames.next();
+				if (!loadedComponents.contains(name)) {
+					requestComplete = false;
+					break;
+				}
+			}
+			if (requestComplete) {
+				componentManagerListener.componentsLoaded(callId);
+				callRequests.remove(callId);
+			}
+		}
 	}
-
 
 	@Override
-	public void unloaded(IComponent component) throws RemoteException {
-		Log.d(this.getClass().getName(), "Component unloaded");
+	public void unloaded(String componentName) throws RemoteException {
+		loadedComponents.remove(componentName);
 	}
-
-
-	@Override
-	public void getLoadedComponents(List<String> componentNames)
-			throws RemoteException {
-		loadedComponents.list(componentNames);
-	}
-
 
 	@Override
 	public IComponent getComponent(String componentName) throws RemoteException {

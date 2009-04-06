@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\thesis\\src\\thesis\\mobilis\\api\\control\\IComponentLoaderListener.aidl
  */
 package thesis.mobilis.api.control;
-import thesis.mobilis.api.IComponent;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
+import thesis.mobilis.api.IComponent;
 public interface IComponentLoaderListener extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
@@ -61,8 +61,8 @@ return true;
 case TRANSACTION_unloaded:
 {
 data.enforceInterface(DESCRIPTOR);
-thesis.mobilis.api.IComponent _arg0;
-_arg0 = thesis.mobilis.api.IComponent.Stub.asInterface(data.readStrongBinder());
+java.lang.String _arg0;
+_arg0 = data.readString();
 this.unloaded(_arg0);
 reply.writeNoException();
 return true;
@@ -100,13 +100,13 @@ _reply.recycle();
 _data.recycle();
 }
 }
-public void unloaded(thesis.mobilis.api.IComponent component) throws android.os.RemoteException
+public void unloaded(java.lang.String componentName) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
-_data.writeStrongBinder((((component!=null))?(component.asBinder()):(null)));
+_data.writeString(componentName);
 mRemote.transact(Stub.TRANSACTION_unloaded, _data, _reply, 0);
 _reply.readException();
 }
@@ -120,5 +120,5 @@ static final int TRANSACTION_loaded = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_unloaded = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
 public void loaded(thesis.mobilis.api.IComponent component) throws android.os.RemoteException;
-public void unloaded(thesis.mobilis.api.IComponent component) throws android.os.RemoteException;
+public void unloaded(java.lang.String componentName) throws android.os.RemoteException;
 }

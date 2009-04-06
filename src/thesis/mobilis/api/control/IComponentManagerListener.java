@@ -55,6 +55,15 @@ this.start();
 reply.writeNoException();
 return true;
 }
+case TRANSACTION_componentsLoaded:
+{
+data.enforceInterface(DESCRIPTOR);
+long _arg0;
+_arg0 = data.readLong();
+this.componentsLoaded(_arg0);
+reply.writeNoException();
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -73,6 +82,10 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
+/**
+	 * This method is called when the component manager is completely
+	 * loaded
+	 */
 public void start() throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
@@ -87,8 +100,37 @@ _reply.recycle();
 _data.recycle();
 }
 }
+/**
+	 * This method is called when a request to load one or more components
+	 * is finished
+	 */
+public void componentsLoaded(long callId) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeLong(callId);
+mRemote.transact(Stub.TRANSACTION_componentsLoaded, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 }
 static final int TRANSACTION_start = (IBinder.FIRST_CALL_TRANSACTION + 0);
+static final int TRANSACTION_componentsLoaded = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
+/**
+	 * This method is called when the component manager is completely
+	 * loaded
+	 */
 public void start() throws android.os.RemoteException;
+/**
+	 * This method is called when a request to load one or more components
+	 * is finished
+	 */
+public void componentsLoaded(long callId) throws android.os.RemoteException;
 }

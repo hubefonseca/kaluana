@@ -9,6 +9,8 @@ interface IReceptacle {
 	
 	String getName();
 	
+	
+	
 	void connectToService(IBinder service);	
 	
 	void setClassName(String className);

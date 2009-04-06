@@ -1,12 +1,11 @@
 package thesis.mobilis.api.control;
 
 import thesis.mobilis.api.IComponent;
-import thesis.mobilis.api.control.IComponentLoaderListener;
 
 interface IComponentManager {
 	
-	void getComponent(String componentName, IComponentLoaderListener listener);
+	void loadComponents(in List<String> componentNames, in long callId);
 	
-	void getLoadedComponents(out List<String> componentNames);
+	IComponent getComponent(in String componentName);
 	
 }
