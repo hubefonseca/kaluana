@@ -48,13 +48,6 @@ case INTERFACE_TRANSACTION:
 reply.writeString(DESCRIPTOR);
 return true;
 }
-case TRANSACTION_start:
-{
-data.enforceInterface(DESCRIPTOR);
-this.start();
-reply.writeNoException();
-return true;
-}
 case TRANSACTION_componentsLoaded:
 {
 data.enforceInterface(DESCRIPTOR);
@@ -83,24 +76,6 @@ public java.lang.String getInterfaceDescriptor()
 return DESCRIPTOR;
 }
 /**
-	 * This method is called when the component manager is completely
-	 * loaded
-	 */
-public void start() throws android.os.RemoteException
-{
-android.os.Parcel _data = android.os.Parcel.obtain();
-android.os.Parcel _reply = android.os.Parcel.obtain();
-try {
-_data.writeInterfaceToken(DESCRIPTOR);
-mRemote.transact(Stub.TRANSACTION_start, _data, _reply, 0);
-_reply.readException();
-}
-finally {
-_reply.recycle();
-_data.recycle();
-}
-}
-/**
 	 * This method is called when a request to load one or more components
 	 * is finished
 	 */
@@ -120,14 +95,8 @@ _data.recycle();
 }
 }
 }
-static final int TRANSACTION_start = (IBinder.FIRST_CALL_TRANSACTION + 0);
-static final int TRANSACTION_componentsLoaded = (IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_componentsLoaded = (IBinder.FIRST_CALL_TRANSACTION + 0);
 }
-/**
-	 * This method is called when the component manager is completely
-	 * loaded
-	 */
-public void start() throws android.os.RemoteException;
 /**
 	 * This method is called when a request to load one or more components
 	 * is finished

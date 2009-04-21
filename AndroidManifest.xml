@@ -19,9 +19,9 @@
 				<action android:name="mobilis.examples.helloworld.services.iMobService"></action>
 			</intent-filter>
 		</service>
-		<service android:name="mobilis.impl.control.ComponentLoader">
+		<service android:name="mobilis.impl.control.ComponentManager">
 			<intent-filter>
-				<action android:name="mobilis.api.control.IComponentLoader"></action>
+				<action android:name="mobilis.api.control.IComponentManager"></action>
 			</intent-filter>
 		</service>
 		<service android:name="mobilis.examples.pingpong.PingService">

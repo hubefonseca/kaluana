@@ -3,13 +3,13 @@
  * Original file: C:\\java\\android\\workspace\\mobilis\\src\\mobilis\\api\\control\\IComponentManager.aidl
  */
 package mobilis.api.control;
+import mobilis.api.IComponent;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
-import mobilis.api.IComponent;
 import java.util.List;
 public interface IComponentManager extends android.os.IInterface
 {
@@ -71,6 +71,33 @@ reply.writeNoException();
 reply.writeStrongBinder((((_result!=null))?(_result.asBinder()):(null)));
 return true;
 }
+case TRANSACTION_init:
+{
+data.enforceInterface(DESCRIPTOR);
+mobilis.api.control.IComponentManagerListener _arg0;
+_arg0 = mobilis.api.control.IComponentManagerListener.Stub.asInterface(data.readStrongBinder());
+this.init(_arg0);
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_loaded:
+{
+data.enforceInterface(DESCRIPTOR);
+mobilis.api.IComponent _arg0;
+_arg0 = mobilis.api.IComponent.Stub.asInterface(data.readStrongBinder());
+this.loaded(_arg0);
+reply.writeNoException();
+return true;
+}
+case TRANSACTION_unloaded:
+{
+data.enforceInterface(DESCRIPTOR);
+java.lang.String _arg0;
+_arg0 = data.readString();
+this.unloaded(_arg0);
+reply.writeNoException();
+return true;
+}
 }
 return super.onTransact(code, data, reply, flags);
 }
@@ -123,10 +150,67 @@ _data.recycle();
 }
 return _result;
 }
+public void init(mobilis.api.control.IComponentManagerListener listener) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
+mRemote.transact(Stub.TRANSACTION_init, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+/**
+	 * Callback interfaces
+	 */
+public void loaded(mobilis.api.IComponent component) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeStrongBinder((((component!=null))?(component.asBinder()):(null)));
+mRemote.transact(Stub.TRANSACTION_loaded, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
+public void unloaded(java.lang.String componentName) throws android.os.RemoteException
+{
+android.os.Parcel _data = android.os.Parcel.obtain();
+android.os.Parcel _reply = android.os.Parcel.obtain();
+try {
+_data.writeInterfaceToken(DESCRIPTOR);
+_data.writeString(componentName);
+mRemote.transact(Stub.TRANSACTION_unloaded, _data, _reply, 0);
+_reply.readException();
+}
+finally {
+_reply.recycle();
+_data.recycle();
+}
+}
 }
 static final int TRANSACTION_loadComponents = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_getComponent = (IBinder.FIRST_CALL_TRANSACTION + 1);
+static final int TRANSACTION_init = (IBinder.FIRST_CALL_TRANSACTION + 2);
+static final int TRANSACTION_loaded = (IBinder.FIRST_CALL_TRANSACTION + 3);
+static final int TRANSACTION_unloaded = (IBinder.FIRST_CALL_TRANSACTION + 4);
 }
 public void loadComponents(java.util.List<java.lang.String> componentNames, long callId) throws android.os.RemoteException;
 public mobilis.api.IComponent getComponent(java.lang.String componentName) throws android.os.RemoteException;
+public void init(mobilis.api.control.IComponentManagerListener listener) throws android.os.RemoteException;
+/**
+	 * Callback interfaces
+	 */
+public void loaded(mobilis.api.IComponent component) throws android.os.RemoteException;
+public void unloaded(java.lang.String componentName) throws android.os.RemoteException;
 }

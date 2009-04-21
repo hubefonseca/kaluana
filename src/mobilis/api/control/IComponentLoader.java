@@ -53,8 +53,8 @@ case TRANSACTION_loadComponent:
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-mobilis.api.control.IComponentLoaderListener _arg1;
-_arg1 = mobilis.api.control.IComponentLoaderListener.Stub.asInterface(data.readStrongBinder());
+mobilis.api.control.IComponentManager _arg1;
+_arg1 = mobilis.api.control.IComponentManager.Stub.asInterface(data.readStrongBinder());
 this.loadComponent(_arg0, _arg1);
 reply.writeNoException();
 return true;
@@ -64,8 +64,8 @@ case TRANSACTION_loadBestComponent:
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-mobilis.api.control.IComponentLoaderListener _arg1;
-_arg1 = mobilis.api.control.IComponentLoaderListener.Stub.asInterface(data.readStrongBinder());
+mobilis.api.control.IComponentManager _arg1;
+_arg1 = mobilis.api.control.IComponentManager.Stub.asInterface(data.readStrongBinder());
 this.loadBestComponent(_arg0, _arg1);
 reply.writeNoException();
 return true;
@@ -88,7 +88,7 @@ public java.lang.String getInterfaceDescriptor()
 {
 return DESCRIPTOR;
 }
-public void loadComponent(java.lang.String componentName, mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException
+public void loadComponent(java.lang.String componentName, mobilis.api.control.IComponentManager listener) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -104,7 +104,7 @@ _reply.recycle();
 _data.recycle();
 }
 }
-public void loadBestComponent(java.lang.String contextRepresentation, mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException
+public void loadBestComponent(java.lang.String contextRepresentation, mobilis.api.control.IComponentManager listener) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
@@ -124,6 +124,6 @@ _data.recycle();
 static final int TRANSACTION_loadComponent = (IBinder.FIRST_CALL_TRANSACTION + 0);
 static final int TRANSACTION_loadBestComponent = (IBinder.FIRST_CALL_TRANSACTION + 1);
 }
-public void loadComponent(java.lang.String componentName, mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException;
-public void loadBestComponent(java.lang.String contextRepresentation, mobilis.api.control.IComponentLoaderListener listener) throws android.os.RemoteException;
+public void loadComponent(java.lang.String componentName, mobilis.api.control.IComponentManager listener) throws android.os.RemoteException;
+public void loadBestComponent(java.lang.String contextRepresentation, mobilis.api.control.IComponentManager listener) throws android.os.RemoteException;
 }
