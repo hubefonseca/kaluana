@@ -3,7 +3,6 @@
  * Original file: C:\\java\\android\\workspace\\mobilis\\src\\mobilis\\api\\control\\IComponentManager.aidl
  */
 package mobilis.api.control;
-import mobilis.api.IComponent;
 import java.lang.String;
 import android.os.RemoteException;
 import android.os.IBinder;
@@ -11,6 +10,7 @@ import android.os.IInterface;
 import android.os.Binder;
 import android.os.Parcel;
 import java.util.List;
+import mobilis.api.IComponent;
 public interface IComponentManager extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */

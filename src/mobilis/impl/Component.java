@@ -7,6 +7,7 @@ import java.util.List;
 
 import mobilis.api.IReceptacle;
 
+import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -37,6 +38,8 @@ public abstract class Component implements mobilis.api.IComponent,
 	 * components
 	 */
 	private List<IReceptacle> receptacles;
+	
+	protected ContextWrapper contextWrapper;
 	
 	public Component() {
 		services = new HashMap<String, IBinder>();
@@ -104,6 +107,10 @@ public abstract class Component implements mobilis.api.IComponent,
 	public void registerDependency(String componentName) throws RemoteException {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setContextWrapper(ContextWrapper contextWrapper) {
+		this.contextWrapper = contextWrapper;
 	}
 	
 	@Override

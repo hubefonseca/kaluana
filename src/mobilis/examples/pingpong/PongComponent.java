@@ -11,17 +11,12 @@ public class PongComponent extends mobilis.impl.Component {
 
 	@Override
 	public void stop() throws RemoteException {
-		// TODO Auto-generated method stub
 		Log.d(this.getClass().getName(), "shutdown");
 	}
 
 	@Override
 	public void start() throws RemoteException {
-		
 		Log.d(this.getClass().getName(), "Pong component started");
-		
-		
-
 	}
 
 	@Override

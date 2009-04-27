@@ -18,7 +18,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class Application extends Activity {
+public class PingPongApp extends Activity implements IComponentManagerListener {
 
 	private PingComponent pingComponent;
 	private PongComponent pongComponent;
@@ -45,7 +45,7 @@ public class Application extends Activity {
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
-				componentManager.init(mListener);
+				componentManager.init(getThis());
 				List<String> componentNames = new ArrayList<String>();
 				componentNames.add("mobilis.examples.pingpong.PingComponent");
 				componentNames.add("mobilis.examples.pingpong.PongComponent");
@@ -64,38 +64,42 @@ public class Application extends Activity {
 		
 	};
 	
-	public IComponentManagerListener mListener = new IComponentManagerListener.Stub() {
-
-		@Override
-		public void componentsLoaded(long callId) throws RemoteException {
-			Log.d(this.getClass().getName(), "callID: " + callId);
-			
-			IBinder servicePing = null;
-			Receptacle recaptaclePing = null;
-			Receptacle receptaclePong = null;
-			IBinder servicePong = null;
-			
-			Log.d(this.getClass().getName(), "Connecting services on receptacles...");
-			
-			pingComponent = (PingComponent)componentManager.getComponent("mobilis.examples.pingpong.PingComponent");
-			pongComponent = (PongComponent)componentManager.getComponent("mobilis.examples.pingpong.PongComponent");
-			
-			servicePing = pingComponent.getService("ping");
-			recaptaclePing = (Receptacle)pingComponent.getReceptacle("pong");
-			recaptaclePing.setContextWrapper(getThis());
-			recaptaclePing.setBindListener(pingComponent);
-			
-			servicePong = pongComponent.getService("pong");
-			receptaclePong = (Receptacle)pongComponent.getReceptacle("ping");
-			receptaclePong.setContextWrapper(getThis());
-			receptaclePong.setBindListener(pongComponent);
-						
-			receptaclePong.connectToService(servicePing);
-			recaptaclePing.connectToService(servicePong);
-		}
-	};
-	
-	public Application getThis() {
+	public PingPongApp getThis() {
 		return this;
 	}
+
+	@Override
+	public void componentsLoaded(long callId) throws RemoteException {
+		Log.d(this.getClass().getName(), "callID: " + callId);
+		
+		IBinder servicePing = null;
+		Receptacle recaptaclePing = null;
+		Receptacle receptaclePong = null;
+		IBinder servicePong = null;
+		
+		Log.d(this.getClass().getName(), "Connecting services on receptacles...");
+		
+		pingComponent = (PingComponent)componentManager.getComponent("mobilis.examples.pingpong.PingComponent");
+		pongComponent = (PongComponent)componentManager.getComponent("mobilis.examples.pingpong.PongComponent");
+		
+		servicePing = pingComponent.getService("ping");
+		recaptaclePing = (Receptacle)pingComponent.getReceptacle("pong");
+		recaptaclePing.setContextWrapper(getThis());
+		recaptaclePing.setBindListener(pingComponent);
+		
+		servicePong = pongComponent.getService("pong");
+		receptaclePong = (Receptacle)pongComponent.getReceptacle("ping");
+		receptaclePong.setContextWrapper(getThis());
+		receptaclePong.setBindListener(pongComponent);
+					
+		receptaclePong.connectToService(servicePing);
+		recaptaclePing.connectToService(servicePong);
+	}
+
+	@Override
+	public IBinder asBinder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

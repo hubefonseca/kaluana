@@ -24,7 +24,7 @@ public class Receptacle implements IReceptacle {
 	/**
 	 * Used to bind services
 	 */
-	private ContextWrapper contextWrapper;
+	protected ContextWrapper contextWrapper;
 	
 	/**
 	 * Binder callback is used to notify the caller about

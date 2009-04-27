@@ -1,17 +1,12 @@
 package mobilis.examples.pingpong;
 
 import mobilis.api.IReceptacle;
-import mobilis.examples.helloworld.services.iMobService;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
 public class PingComponent extends mobilis.impl.Component {
 
 	IPongService pongService;
-
-	// receptacles :
-	public iMobService mobService;	
 
 	@Override
 	public void stop() throws RemoteException {

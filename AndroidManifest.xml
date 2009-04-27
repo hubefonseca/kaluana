@@ -3,22 +3,13 @@
 	android:versionCode="1" android:versionName="1.0.0" package="mobilis.app">
 	<application android:icon="@drawable/mobilis"
 		android:label="@string/app_name">
-		<activity android:label="@string/app_name" android:name=".Application">
+		<uses-library android:name="com.google.android.maps" />
+		<activity android:label="@string/app_name" android:name=".NavigatorApp">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<service android:name="mobilis.examples.helloworld.services.AdapterService">
-			<intent-filter>
-				<action android:name="mobilis.services.iMobService"></action>
-			</intent-filter>
-		</service>
-		<service android:name="mobilis.examples.helloworld.services.MobService">
-			<intent-filter>
-				<action android:name="mobilis.examples.helloworld.services.iMobService"></action>
-			</intent-filter>
-		</service>
 		<service android:name="mobilis.impl.control.ComponentManager">
 			<intent-filter>
 				<action android:name="mobilis.api.control.IComponentManager"></action>
@@ -34,5 +25,22 @@
 				<action android:name="mobilis.examples.pingpong.IPongService"></action>
 			</intent-filter>
 		</service>
+		<service android:name="mobilis.context.location.ProviderService">
+			<intent-filter>
+				<action android:name="mobilis.context.location.IProviderService"></action>
+			</intent-filter>
+		</service>
+		<activity android:name="mobilis.examples.navigator.NavigatorActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"></action>
+				<category android:name="android.intent.category.LAUNCHER"></category>
+			</intent-filter>
+		</activity>
 	</application>
-</manifest> 
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_GPS" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+</manifest>
