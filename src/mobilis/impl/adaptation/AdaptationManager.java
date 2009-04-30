@@ -17,8 +17,8 @@ public class AdaptationManager implements IAdaptationManager, ILocationListener 
 	IProviderService locationProvider;
 	
 	public AdaptationManager(ContextWrapper contextWrapper) {
-		Intent intent = new Intent(mobilis.context.location.IProviderService.class.getName());
-		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+//		Intent intent = new Intent(mobilis.context.location.IProviderService.class.getName());
+//		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {

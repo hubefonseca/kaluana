@@ -47,7 +47,7 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 				componentManager.loadComponents(componentNames, 0);
 				
 				
-				AdaptationManager adaptationManager = new AdaptationManager(getThis());
+//				AdaptationManager adaptationManager = new AdaptationManager(getThis());
 				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block

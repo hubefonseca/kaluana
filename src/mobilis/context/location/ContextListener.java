@@ -3,11 +3,14 @@ package mobilis.context.location;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 
-public class ContextListener implements LocationListener {
+public class ContextListener extends Thread implements LocationListener {
 
 	public ContextListener() {
+		Looper.prepare();
+		Looper.loop();
 		Log.d(this.getClass().getName(), "Listener constructor");
 	}
 	
@@ -34,4 +37,7 @@ public class ContextListener implements LocationListener {
 		Log.d(this.getClass().getName(), "Status changed: " + status);
 	}
 
+	public void test() {
+		Log.d(this.getClass().getName(), "Test!!!");
+	}
 }
