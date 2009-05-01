@@ -1,8 +1,10 @@
 package mobilis.impl.adaptation;
 
+import java.util.List;
+
+import mobilis.api.adaptation.IAdaptable;
 import mobilis.api.adaptation.IAdaptationManager;
-import mobilis.context.location.ILocationListener;
-import mobilis.context.location.IProviderService;
+import mobilis.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -12,13 +14,15 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class AdaptationManager implements IAdaptationManager, ILocationListener {
+public class AdaptationManager implements IAdaptationManager {
 
-	IProviderService locationProvider;
+	private IProviderService contextProvider;
+	
+	private List<IAdaptable> components;
 	
 	public AdaptationManager(ContextWrapper contextWrapper) {
-//		Intent intent = new Intent(mobilis.context.location.IProviderService.class.getName());
-//		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
+		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -26,12 +30,13 @@ public class AdaptationManager implements IAdaptationManager, ILocationListener 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			
-			locationProvider = IProviderService.Stub.asInterface(service);
+			contextProvider = IProviderService.Stub.asInterface(service);
 			
 			Log.d(this.getClass().getName(), "Location provider service connected!");
 			
 			try {
-				locationProvider.registerListener(getThis());
+				contextProvider.registerAdaptationManager(getThis());
+				contextProvider.start();
 			} catch(RemoteException e) {
 				
 			}
@@ -49,7 +54,7 @@ public class AdaptationManager implements IAdaptationManager, ILocationListener 
 	@Override
 	public void notifyContextChange() throws RemoteException {
 		// TODO Auto-generated method stub
-		
+		Log.d(this.getClass().getName(), "Context change notification!");
 	}
 
 	@Override
@@ -63,10 +68,8 @@ public class AdaptationManager implements IAdaptationManager, ILocationListener 
 	}
 
 	@Override
-	public int locationChanged() throws RemoteException {
-		Log.d(this.getClass().getName(), "User location has changed!!");
+	public void registerComponent(String scope) throws RemoteException {
+		// TODO Auto-generated method stub
 		
-		
-		return 0;
 	}
 }

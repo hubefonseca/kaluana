@@ -9,6 +9,7 @@ import mobilis.api.IComponent;
 import mobilis.api.control.IComponentLoader;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
+import mobilis.impl.adaptation.AdaptationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -93,6 +94,10 @@ public class ComponentManager extends Service {
 			loadedComponents = new ComponentCollection();
 			callRequests = new HashMap<Long, List<String>>();
 			componentManagerListener = listener;
+			
+			// Start Adaptation Manager
+			AdaptationManager adaptationManager = new AdaptationManager(getThis());
+			
 		}
 		
 	};
@@ -100,6 +105,10 @@ public class ComponentManager extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mComponentManager;
+	}
+	
+	public ComponentManager getThis() {
+		return this;
 	}
 
 }

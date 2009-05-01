@@ -1,5 +1,6 @@
 package mobilis.context.location;
 
+import mobilis.context.IProviderService;
 import android.os.RemoteException;
 
 public class LocationProviderComponent extends mobilis.impl.Component {

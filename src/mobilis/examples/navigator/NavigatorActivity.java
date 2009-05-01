@@ -54,12 +54,10 @@ public class NavigatorActivity extends MapActivity implements LocationListener {
 
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 50, this);
-        // tentar fazer com Intent (register intent receiver)
     }
 
     @Override
 	public void onLocationChanged(Location location) {
-    	Log.d(this.getClass().getName(), "Location change updated");
     	if (location != null) {
 			double lat = location.getLatitude();
 			double lng = location.getLongitude();
@@ -84,10 +82,7 @@ public class NavigatorActivity extends MapActivity implements LocationListener {
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		Log.d(this.getClass().getName(), "Status changed: " + status);
 		
-//		Log.d(this.getClass().getName(), "enabled: " + locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 	}
 	
 	/* User can zoom in/out using keys provided on keypad */

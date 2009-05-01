@@ -4,6 +4,8 @@ interface IAdaptable {
 	
 	void registerDependencies();
 	
+	void getDependencies();
+	
 	void start();
 	
 	void stop();

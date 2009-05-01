@@ -7,7 +7,6 @@ import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.context.location.LocationProviderComponent;
 import mobilis.examples.navigator.NavigatorComponent;
-import mobilis.impl.adaptation.AdaptationManager;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -45,9 +44,6 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 				componentNames.add("mobilis.examples.navigator.NavigatorComponent");
 				componentNames.add("mobilis.context.location.LocationProviderComponent");
 				componentManager.loadComponents(componentNames, 0);
-				
-				
-//				AdaptationManager adaptationManager = new AdaptationManager(getThis());
 				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block

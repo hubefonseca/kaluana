@@ -29,9 +29,9 @@
 				<action android:name="mobilis.examples.pingpong.IPongService"></action>
 			</intent-filter>
 		</service>
-		<service android:name="mobilis.context.location.ProviderService">
+		<service android:name="mobilis.context.ProviderService">
 			<intent-filter>
-				<action android:name="mobilis.context.location.IProviderService"></action>
+				<action android:name="mobilis.context.IProviderService"></action>
 			</intent-filter>
 		</service>
 		<activity android:name="mobilis.examples.navigator.NavigatorActivity">

@@ -129,13 +129,16 @@ public abstract class Component implements mobilis.api.IComponent,
 	public abstract void registerServices() throws RemoteException;
 
 	@Override
-	public abstract void registerDependencies() throws RemoteException;
+	public void registerDependencies() throws RemoteException {};
 	
 	@Override
-	public abstract void start() throws RemoteException;
+	public void getDependencies() throws RemoteException {};
+	
+	@Override
+	public void start() throws RemoteException {};
 
 	@Override
-	public abstract void stop() throws RemoteException;
+	public void stop() throws RemoteException {};
 	
 	@Override
 	public abstract void connected(String receptacleName) throws RemoteException;
