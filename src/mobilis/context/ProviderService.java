@@ -1,7 +1,6 @@
 package mobilis.context;
 
 import mobilis.api.adaptation.IAdaptationManager;
-import mobilis.context.location.ContextListener;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;

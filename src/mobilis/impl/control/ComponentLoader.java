@@ -11,6 +11,10 @@ import java.net.URL;
 import mobilis.api.control.IComponentLoader;
 import mobilis.api.control.IComponentManager;
 import mobilis.impl.Component;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -21,7 +25,12 @@ import android.util.Log;
  *
  */
 public class ComponentLoader implements IComponentLoader {
-		
+	
+	private ContextWrapper contextWrapper;
+	
+	public ComponentLoader(ContextWrapper contextWrapper) {
+		this.contextWrapper = contextWrapper;
+	}
 	
 	@Override
 	public void loadBestComponent(String contextRepresentation,
@@ -36,6 +45,8 @@ public class ComponentLoader implements IComponentLoader {
 		Class clazz = null;
 		
 		synchronized (this) {
+			// Search inside this package
+			Log.d(this.getClass().getName(), "trying on this package...");
 			try {
 				clazz = Class.forName(componentName);
 			} catch (ClassNotFoundException e) {
@@ -43,6 +54,47 @@ public class ComponentLoader implements IComponentLoader {
 				e.printStackTrace();
 			}
 
+			
+			if (clazz == null) {
+				// Search inside other packages
+				Log.d(this.getClass().getName(), "no success. trying on another package...");
+				try {
+					Context ctx = contextWrapper.createPackageContext("mobilis.examples.navigator", 0);
+					Log.d(this.getClass().getName(), "found package: " + ctx.getPackageName());
+					String className = "NavigatorActivity";
+					ClassLoader classLoader = ctx.getClassLoader();
+					Log.d(this.getClass().getName(), "me: " + classLoader);
+					Log.d(this.getClass().getName(), "my parent: " + classLoader.getParent());
+					try {
+						clazz = classLoader.loadClass(className);
+					}
+					catch (ClassNotFoundException e) {
+						Log.d(this.getClass().getName(), className + " doesn`t exist");
+						className = "mobilis.examples.navigator.NavigatorActivity";
+						try {
+							clazz = classLoader.loadClass(className);
+						}
+						catch (ClassNotFoundException e1) {
+							Log.d(this.getClass().getName(), className + " doesn`t exist either");
+						}
+					}
+					
+					((Component)clazz.newInstance()).start();
+					
+				} catch (NameNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			}
+			
 			Log.d(this.getClass().getName(), "component: " + componentName);
 			
 			if (clazz == null) {
@@ -107,5 +159,5 @@ public class ComponentLoader implements IComponentLoader {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 }

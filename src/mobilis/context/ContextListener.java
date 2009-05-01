@@ -1,4 +1,4 @@
-package mobilis.context.location;
+package mobilis.context;
 
 import mobilis.api.adaptation.IAdaptationManager;
 import mobilis.context.IContextListener;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-
 
 public class ContextListener implements IContextListener, LocationListener {
 
@@ -24,7 +23,10 @@ public class ContextListener implements IContextListener, LocationListener {
 	public void onLocationChanged(Location location) {
 		Log.d(this.getClass().getName(), "Location changed");
 		try {
-			adaptationManager.notifyContextChange();
+			Context context = new Context();
+			context.setLatitude(location.getLatitude());
+			context.setLongitude(location.getLongitude());
+			adaptationManager.onContextChange(context);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

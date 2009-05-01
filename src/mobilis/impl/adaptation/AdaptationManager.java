@@ -52,9 +52,18 @@ public class AdaptationManager implements IAdaptationManager {
 	};
 	
 	@Override
-	public void notifyContextChange() throws RemoteException {
+	public void onContextChange(mobilis.context.Context context) throws RemoteException {
 		// TODO Auto-generated method stub
 		Log.d(this.getClass().getName(), "Context change notification!");
+		Log.d(this.getClass().getName(), "new latitude: " + context.getLatitude());
+		Log.d(this.getClass().getName(), "new longitude: " + context.getLongitude());
+		
+		// Verify whether the current components can still operate well
+		
+		
+		// Search for new components that could operate under the new conditions
+		
+		
 	}
 
 	@Override

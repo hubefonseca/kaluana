@@ -90,7 +90,7 @@ public class ComponentManager extends Service {
 		@Override
 		public void init(IComponentManagerListener listener) 
 				throws RemoteException {
-			componentLoader = new ComponentLoader();
+			componentLoader = new ComponentLoader(getThis());
 			loadedComponents = new ComponentCollection();
 			callRequests = new HashMap<Long, List<String>>();
 			componentManagerListener = listener;

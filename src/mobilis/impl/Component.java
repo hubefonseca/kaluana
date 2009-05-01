@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import mobilis.api.IReceptacle;
+import mobilis.context.ExecutionScope;
 
 import android.content.ContextWrapper;
 import android.os.IBinder;
@@ -38,6 +39,8 @@ public abstract class Component implements mobilis.api.IComponent,
 	 * components
 	 */
 	private List<IReceptacle> receptacles;
+	
+	private ExecutionScope executionScope;
 	
 	protected ContextWrapper contextWrapper;
 	
@@ -127,7 +130,7 @@ public abstract class Component implements mobilis.api.IComponent,
 
 	@Override
 	public abstract void registerServices() throws RemoteException;
-
+	
 	@Override
 	public void registerDependencies() throws RemoteException {};
 	
@@ -145,6 +148,14 @@ public abstract class Component implements mobilis.api.IComponent,
 
 	@Override
 	public abstract void disconnected(String receptacleName) throws RemoteException;
+	
+	@Override
+	public void registerExecutionScope(ExecutionScope executionScope) throws RemoteException {
+		this.executionScope = executionScope;
+	};
+	
+	@Override
+	public void registerScope() throws RemoteException {}
 	
 }
 
