@@ -3,9 +3,7 @@ package mobilis.api;
 import mobilis.api.IReceptacle;
 
 interface IComponent {
-	
-	// fazer o bind no Receptacle impede receptáculos múltiplos?
-	
+
 	/*
 	* Internal
 	*/

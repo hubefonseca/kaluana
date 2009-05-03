@@ -3,9 +3,9 @@ package mobilis.api.control;
 import mobilis.api.IComponent;
 import mobilis.api.control.IComponentManager;
 
-interface IComponentLoader {
+interface IRemoteLoader {
 
-	void loadComponent(in String componentName, in IComponentManager listener);
+	int loadComponent(in String componentName, in IComponentManager listener);
 
 	void loadBestComponent(in String contextRepresentation, in IComponentManager listener);
 	

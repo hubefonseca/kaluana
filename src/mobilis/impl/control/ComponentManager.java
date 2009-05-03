@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import mobilis.api.IComponent;
-import mobilis.api.control.IComponentLoader;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
-import mobilis.impl.adaptation.AdaptationManager;
+import mobilis.api.control.IRemoteLoader;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -20,7 +19,7 @@ public class ComponentManager extends Service {
 
 	private ComponentCollection loadedComponents;
 	
-	private IComponentLoader componentLoader;
+	private IRemoteLoader componentLoader;
 	private IComponentManagerListener componentManagerListener;
 	
 	private HashMap<Long, List<String>> callRequests;
@@ -96,7 +95,7 @@ public class ComponentManager extends Service {
 			componentManagerListener = listener;
 			
 			// Start Adaptation Manager
-			AdaptationManager adaptationManager = new AdaptationManager(getThis());
+//			AdaptationManager adaptationManager = new AdaptationManager(getThis());
 			
 		}
 		
