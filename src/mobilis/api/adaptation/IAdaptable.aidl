@@ -1,6 +1,6 @@
 package mobilis.api.adaptation;
 
-import mobilis.context.ExecutionScope;
+import mobilis.context.Context;
 
 interface IAdaptable {
 	
@@ -12,8 +12,6 @@ interface IAdaptable {
 	
 	void stop();
 	
-	void registerExecutionScope(in ExecutionScope executionScope);
-	
-	void registerScope();
+	boolean canOperateUnder(in Context context);
 	
 }

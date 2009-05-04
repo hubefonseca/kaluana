@@ -8,4 +8,5 @@ interface IProviderService {
 	void start();
 	
 	void registerAdaptationManager(IAdaptationManager adaptationManager);
+	
 }

@@ -1,7 +1,14 @@
 package mobilis.context;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import mobilis.api.adaptation.IAdaptationManager;
-import mobilis.context.IContextListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -22,10 +29,46 @@ public class ContextListener implements IContextListener, LocationListener {
 	@Override
 	public void onLocationChanged(Location location) {
 		Log.d(this.getClass().getName(), "Location changed");
+		String loc = null;
 		try {
-			Context context = new Context();
+			mobilis.context.Context context = new mobilis.context.Context();
+			try {
+				URL url = new URL("http://10.0.2.2:8080/location/provider");
+				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+				conn.setDoOutput(true);
+
+				OutputStreamWriter out = new OutputStreamWriter(
+						conn.getOutputStream());
+				out.write("latitude=" + location.getLatitude() + "&longitude=" + location.getLongitude());
+				out.close();
+
+				BufferedReader in = new BufferedReader(
+						new InputStreamReader(
+								conn.getInputStream()));
+
+				StringBuffer response = new StringBuffer();
+				int c = in.read();
+				while (c > -1) {
+					response.append((char)c);
+					c = in.read();
+				}
+				in.close();
+
+				loc = response.toString();
+				
+				Log.d(this.getClass().getName(), "Location: " + loc);
+				
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			context.setLatitude(location.getLatitude());
 			context.setLongitude(location.getLongitude());
+			context.setLocation(loc);
 			adaptationManager.onContextChange(context);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

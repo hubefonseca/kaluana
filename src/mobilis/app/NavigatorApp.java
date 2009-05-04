@@ -69,7 +69,7 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 		
 		navigatorComponent.setContextWrapper(getThis());
 		
-		navigatorComponent.start();		
+		navigatorComponent.start();
 		locationProviderComponent.start();
 	}
 

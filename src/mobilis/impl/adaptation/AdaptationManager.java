@@ -1,8 +1,5 @@
 package mobilis.impl.adaptation;
 
-import java.util.List;
-
-import mobilis.api.adaptation.IAdaptable;
 import mobilis.api.adaptation.IAdaptationManager;
 import mobilis.context.IProviderService;
 import android.content.ComponentName;
@@ -17,8 +14,6 @@ import android.util.Log;
 public class AdaptationManager implements IAdaptationManager {
 
 	private IProviderService contextProvider;
-	
-	private List<IAdaptable> components;
 	
 	public AdaptationManager(ContextWrapper contextWrapper) {
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
@@ -57,11 +52,15 @@ public class AdaptationManager implements IAdaptationManager {
 		Log.d(this.getClass().getName(), "Context change notification!");
 		Log.d(this.getClass().getName(), "new latitude: " + context.getLatitude());
 		Log.d(this.getClass().getName(), "new longitude: " + context.getLongitude());
+		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
+		
+		// Search for components that could operate under the new conditions
+		
 		
 		// Verify whether the current components can still operate well
 		
 		
-		// Search for new components that could operate under the new conditions
+		
 		
 		
 	}

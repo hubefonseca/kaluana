@@ -5,6 +5,8 @@ import mobilis.api.control.IComponentManagerListener;
 
 interface IComponentManager {
 	
+	void getLoadedComponents(out List<String> componentNames);
+	
 	void loadComponents(in List<String> componentNames, in long callId);
 	
 	IComponent getComponent(in String componentName);
@@ -16,5 +18,6 @@ interface IComponentManager {
 	 */
 	void loaded(IComponent component);
 	
-	void unloaded(in String componentName);	
+	void unloaded(in String componentName);
+	
 }

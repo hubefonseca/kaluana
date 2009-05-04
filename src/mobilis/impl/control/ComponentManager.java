@@ -9,6 +9,7 @@ import mobilis.api.IComponent;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.IRemoteLoader;
+import mobilis.impl.adaptation.AdaptationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -36,10 +37,7 @@ public class ComponentManager extends Service {
 		public void loadComponents(List<String> componentNames, long callId)
 				throws RemoteException {
 			callRequests.put(callId, componentNames);
-			Iterator<String> iterator = componentNames.iterator();
-			String componentName;
-			while (iterator.hasNext()) {
-				componentName = iterator.next();
+			for (String componentName : componentNames) {
 				componentLoader.loadComponent(componentName, this);
 			}
 		}
@@ -95,8 +93,14 @@ public class ComponentManager extends Service {
 			componentManagerListener = listener;
 			
 			// Start Adaptation Manager
-//			AdaptationManager adaptationManager = new AdaptationManager(getThis());
+			AdaptationManager adaptationManager = new AdaptationManager(getThis());
 			
+		}
+
+		@Override
+		public void getLoadedComponents(List<String> componentNames)
+				throws RemoteException {
+			componentNames = loadedComponents.getComponentNames();
 		}
 		
 	};

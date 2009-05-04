@@ -7,6 +7,7 @@ public class Context implements Parcelable {
 
 	private double latitude;
 	private double longitude;
+	private String location;
 
 	public static final Parcelable.Creator<Context> CREATOR = new Parcelable.Creator<Context>() {
 		public Context createFromParcel(Parcel in) {
@@ -29,6 +30,7 @@ public class Context implements Parcelable {
 	public void readFromParcel(Parcel in) {
 		this.latitude = in.readDouble();
 		this.longitude = in.readDouble();
+		this.location = in.readString();
 	}
 
 	@Override
@@ -41,6 +43,7 @@ public class Context implements Parcelable {
 	public void writeToParcel(Parcel arg0, int arg1) {
 		arg0.writeDouble(latitude);
 		arg0.writeDouble(longitude);
+		arg0.writeString(location);
 	}
 
 	public double getLatitude() {
@@ -57,6 +60,14 @@ public class Context implements Parcelable {
 
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 }

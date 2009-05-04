@@ -1,6 +1,7 @@
 package mobilis.examples.pingpong;
 
 import mobilis.api.IReceptacle;
+import mobilis.context.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -53,19 +54,17 @@ public class PongComponent extends mobilis.impl.Component {
 		
 		Log.d(this.getClass().getName(), "the result is " + a);
 
-		a = pingService.ping();
-
-		Log.d(this.getClass().getName(), "the result is " + a);
-
-		a = pingService.ping();
-
-		Log.d(this.getClass().getName(), "the result is " + a);
 	}
 
 	@Override
 	public void disconnected(String receptacleName) throws RemoteException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean canOperateUnder(Context context) throws RemoteException {
+		return true;
 	}
 
 }

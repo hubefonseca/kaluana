@@ -1,11 +1,9 @@
 package mobilis.impl.control;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import mobilis.api.IComponent;
-
 import android.os.RemoteException;
 
 public class ComponentCollection {
@@ -21,10 +19,7 @@ public class ComponentCollection {
 	}
 	
 	public void remove(String componentName) throws RemoteException {
-		Iterator<IComponent> iterator = components.iterator();
-		IComponent component;
-		while (iterator.hasNext()) {
-			component = iterator.next();
+		for(IComponent component : components) {
 			if (component.getName().equals(componentName)) {
 				components.remove(component);
 				break;
@@ -33,10 +28,7 @@ public class ComponentCollection {
 	}
 	
 	public IComponent getByName(String componentName) throws RemoteException {
-		Iterator<IComponent> iterator = components.iterator();
-		IComponent component;
-		while (iterator.hasNext()) {
-			component = iterator.next();
+		for (IComponent component : components) {
 			if (component.getName().equals(componentName)) {
 				return component;
 			}
@@ -45,10 +37,7 @@ public class ComponentCollection {
 	}
 	
 	public boolean contains(String componentName) throws RemoteException {
-		Iterator<IComponent> iterator = components.iterator();
-		IComponent component;
-		while (iterator.hasNext()) {
-			component = iterator.next();
+		for (IComponent component : components) {
 			if (component.getName().equals(componentName)) {
 				return true;
 			}
@@ -56,4 +45,16 @@ public class ComponentCollection {
 		return false;
 	}
 	
+	public List<String> getComponentNames() {
+		List<String> componentNames = new ArrayList<String>();
+		for (IComponent component : components) {
+			try {
+				componentNames.add(component.getName());
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return componentNames;
+	}
 }
