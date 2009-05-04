@@ -34,11 +34,5 @@
 				<action android:name="mobilis.context.IProviderService"></action>
 			</intent-filter>
 		</service>
-		<activity android:name="mobilis.examples.navigator.puc.NavigatorPUCActivity">
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW"></action>
-				<category android:name="android.intent.category.LAUNCHER"></category>
-			</intent-filter>
-		</activity>
 	</application>
 </manifest>
