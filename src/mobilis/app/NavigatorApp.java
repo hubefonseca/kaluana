@@ -5,6 +5,7 @@ import java.util.List;
 
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
+import mobilis.api.control.ILocalLoader;
 import mobilis.impl.Component;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -17,8 +18,8 @@ import android.os.RemoteException;
 
 public class NavigatorApp extends Activity implements IComponentManagerListener {
 
-	private Component navigatorComponent;
-	private Component locationProviderComponent;
+	private ILocalLoader navigatorLoader;
+	private ILocalLoader locationProviderLoader;
 
 	private IComponentManager componentManager;
 
@@ -64,13 +65,11 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {		
-		navigatorComponent = (Component)componentManager.getComponent("mobilis.examples.navigator.NavigatorComponent");
-		locationProviderComponent = (Component)componentManager.getComponent("mobilis.context.location.LocationProviderComponent");
+		navigatorLoader = componentManager.getComponent("mobilis.examples.navigator.NavigatorComponent");
+		locationProviderLoader = componentManager.getComponent("mobilis.context.location.LocationProviderComponent");
 		
-		navigatorComponent.setContextWrapper(getThis());
-		
-		navigatorComponent.start();
-		locationProviderComponent.start();
+		navigatorLoader.start();
+		locationProviderLoader.start();
 	}
 
 	@Override

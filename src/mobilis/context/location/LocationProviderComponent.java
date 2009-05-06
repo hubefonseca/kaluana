@@ -56,5 +56,5 @@ public class LocationProviderComponent extends mobilis.impl.Component {
 	public boolean canOperateUnder(Context context) throws RemoteException {
 		return true;
 	}
-	
+
 }

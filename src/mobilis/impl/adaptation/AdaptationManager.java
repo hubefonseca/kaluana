@@ -1,6 +1,10 @@
 package mobilis.impl.adaptation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mobilis.api.adaptation.IAdaptationManager;
+import mobilis.api.control.IComponentManager;
 import mobilis.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,8 +18,11 @@ import android.util.Log;
 public class AdaptationManager implements IAdaptationManager {
 
 	private IProviderService contextProvider;
+	private IComponentManager.Stub componentManager;
 	
-	public AdaptationManager(ContextWrapper contextWrapper) {
+	public AdaptationManager(ContextWrapper contextWrapper, IComponentManager.Stub componentManager) {
+		this.componentManager = componentManager;
+		
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
 		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -55,7 +62,12 @@ public class AdaptationManager implements IAdaptationManager {
 		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
 		
 		// Search for components that could operate under the new conditions
-		
+		Log.d(this.getClass().getName(), "components:");
+		List<String> components = new ArrayList<String>();
+		componentManager.getLoadedComponents(components);
+		for (String component : components) {
+			Log.d(this.getClass().getName(), "loaded component: " + component);
+		}
 		
 		// Verify whether the current components can still operate well
 		

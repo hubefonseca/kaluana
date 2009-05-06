@@ -1,13 +1,12 @@
 package mobilis.impl.control;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import mobilis.api.IComponent;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
+import mobilis.api.control.ILocalLoader;
 import mobilis.api.control.IRemoteLoader;
 import mobilis.impl.adaptation.AdaptationManager;
 import android.app.Service;
@@ -18,7 +17,7 @@ import android.util.Log;
 
 public class ComponentManager extends Service {
 
-	private ComponentCollection loadedComponents;
+	private LoaderCollection loadedComponents;
 	
 	private IRemoteLoader componentLoader;
 	private IComponentManagerListener componentManagerListener;
@@ -28,7 +27,19 @@ public class ComponentManager extends Service {
 	private final IComponentManager.Stub mComponentManager = new IComponentManager.Stub() {
 
 		@Override
-		public IComponent getComponent(String componentName)
+		public void init(IComponentManagerListener listener) 
+				throws RemoteException {
+			componentLoader = new ComponentLoader(getThis());
+			loadedComponents = new LoaderCollection();
+			callRequests = new HashMap<Long, List<String>>();
+			componentManagerListener = listener;
+			
+			// Start Adaptation Manager
+			AdaptationManager adaptationManager = new AdaptationManager(getThis(), this);
+		}
+		
+		@Override
+		public ILocalLoader getComponent(String componentName)
 				throws RemoteException {
 			return loadedComponents.getByName(componentName);
 		}
@@ -43,29 +54,28 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public void loaded(IComponent component) throws RemoteException {
+		public void loaded(ILocalLoader loader) throws RemoteException {
+			
+			Log.d(this.getClass().getName(), "Component successfully loaded: " + loader.getName());
+			
 			Log.d(this.getClass().getName(), "Registering component's services and receptacles...");
 			
-			component.registerReceptacles();
-			component.registerServices();
+			loader.registerReceptacles();
+			loader.registerServices();
+			
+			Log.d(this.getClass().getName(), "Adding component to loaded components list...");
 			
 			// Manage component dependencies before deliver it to caller
 			
-			loadedComponents.add(component);
+			loadedComponents.add(loader);
 			
-			Iterator<Entry<Long, List<String>>> iteratorCalls = callRequests.entrySet().iterator();
-			Entry<Long, List<String>> entry;
 			List<String> componentNames;
 			long callId;
-			while (iteratorCalls.hasNext()) {
-				entry = iteratorCalls.next();
+			for (Entry<Long, List<String>> entry : callRequests.entrySet()) {
 				componentNames = entry.getValue();
 				callId = entry.getKey();
-				Iterator<String> iteratorNames = componentNames.iterator();
-				String name;
 				boolean requestComplete = true;
-				while (iteratorNames.hasNext()) {
-					name = iteratorNames.next();
+				for (String name : componentNames) {
 					if (!loadedComponents.contains(name)) {
 						requestComplete = false;
 						break;
@@ -85,22 +95,13 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public void init(IComponentManagerListener listener) 
-				throws RemoteException {
-			componentLoader = new ComponentLoader(getThis());
-			loadedComponents = new ComponentCollection();
-			callRequests = new HashMap<Long, List<String>>();
-			componentManagerListener = listener;
-			
-			// Start Adaptation Manager
-			AdaptationManager adaptationManager = new AdaptationManager(getThis());
-			
-		}
-
-		@Override
 		public void getLoadedComponents(List<String> componentNames)
 				throws RemoteException {
-			componentNames = loadedComponents.getComponentNames();
+			Log.d(this.getClass().getName(), "get loaded components");
+			for (String componentName : loadedComponents.getComponentNames()) {
+				Log.d(this.getClass().getName(), componentName + " component is loaded");
+				componentNames.add(componentName);
+			}
 		}
 		
 	};

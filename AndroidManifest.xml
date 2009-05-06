@@ -34,5 +34,10 @@
 				<action android:name="mobilis.context.IProviderService"></action>
 			</intent-filter>
 		</service>
+		<service android:name="mobilis.context.location.LocationProviderComponentLoader">
+			<intent-filter>
+				<action android:name="mobilis.context.location.LocationProviderComponent"></action>
+			</intent-filter>
+		</service>
 	</application>
 </manifest>

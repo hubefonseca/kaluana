@@ -2,7 +2,6 @@ package mobilis.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import mobilis.api.IReceptacle;
@@ -69,10 +68,7 @@ public abstract class Component implements mobilis.api.IComponent,
 	@Override
 	public IReceptacle getReceptacle(String receptacleName)
 			throws RemoteException {
-		Iterator<IReceptacle> iterator = receptacles.iterator();
-		IReceptacle receptacle;
-		while (iterator.hasNext()) {
-			receptacle = iterator.next();
+		for (IReceptacle receptacle : receptacles) {
 			if (receptacle.getName().equals(receptacleName)) {
 				return receptacle;
 			}
@@ -100,7 +96,7 @@ public abstract class Component implements mobilis.api.IComponent,
 	
 	@Override
 	public String getName() {
-		return name;
+		return this.getClass().getName();
 	}
 	
 	@Override
