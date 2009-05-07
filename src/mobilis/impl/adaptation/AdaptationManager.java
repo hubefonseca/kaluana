@@ -11,20 +11,23 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ResolveInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
 public class AdaptationManager implements IAdaptationManager {
 
+	private ContextWrapper contextWrapper;
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
 	
 	public AdaptationManager(ContextWrapper contextWrapper, IComponentManager.Stub componentManager) {
 		this.componentManager = componentManager;
+		this.contextWrapper = contextWrapper;
 		
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
-		contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		this.contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -62,16 +65,17 @@ public class AdaptationManager implements IAdaptationManager {
 		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
 		
 		// Search for components that could operate under the new conditions
-		Log.d(this.getClass().getName(), "components:");
 		List<String> components = new ArrayList<String>();
 		componentManager.getLoadedComponents(components);
 		for (String component : components) {
 			Log.d(this.getClass().getName(), "loaded component: " + component);
 		}
 		
-		// Verify whether the current components can still operate well
-		
-		
+		// Verify whether these components can still operate well
+		Intent intent = new Intent(context.getLocation());
+		for (ResolveInfo info : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+			Log.d(this.getClass().getName(), "service: " + info.serviceInfo.name);
+		}
 		
 		
 		

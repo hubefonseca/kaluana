@@ -6,7 +6,6 @@ import java.util.List;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.ILocalLoader;
-import mobilis.impl.Component;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

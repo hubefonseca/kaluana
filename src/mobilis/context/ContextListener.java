@@ -49,7 +49,9 @@ public class ContextListener implements IContextListener, LocationListener {
 				StringBuffer response = new StringBuffer();
 				int c = in.read();
 				while (c > -1) {
-					response.append((char)c);
+					if (c != 10 && c != 13) {
+						response.append((char)c);
+					}
 					c = in.read();
 				}
 				in.close();

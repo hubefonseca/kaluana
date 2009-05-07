@@ -97,9 +97,7 @@ public class ComponentManager extends Service {
 		@Override
 		public void getLoadedComponents(List<String> componentNames)
 				throws RemoteException {
-			Log.d(this.getClass().getName(), "get loaded components");
 			for (String componentName : loadedComponents.getComponentNames()) {
-				Log.d(this.getClass().getName(), componentName + " component is loaded");
 				componentNames.add(componentName);
 			}
 		}
