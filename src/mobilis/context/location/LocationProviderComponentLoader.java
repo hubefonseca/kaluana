@@ -28,6 +28,11 @@ public class LocationProviderComponentLoader extends Service {
 		}
 		
 		@Override
+		public String getCategory() throws RemoteException {
+			return component.getCategory();
+		}
+		
+		@Override
 		public void buildComponent() throws RemoteException {
 			component = new LocationProviderComponent();			
 		}
@@ -82,13 +87,13 @@ public class LocationProviderComponentLoader extends Service {
 
 		@Override
 		public void start() throws RemoteException {
-			component.setContextWrapper(getThis());
+			component.setContextWrapper(getContextWrapper());
 			component.start();
 		}
 		
 	};
 	
-	public LocationProviderComponentLoader getThis() {
+	public LocationProviderComponentLoader getContextWrapper() {
 		return this;
 	}
 }

@@ -6,13 +6,17 @@ import mobilis.api.control.IComponentManagerListener;
 
 interface IComponentManager {
 	
-	void getLoadedComponents(out List<String> componentNames);
+	boolean isLoaded(in String componentName);
 	
 	void loadComponents(in List<String> componentNames, in long callId);
 	
 	ILocalLoader getComponent(in String componentName);
 
 	void init(IComponentManagerListener listener);
+	
+	List<String> getAllNames();
+	
+	ILocalLoader getByName(String name);
 	
 	/**
 	 * Callback interfaces

@@ -1,7 +1,6 @@
 package mobilis.examples.pingpong;
 
 import mobilis.api.IReceptacle;
-import mobilis.context.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -63,8 +62,8 @@ public class PongComponent extends mobilis.impl.Component {
 	}
 
 	@Override
-	public boolean canOperateUnder(Context context) throws RemoteException {
-		return true;
+	public String getCategory() throws RemoteException {
+		return "mobilis.examples.pong";
 	}
 
 }

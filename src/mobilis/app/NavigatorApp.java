@@ -40,7 +40,7 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 				
 				componentManager.init(getThis());
 				List<String> componentNames = new ArrayList<String>();
-				componentNames.add("mobilis.examples.navigator.NavigatorComponent");
+				componentNames.add("mobilis.examples.navigator");
 				componentNames.add("mobilis.context.location.LocationProviderComponent");
 				componentManager.loadComponents(componentNames, 0);
 				

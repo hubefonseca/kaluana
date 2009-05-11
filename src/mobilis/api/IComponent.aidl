@@ -16,6 +16,8 @@ interface IComponent {
 	
 	void registerReceptacles();
 	
+	String getCategory();
+	
 	/*
 	 * May be called by component developer
 	 */

@@ -9,6 +9,8 @@ interface ILocalLoader {
 	 */
 	String getName();
 	
+	String getCategory();
+	
 	void buildComponent();
 	 
 	void start();

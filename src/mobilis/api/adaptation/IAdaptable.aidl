@@ -12,6 +12,4 @@ interface IAdaptable {
 	
 	void stop();
 	
-	boolean canOperateUnder(in Context context);
-	
 }

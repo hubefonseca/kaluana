@@ -7,6 +7,4 @@ interface IAdaptationManager {
 	
 	void onContextChange(in Context context);
 	
-	void registerComponent(String scope);
-	
 }

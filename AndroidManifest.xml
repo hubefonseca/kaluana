@@ -37,6 +37,7 @@
 		<service android:name="mobilis.context.location.LocationProviderComponentLoader">
 			<intent-filter>
 				<action android:name="mobilis.context.location.LocationProviderComponent"></action>
+				<action android:name="loc"></action>
 			</intent-filter>
 		</service>
 	</application>

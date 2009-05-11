@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import mobilis.api.IReceptacle;
-import mobilis.context.Context;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -14,10 +13,6 @@ public abstract class Component implements mobilis.api.IComponent,
 										mobilis.api.control.IReceptacleConnectionListener,
 										mobilis.api.adaptation.IAdaptable {
 	
-	/** 
-	 * The component name
-	 */
-	private String name;
 	
 	/**
 	 * This map stores the references between service names and 
@@ -89,10 +84,6 @@ public abstract class Component implements mobilis.api.IComponent,
 		// TODO Auto-generated method stub
 		
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 	
 	@Override
 	public String getName() {
@@ -141,9 +132,6 @@ public abstract class Component implements mobilis.api.IComponent,
 
 	@Override
 	public abstract void disconnected(String receptacleName) throws RemoteException;
-
-	@Override
-	public abstract boolean canOperateUnder(Context context) throws RemoteException;
 	
 }
 

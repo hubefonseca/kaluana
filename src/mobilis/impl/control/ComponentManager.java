@@ -29,13 +29,13 @@ public class ComponentManager extends Service {
 		@Override
 		public void init(IComponentManagerListener listener) 
 				throws RemoteException {
-			componentLoader = new ComponentLoader(getThis());
+			componentLoader = new ComponentLoader(getContextWrapper());
 			loadedComponents = new LoaderCollection();
 			callRequests = new HashMap<Long, List<String>>();
 			componentManagerListener = listener;
 			
 			// Start Adaptation Manager
-			AdaptationManager adaptationManager = new AdaptationManager(getThis(), this);
+			AdaptationManager adaptationManager = new AdaptationManager(getContextWrapper(), this);
 		}
 		
 		@Override
@@ -57,7 +57,6 @@ public class ComponentManager extends Service {
 		public void loaded(ILocalLoader loader) throws RemoteException {
 			
 			Log.d(this.getClass().getName(), "Component successfully loaded: " + loader.getName());
-			
 			Log.d(this.getClass().getName(), "Registering component's services and receptacles...");
 			
 			loader.registerReceptacles();
@@ -67,7 +66,7 @@ public class ComponentManager extends Service {
 			
 			// Manage component dependencies before deliver it to caller
 			
-			loadedComponents.add(loader);
+			loadedComponents.add(loader.getCategory(), loader);
 			
 			List<String> componentNames;
 			long callId;
@@ -95,11 +94,18 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public void getLoadedComponents(List<String> componentNames)
-				throws RemoteException {
-			for (String componentName : loadedComponents.getComponentNames()) {
-				componentNames.add(componentName);
-			}
+		public boolean isLoaded(String componentName) throws RemoteException {
+			return loadedComponents.contains(componentName);
+		}
+
+		@Override
+		public List<String> getAllNames() throws RemoteException {
+			return loadedComponents.getAllNames();
+		}
+
+		@Override
+		public ILocalLoader getByName(String name) throws RemoteException {
+			return loadedComponents.getByName(name);
 		}
 		
 	};
@@ -109,7 +115,7 @@ public class ComponentManager extends Service {
 		return mComponentManager;
 	}
 	
-	public ComponentManager getThis() {
+	private ComponentManager getContextWrapper() {
 		return this;
 	}
 

@@ -40,7 +40,7 @@ public class AdaptationManager implements IAdaptationManager {
 			Log.d(this.getClass().getName(), "Location provider service connected!");
 			
 			try {
-				contextProvider.registerAdaptationManager(getThis());
+				contextProvider.registerAdaptationManager(getContextWrapper());
 				contextProvider.start();
 			} catch(RemoteException e) {
 				
@@ -56,29 +56,121 @@ public class AdaptationManager implements IAdaptationManager {
 		
 	};
 	
+	/**
+	 * There are two cases for adaptation:
+	 * 1 - User enters a more specific domain
+	 * 2 - User leaves a specific domain and browses for a more general component
+	 */
 	@Override
 	public void onContextChange(mobilis.context.Context context) throws RemoteException {
-		// TODO Auto-generated method stub
-		Log.d(this.getClass().getName(), "Context change notification!");
-		Log.d(this.getClass().getName(), "new latitude: " + context.getLatitude());
-		Log.d(this.getClass().getName(), "new longitude: " + context.getLongitude());
 		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
 		
-		// Search for components that could operate under the new conditions
-		List<String> components = new ArrayList<String>();
-		componentManager.getLoadedComponents(components);
-		for (String component : components) {
-			Log.d(this.getClass().getName(), "loaded component: " + component);
+		String domain = context.getLocation();
+		
+		List<String> candidatesToGetMoreSpecific = new ArrayList<String>();
+		List<String> candidatesToGetLessSpecific = new ArrayList<String>();
+		String candidate = null;
+		
+		// If a loaded component can not operate on this context, 
+		// search for less specific components
+		List<String> componentNames = componentManager.getAllNames();
+		for (String name : componentNames) {
+			candidatesToGetLessSpecific.add(name);
 		}
 		
-		// Verify whether these components can still operate well
-		Intent intent = new Intent(context.getLocation());
-		for (ResolveInfo info : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
-			Log.d(this.getClass().getName(), "service: " + info.serviceInfo.name);
+		// Search for more specific components
+		Intent intent = new Intent(domain);
+		for (ResolveInfo availableCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+			if (!componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
+				// The available component is not loaded. Verify if it can replace another one
+				String category = availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.lastIndexOf("."));
+				intent = new Intent(category);
+				for (ResolveInfo categoryCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+					if (componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
+						// There are components registered to the same category - candidates to be replaced
+						candidatesToGetMoreSpecific.add(categoryCompInfo.serviceInfo.name);
+					}
+				}
+				
+				// Browse for loaded components with less specific domain
+				domain = context.getLocation();
+				while (domain != null) {
+					intent = new Intent(domain);
+					for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+						if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
+							if (candidatesToGetMoreSpecific.contains(domainCompInfo.serviceInfo.name)) {
+								candidate = domainCompInfo.serviceInfo.name;
+							}
+						}
+					}
+					if (domain.indexOf(".") >= 0) {
+						domain = domain.substring(0, domain.lastIndexOf("."));
+					} else {
+						domain = null;
+					}
+				}
+			} else {
+				Log.d(this.getClass().getName(), availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.indexOf("Loader")) + " is loaded and operating well");
+				candidatesToGetLessSpecific.remove(availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.indexOf("Loader")));
+			}
+			
+			if (candidate != null) {
+				Log.d(this.getClass().getName(), candidate + " must be replaced by " + availableCompInfo.serviceInfo.name + "(more specific)");
+			}
 		}
 		
+		// Search for less specific components to replace the specific ones		
 		
+		// Verify if the loaded components that don't belong to this domain belong to a more generic one
+		// If not, browse for other component on the same category
+		// Discover the candidate to replace the component
+			// For every component, find its category
+			// Browse for components on less specific domains on the same category
+		domain = context.getLocation();
+		while (domain != null) {
+			intent = new Intent(domain);
+			for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+				if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
+					candidatesToGetLessSpecific.remove(domainCompInfo.serviceInfo.name);
+				}
+			}
+			if (domain.indexOf(".") >= 0) {
+				domain = domain.substring(0, domain.lastIndexOf("."));
+			} else {
+				domain = null;
+			}
+		}
 		
+		for (String name : candidatesToGetLessSpecific) {
+			String category = componentManager.getByName(name).getCategory();
+			
+			domain = context.getLocation();
+			candidate = null;
+			while (domain != null) {
+				intent = new Intent(domain);
+				for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+					Intent categoryIntent = new Intent(category);
+					for (ResolveInfo catCompInfo : contextWrapper.getPackageManager().queryIntentServices(categoryIntent, 0)) {
+						if (!componentManager.isLoaded(catCompInfo.serviceInfo.name)) {	
+							if (domainCompInfo.serviceInfo.name.equals(catCompInfo.serviceInfo.name)) {
+								// The candidate has same category and less specific domain
+								candidate = catCompInfo.serviceInfo.name.substring(0, catCompInfo.serviceInfo.name.lastIndexOf("Loader"));
+							}
+						}
+					}
+				}
+				if (domain.indexOf(".") >= 0) {
+					domain = domain.substring(0, domain.lastIndexOf("."));
+				} else {
+					domain = null;
+				}
+			}
+			if (candidate != null) {
+				Log.d(this.getClass().getName(), name + " must be replaced by " + candidate + "(less specific)");
+			} else {
+				Log.d(this.getClass().getName(), "There is no candidate to replace " + name);
+			}
+		}
 	}
 
 	@Override
@@ -87,13 +179,8 @@ public class AdaptationManager implements IAdaptationManager {
 		return null;
 	}
 
-	public AdaptationManager getThis() {
+	private AdaptationManager getContextWrapper() {
 		return this;
 	}
 
-	@Override
-	public void registerComponent(String scope) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -1,6 +1,5 @@
 package mobilis.context.location;
 
-import mobilis.context.Context;
 import mobilis.context.IProviderService;
 import android.os.RemoteException;
 
@@ -53,8 +52,8 @@ public class LocationProviderComponent extends mobilis.impl.Component {
 	}
 
 	@Override
-	public boolean canOperateUnder(Context context) throws RemoteException {
-		return true;
+	public String getCategory() throws RemoteException {
+		return "mobilis.context.location";
 	}
 
 }
