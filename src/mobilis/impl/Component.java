@@ -9,7 +9,6 @@ import mobilis.api.IReceptacle;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 public abstract class Component implements mobilis.api.IComponent,
 										mobilis.api.adaptation.IAdaptable {

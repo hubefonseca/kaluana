@@ -6,7 +6,6 @@ import java.util.List;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.ILocalLoader;
-import mobilis.examples.pingpong.IPongService;
 import mobilis.impl.Receptacle;
 import android.app.Activity;
 import android.content.ComponentName;

@@ -162,6 +162,8 @@ public class RemoteLoader implements IRemoteLoader {
 				try {
 					localLoader.bind(serviceName, service);
 					
+					Log.d(this.getClass().getName(), serviceName + " service bound");
+					
 					if (--counter == 0) {
 						// All the services are bound
 						listener.loaded(localLoader);

@@ -7,6 +7,7 @@ import mobilis.api.IReceptacle;
 import mobilis.api.control.ILocalLoader;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 /**
  * This class represents the Stub implementation on every Local Loader service 
@@ -64,6 +65,7 @@ public class LocalLoader extends ILocalLoader.Stub {
 
 	@Override
 	public void start() throws RemoteException {
+		Log.d(this.getClass().getName(), "Starting component...");
 		component.start();
 	}
 	

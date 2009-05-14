@@ -62,9 +62,7 @@ public class ComponentManager extends Service {
 
 		@Override
 		public void loaded(ILocalLoader loader) throws RemoteException {
-			
-			Log.d(this.getClass().getName(), "Component successfully loaded: " + loader.getName());
-			Log.d(this.getClass().getName(), "Registering component's services and receptacles...");
+			Log.d(this.getClass().getName(), loader.getName() + ": Registering component's services and receptacles...");
 			
 			// Manage component dependencies before deliver it to caller
 			loadedComponents.add(loader.getCategory(), loader);
@@ -76,7 +74,7 @@ public class ComponentManager extends Service {
 				callId = entry.getKey();
 				boolean requestComplete = true;
 				for (String name : componentNames) {
-					if (!loadedComponents.containsCategory(name)) {
+					if (!loadedComponents.containsCategory(name) && !loadedComponents.contains(name)) {
 						requestComplete = false;
 						break;
 					}

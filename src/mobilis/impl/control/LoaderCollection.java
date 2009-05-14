@@ -85,7 +85,7 @@ public class LoaderCollection {
 		List<ILocalLoader> l = loaders.get(category);
 		
 		ILocalLoader loader = null;
-		if (l.size() > 0) {
+		if (l != null && l.size() > 0) {
 			loader= l.get(0);
 		}
 		return loader;

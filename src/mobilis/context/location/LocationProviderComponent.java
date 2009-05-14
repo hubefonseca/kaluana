@@ -2,6 +2,7 @@ package mobilis.context.location;
 
 import mobilis.context.IProviderService;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class LocationProviderComponent extends mobilis.impl.Component {
 
@@ -24,12 +25,12 @@ public class LocationProviderComponent extends mobilis.impl.Component {
 
 	@Override
 	public void registerServices() throws RemoteException {
-		registerService("provider", "mobilis.impl.context.location.IProviderService");
+		
 	}
 
 	@Override
 	public void start() throws RemoteException {
-		// TODO Auto-generated method stub
+		Log.d(this.getClass().getName(), "Location Provider Component started!");
 		
 	}
 
