@@ -8,8 +8,6 @@ interface IAdaptable {
 	
 	void getDependencies();
 	
-	void start();
 	
-	void stop();
 	
 }

@@ -16,7 +16,18 @@ public class PingComponent extends mobilis.impl.Component {
 
 	@Override
 	public void start() throws RemoteException {
+		// TODO Auto-generated method stub
+		Log.d(this.getClass().getName(), "Servico instanciado no ping component");
 		
+		IReceptacle r = this.getReceptacle("pong");
+		
+		pongService = (IPongService)r.getConnection();
+		
+		int i = 0;
+		while (i++ < 3) {
+			int a = pongService.pong();
+			Log.d(this.getClass().getName(), "the result is " + a);
+		}
 		
 	}
 
@@ -33,26 +44,6 @@ public class PingComponent extends mobilis.impl.Component {
 	@Override
 	public void registerDependencies() throws RemoteException {
 		// no dependencies
-	}
-
-	@Override
-	public void connected(String receptacleName) throws RemoteException {
-		// TODO Auto-generated method stub
-		Log.d(this.getClass().getName(), "Servico instanciado no ping component");
-		
-		IReceptacle r = this.getReceptacle("pong");
-		
-		pongService = (IPongService)r.getConnection();
-		
-		int a = pongService.pong();
-		
-		Log.d(this.getClass().getName(), "the result is " + a);
-	}
-
-	@Override
-	public void disconnected(String receptacleName) throws RemoteException {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

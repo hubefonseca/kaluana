@@ -139,6 +139,7 @@ public class AdaptationManager implements IAdaptationManager {
 			} else {
 				domain = null;
 			}
+			// não tá tirando o locationProviderComponent da lista de candidatos quando entra na puc.... :(
 		}
 		
 		for (String name : candidatesToGetLessSpecific) {
@@ -173,6 +174,20 @@ public class AdaptationManager implements IAdaptationManager {
 		}
 	}
 
+	private void stopComponent(String componentName) {
+		// Before stopping a component, it's necessary to know to whom its receptacles
+		// and services are connected, and save this - so called - component state
+		
+		// Each receptacle connects to a service via the service name. Is it correct?
+		
+		
+	}
+	
+	private void startComponent(String componentName) {
+		// After starting the component, it's necessary to re-build its state, if there is a state
+		
+	}
+	
 	@Override
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub

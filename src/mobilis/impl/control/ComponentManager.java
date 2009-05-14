@@ -19,9 +19,13 @@ public class ComponentManager extends Service {
 
 	private LoaderCollection loadedComponents;
 	
-	private IRemoteLoader componentLoader;
+	private IRemoteLoader remoteLoader;
 	private IComponentManagerListener componentManagerListener;
 	
+	/**
+	 * This structure stores, for each request to load components, the components
+	 * that the caller wants to load
+	 */
 	private HashMap<Long, List<String>> callRequests;
 
 	private final IComponentManager.Stub mComponentManager = new IComponentManager.Stub() {
@@ -29,7 +33,7 @@ public class ComponentManager extends Service {
 		@Override
 		public void init(IComponentManagerListener listener) 
 				throws RemoteException {
-			componentLoader = new ComponentLoader(getContextWrapper());
+			remoteLoader = new RemoteLoader(getContextWrapper());
 			loadedComponents = new LoaderCollection();
 			callRequests = new HashMap<Long, List<String>>();
 			componentManagerListener = listener;
@@ -39,17 +43,20 @@ public class ComponentManager extends Service {
 		}
 		
 		@Override
-		public ILocalLoader getComponent(String componentName)
+		public ILocalLoader getComponent(String category)
 				throws RemoteException {
-			return loadedComponents.getByName(componentName);
+			return loadedComponents.getByCategory(category);
 		}
 
 		@Override
-		public void loadComponents(List<String> componentNames, long callId)
+		/**
+		 * This method receives a list with the category of each component that has to be loaded
+		 */
+		public void loadComponents(List<String> categories, long callId)
 				throws RemoteException {
-			callRequests.put(callId, componentNames);
-			for (String componentName : componentNames) {
-				componentLoader.loadComponent(componentName, this);
+			callRequests.put(callId, categories);
+			for (String category : categories) {
+				remoteLoader.loadComponent(category, this);
 			}
 		}
 
@@ -59,13 +66,7 @@ public class ComponentManager extends Service {
 			Log.d(this.getClass().getName(), "Component successfully loaded: " + loader.getName());
 			Log.d(this.getClass().getName(), "Registering component's services and receptacles...");
 			
-			loader.registerReceptacles();
-			loader.registerServices();
-			
-			Log.d(this.getClass().getName(), "Adding component to loaded components list...");
-			
 			// Manage component dependencies before deliver it to caller
-			
 			loadedComponents.add(loader.getCategory(), loader);
 			
 			List<String> componentNames;
@@ -75,12 +76,13 @@ public class ComponentManager extends Service {
 				callId = entry.getKey();
 				boolean requestComplete = true;
 				for (String name : componentNames) {
-					if (!loadedComponents.contains(name)) {
+					if (!loadedComponents.containsCategory(name)) {
 						requestComplete = false;
 						break;
 					}
 				}
 				if (requestComplete) {
+					Log.d(this.getClass().getName(), "request complete");
 					componentManagerListener.componentsLoaded(callId);
 					callRequests.remove(callId);
 				}

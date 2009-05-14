@@ -3,6 +3,7 @@ package mobilis.impl.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import mobilis.api.control.ILocalLoader;
@@ -70,6 +71,24 @@ public class LoaderCollection {
 			}
 		}
 		return null;
+	}
+	
+	public boolean containsCategory(String category) {
+		return loaders.keySet().contains(category);
+	}
+	
+	public Set<String> keySet() {
+		return loaders.keySet();
+	}
+	
+	public ILocalLoader getByCategory(String category) {
+		List<ILocalLoader> l = loaders.get(category);
+		
+		ILocalLoader loader = null;
+		if (l.size() > 0) {
+			loader= l.get(0);
+		}
+		return loader;
 	}
 	
 	public boolean contains(String name) {

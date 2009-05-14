@@ -3,17 +3,17 @@ package mobilis.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import mobilis.api.IReceptacle;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
-public abstract class Component implements mobilis.api.IComponent, 
-										mobilis.api.control.IReceptacleConnectionListener,
+public abstract class Component implements mobilis.api.IComponent,
 										mobilis.api.adaptation.IAdaptable {
-	
-	
+		
 	/**
 	 * This map stores the references between service names and 
 	 * their interfaces, which will be used to return a implementation
@@ -74,8 +74,9 @@ public abstract class Component implements mobilis.api.IComponent,
 	@Override
 	public void getServiceNames(List<String> serviceNames)
 	throws RemoteException {
-		// TODO Auto-generated method stub
-
+		for (Entry<String, String> serviceInterface : servicesInterfaces.entrySet()) {
+			serviceNames.add(serviceInterface.getValue());
+		}
 	}
 	
 	@Override
@@ -98,6 +99,16 @@ public abstract class Component implements mobilis.api.IComponent,
 	
 	public void setContextWrapper(ContextWrapper contextWrapper) {
 		this.contextWrapper = contextWrapper;
+	}
+	
+	public void bind(String name, IBinder service) {
+		String serviceName = null;
+		for (Entry<String, String> entry : servicesInterfaces.entrySet()) {
+			if (entry.getValue().equals(name)) {
+				serviceName = entry.getKey();
+			}
+		}
+		services.put(serviceName, service);
 	}
 	
 	@Override
@@ -126,12 +137,6 @@ public abstract class Component implements mobilis.api.IComponent,
 
 	@Override
 	public void stop() throws RemoteException {};
-	
-	@Override
-	public abstract void connected(String receptacleName) throws RemoteException;
-
-	@Override
-	public abstract void disconnected(String receptacleName) throws RemoteException;
 	
 }
 

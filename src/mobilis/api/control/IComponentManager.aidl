@@ -8,7 +8,7 @@ interface IComponentManager {
 	
 	boolean isLoaded(in String componentName);
 	
-	void loadComponents(in List<String> componentNames, in long callId);
+	void loadComponents(in List<String> categories, in long callId);
 	
 	ILocalLoader getComponent(in String componentName);
 

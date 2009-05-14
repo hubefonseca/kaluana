@@ -8,7 +8,7 @@
 	<application android:icon="@drawable/mobilis"
 		android:label="@string/app_name">
 		<uses-library android:name="com.google.android.maps" />
-		<activity android:label="@string/app_name" android:name=".NavigatorApp">
+		<activity android:label="@string/app_name" android:name=".PingPongApp">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -37,6 +37,18 @@
 		<service android:name="mobilis.context.location.LocationProviderComponentLoader">
 			<intent-filter>
 				<action android:name="mobilis.context.location.LocationProviderComponent"></action>
+				<action android:name="loc"></action>
+			</intent-filter>
+		</service>
+		<service android:name="mobilis.examples.pingpong.PingComponentLoader">
+			<intent-filter>
+				<action android:name="mobilis.examples.ping"></action>
+				<action android:name="loc"></action>
+			</intent-filter>
+		</service>
+		<service android:name="mobilis.examples.pingpong.PongComponentLoader">
+			<intent-filter>
+				<action android:name="mobilis.examples.pong"></action>
 				<action android:name="loc"></action>
 			</intent-filter>
 		</service>

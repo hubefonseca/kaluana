@@ -7,7 +7,13 @@ interface IComponent {
 	/*
 	* Internal
 	*/
+	void bind(String serviceName, IBinder service);
+	
 	String getName();
+	
+	void start();
+	
+	void stop();
 	
 	/*
 	 * Must be implemented by component developer

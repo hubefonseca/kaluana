@@ -1,6 +1,7 @@
 package mobilis.api.control;
 
 import mobilis.api.IReceptacle;
+import mobilis.api.IComponent;
 
 interface ILocalLoader {
 
@@ -11,26 +12,19 @@ interface ILocalLoader {
 	
 	String getCategory();
 	
-	void buildComponent();
-	 
+	void bind(String serviceName, IBinder service);
+	
 	void start();
-		
+	
+	void stop();
+	
 	/*
 	 * Must be implemented by component developer
 	 */
 	void registerServices();
 	
 	void registerReceptacles();
-	
-	/*
-	 * May be called by component developer
-	 */
-	void registerService(String serviceName, String interfaceName);
-	
-	void registerReceptacle(String receptacleName, String interfaceName);
-	
-	void registerDependency(String componentName);
-	
+
 	/*
 	 * Should be called by component user
 	 */

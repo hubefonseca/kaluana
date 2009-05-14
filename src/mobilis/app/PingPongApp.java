@@ -5,8 +5,8 @@ import java.util.List;
 
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
-import mobilis.examples.pingpong.PingComponent;
-import mobilis.examples.pingpong.PongComponent;
+import mobilis.api.control.ILocalLoader;
+import mobilis.examples.pingpong.IPongService;
 import mobilis.impl.Receptacle;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -20,8 +20,8 @@ import android.util.Log;
 
 public class PingPongApp extends Activity implements IComponentManagerListener {
 
-	private PingComponent pingComponent;
-	private PongComponent pongComponent;
+	private ILocalLoader pingComponentLoader;
+	private ILocalLoader pongComponentLoader;
 
 	private IComponentManager componentManager;
 
@@ -47,8 +47,8 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 				
 				componentManager.init(getThis());
 				List<String> componentNames = new ArrayList<String>();
-				componentNames.add("mobilis.examples.pingpong.PingComponent");
-				componentNames.add("mobilis.examples.pingpong.PongComponent");
+				componentNames.add("mobilis.examples.ping");
+				componentNames.add("mobilis.examples.pong");
 				componentManager.loadComponents(componentNames, 123123);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -70,30 +70,31 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
-		Log.d(this.getClass().getName(), "callID: " + callId);
+		
+		Log.d(this.getClass().getName(), "components loaded");
+		
 		
 		IBinder servicePing = null;
 		Receptacle recaptaclePing = null;
 		Receptacle receptaclePong = null;
 		IBinder servicePong = null;
 		
-		Log.d(this.getClass().getName(), "Connecting services on receptacles...");
+		pingComponentLoader = componentManager.getComponent("mobilis.examples.ping");
+		pongComponentLoader = componentManager.getComponent("mobilis.examples.pong");
 		
-		pingComponent = (PingComponent)componentManager.getComponent("mobilis.examples.pingpong.PingComponent");
-		pongComponent = (PongComponent)componentManager.getComponent("mobilis.examples.pingpong.PongComponent");
+		servicePing = pingComponentLoader.getService("ping");
+		recaptaclePing = (Receptacle)pingComponentLoader.getReceptacle("pong");
 		
-		servicePing = pingComponent.getService("ping");
-		recaptaclePing = (Receptacle)pingComponent.getReceptacle("pong");
-		recaptaclePing.setContextWrapper(getThis());
-		recaptaclePing.setBindListener(pingComponent);
+		servicePong = pongComponentLoader.getService("pong");
+		receptaclePong = (Receptacle)pongComponentLoader.getReceptacle("ping");
 		
-		servicePong = pongComponent.getService("pong");
-		receptaclePong = (Receptacle)pongComponent.getReceptacle("ping");
-		receptaclePong.setContextWrapper(getThis());
-		receptaclePong.setBindListener(pongComponent);
-					
+		Log.d(this.getClass().getName(), "connecting components");
+		
 		receptaclePong.connectToService(servicePing);
 		recaptaclePing.connectToService(servicePong);
+		
+		pingComponentLoader.start();
+		pongComponentLoader.start();
 	}
 
 	@Override
