@@ -10,10 +10,9 @@ public class LocationProviderComponentLoader extends Service {
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
 		return mComponentManager;
 	}
 
-	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new LocationProviderComponent());
+	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new LocationProviderComponent(), this);
 	
 }

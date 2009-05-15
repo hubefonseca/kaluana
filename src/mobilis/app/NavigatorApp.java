@@ -14,7 +14,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 public class NavigatorApp extends Activity implements IComponentManagerListener {
 
@@ -39,7 +38,7 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
-				componentManager.init(getThis());
+				componentManager.init(getComponentManagerListener());
 				List<String> componentNames = new ArrayList<String>();
 				componentNames.add("mobilis.examples.navigator");
 				componentNames.add("mobilis.context.location");
@@ -59,17 +58,22 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 		
 	};
 	
-	public NavigatorApp getThis() {
+	public NavigatorApp getComponentManagerListener() {
 		return this;
 	}
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
+		
 		navigatorLoader = componentManager.getComponent("mobilis.examples.navigator");
 		locationProviderLoader = componentManager.getComponent("mobilis.context.location");
 		
-		navigatorLoader.start();
-		locationProviderLoader.start();
+		try {
+			navigatorLoader.start();
+			locationProviderLoader.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

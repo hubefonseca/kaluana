@@ -33,7 +33,7 @@ public class LocationProviderComponent extends mobilis.impl.Component {
 		Log.d(this.getClass().getName(), "Location Provider Component started!");
 		
 	}
-
+	
 	@Override
 	public void stop() throws RemoteException {
 		// TODO Auto-generated method stub

@@ -45,7 +45,8 @@ public class ComponentManager extends Service {
 		@Override
 		public ILocalLoader getComponent(String category)
 				throws RemoteException {
-			return loadedComponents.getByCategory(category);
+			ILocalLoader loader = loadedComponents.getByCategory(category);
+			return loader;
 		}
 
 		@Override

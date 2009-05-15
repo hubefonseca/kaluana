@@ -14,6 +14,6 @@ public class PongComponentLoader extends Service {
 		return mComponentManager;
 	}
 
-	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new PongComponent());
+	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new PongComponent(), this);
 	
 }

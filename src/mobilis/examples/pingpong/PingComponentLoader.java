@@ -14,6 +14,6 @@ public class PingComponentLoader extends Service {
 		return mComponentManager;
 	}
 
-	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new PingComponent());
+	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new PingComponent(), this);
 	
 }

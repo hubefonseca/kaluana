@@ -2,12 +2,12 @@ package mobilis.impl.control;
 
 import java.util.List;
 
-import mobilis.api.IComponent;
 import mobilis.api.IReceptacle;
 import mobilis.api.control.ILocalLoader;
+import mobilis.impl.Component;
+import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 /**
  * This class represents the Stub implementation on every Local Loader service 
@@ -16,10 +16,12 @@ import android.util.Log;
  */
 public class LocalLoader extends ILocalLoader.Stub {
 	
-	private IComponent component;
+	private Component component;
+	private ContextWrapper contextWrapper;
 	
-	public LocalLoader(IComponent component) {
+	public LocalLoader(Component component, ContextWrapper contextWrapper) {
 		this.component = component;
+		this.contextWrapper = contextWrapper;
 	}
 	
 	@Override
@@ -65,7 +67,7 @@ public class LocalLoader extends ILocalLoader.Stub {
 
 	@Override
 	public void start() throws RemoteException {
-		Log.d(this.getClass().getName(), "Starting component...");
+		component.setContextWrapper(contextWrapper);
 		component.start();
 	}
 	

@@ -127,7 +127,7 @@ public class RemoteLoader implements IRemoteLoader {
 				localLoader.getServiceNames(serviceNames);
 				counter = serviceNames.size();
 				
-				Log.d(this.getClass().getName(), localLoader.getName() + ": Remote loader bound! There are " + counter + " services to bind on component");
+				Log.i(this.getClass().getName(), localLoader.getName() + ": Remote loader bound! There are " + counter + " services to bind on component");
 				
 				if (counter == 0) {
 					// No services to bind
@@ -162,8 +162,6 @@ public class RemoteLoader implements IRemoteLoader {
 				try {
 					localLoader.bind(serviceName, service);
 					
-					Log.d(this.getClass().getName(), serviceName + " service bound");
-					
 					if (--counter == 0) {
 						// All the services are bound
 						listener.loaded(localLoader);
@@ -184,7 +182,6 @@ public class RemoteLoader implements IRemoteLoader {
 				this.serviceName = name;
 			}
 		};
-
 	};
 
 }
