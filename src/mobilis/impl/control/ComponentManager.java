@@ -63,7 +63,6 @@ public class ComponentManager extends Service {
 
 		@Override
 		public void loaded(ILocalLoader loader) throws RemoteException {
-			Log.d(this.getClass().getName(), loader.getName() + ": Registering component's services and receptacles...");
 			
 			// Manage component dependencies before deliver it to caller
 			loadedComponents.add(loader.getCategory(), loader);
@@ -107,6 +106,12 @@ public class ComponentManager extends Service {
 		@Override
 		public ILocalLoader getByName(String name) throws RemoteException {
 			return loadedComponents.getByName(name);
+		}
+
+		@Override
+		public void unloadComponent(String componentName)
+				throws RemoteException {
+			Log.d(this.getClass().getName(), componentName + " unload requested");			
 		}
 		
 	};

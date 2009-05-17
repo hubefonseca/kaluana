@@ -3,6 +3,7 @@ package mobilis.impl.control;
 import java.util.List;
 
 import mobilis.api.IReceptacle;
+import mobilis.api.IService;
 import mobilis.api.control.ILocalLoader;
 import mobilis.impl.Component;
 import android.content.ContextWrapper;
@@ -10,7 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 /**
- * This class represents the Stub implementation on every Local Loader service 
+ * This class represents the Stub implementation on each LocalLoader service 
  * @author Hubert
  *
  */
@@ -30,10 +31,12 @@ public class LocalLoader extends ILocalLoader.Stub {
 	}
 
 	@Override
-	public IReceptacle getReceptacle(String arg0) throws RemoteException {
-		return component.getReceptacle(arg0);
+	public IReceptacle getReceptacle(String arg0)
+			throws RemoteException {
+		IReceptacle receptacle = component.getReceptacle(arg0);
+		return receptacle;
 	}
-
+	
 	@Override
 	public void getReceptacleNames(List<String> arg0)
 			throws RemoteException {
@@ -42,7 +45,7 @@ public class LocalLoader extends ILocalLoader.Stub {
 
 	@Override
 	public IBinder getService(String arg0) throws RemoteException {
-		return component.getService(arg0);
+		return component.getService(arg0).getServiceImpl();
 	}
 
 	@Override
@@ -77,9 +80,31 @@ public class LocalLoader extends ILocalLoader.Stub {
 	}
 
 	@Override
-	public void bind(String serviceName, IBinder service)
+	public void bindService(String serviceName, IBinder binder)
 			throws RemoteException {
-		component.bind(serviceName, service);
+		component.bindService(serviceName, binder);
+	}
+
+	@Override
+	public String getServiceInterface(String arg0)
+			throws RemoteException {
+		return component.getServiceInterface(arg0);
+	}
+
+	@Override
+	public IService getBoundService(String receptacleName)
+			throws RemoteException {
+		return component.getBoundService(receptacleName);
+	}
+
+	@Override
+	public void bindReceptacle(String receptacleName, IBinder binder, String serviceName, String providerComponentName) 
+			throws RemoteException {
+		IService service = new mobilis.impl.Service();
+		service.setComponentName(providerComponentName);
+		service.setName(serviceName);
+		service.setServiceImpl(binder);
+		component.bindReceptacle(receptacleName, service);
 	}
 	
 }

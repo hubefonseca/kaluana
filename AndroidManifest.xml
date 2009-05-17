@@ -40,6 +40,11 @@
 				<action android:name="loc"></action>
 			</intent-filter>
 		</service>
+		<service android:name="mobilis.context.location.SemanticLocationService">
+			<intent-filter>
+				<action android:name="mobilis.context.location.ISemanticLocationService"></action>
+			</intent-filter>
+		</service>
 		<service android:name="mobilis.examples.pingpong.PingComponentLoader">
 			<intent-filter>
 				<action android:name="mobilis.examples.ping"></action>

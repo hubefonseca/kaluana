@@ -10,6 +10,8 @@ interface IComponentManager {
 	
 	void loadComponents(in List<String> categories, in long callId);
 	
+	void unloadComponent(in String componentName);
+	
 	ILocalLoader getComponent(in String category);
 
 	void init(IComponentManagerListener listener);

@@ -3,8 +3,10 @@ package mobilis.impl.adaptation;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobilis.api.IService;
 import mobilis.api.adaptation.IAdaptationManager;
 import mobilis.api.control.IComponentManager;
+import mobilis.api.control.ILocalLoader;
 import mobilis.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,7 +36,6 @@ public class AdaptationManager implements IAdaptationManager {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			
 			contextProvider = IProviderService.Stub.asInterface(service);
 			
 			Log.d(this.getClass().getName(), "Location provider service connected!");
@@ -45,7 +46,6 @@ public class AdaptationManager implements IAdaptationManager {
 			} catch(RemoteException e) {
 				
 			}
-			
 		}
 
 		@Override
@@ -116,6 +116,7 @@ public class AdaptationManager implements IAdaptationManager {
 			
 			if (candidate != null) {
 				Log.d(this.getClass().getName(), candidate + " must be replaced by " + availableCompInfo.serviceInfo.name + "(more specific)");
+				replaceComponents(candidate, availableCompInfo.serviceInfo.name);
 			}
 		}
 		
@@ -168,22 +169,69 @@ public class AdaptationManager implements IAdaptationManager {
 			}
 			if (candidate != null) {
 				Log.d(this.getClass().getName(), name + " must be replaced by " + candidate + "(less specific)");
+				replaceComponents(name, candidate);
 			} else {
 				Log.d(this.getClass().getName(), "There is no candidate to replace " + name);
 			}
 		}
 	}
 
-	private void stopComponent(String componentName) {
-		// Before stopping a component, it's necessary to know to whom its receptacles
-		// and services are connected, and save this - so called - component state
+	private void replaceComponents(String oldComponentName, String newComponentName) {
+		ConnectionState connectionState = unloadComponent(oldComponentName);
 		
-		// Each receptacle connects to a service via the service name. Is it correct?
+//		for (ReceptacleState rec : connectionState.receptacles.values()) {
+//			Log.d(this.getClass().getName(), "provider: " + rec.getComponentName());
+//		}
 		
-		
+		// load new component
 	}
 	
-	private void startComponent(String componentName) {
+	private ConnectionState unloadComponent(String componentName) {
+		ConnectionState connectionState = new ConnectionState();
+		try {
+			ILocalLoader loader = componentManager.getByName(componentName);
+			
+			// Find out to which services the receptacles are bound
+			List<String> receptacleNames = new ArrayList<String>();
+			loader.getReceptacleNames(receptacleNames);
+			for (String receptacleName : receptacleNames) {
+				IService service = loader.getBoundService(receptacleName);
+				connectionState.addReceptacle(receptacleName, service);
+				// Tem que buscar o nome do componente a partir do loader 
+				// (passar o IService entre diferentes processos é impossível)
+				Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component ...");
+			}
+			
+			// Find out to each receptacles the services are bound
+			List<String> componentNames = componentManager.getAllNames();
+			for (String name : componentNames) {
+				loader = componentManager.getByName(name);
+				
+				receptacleNames = new ArrayList<String>();
+				loader.getReceptacleNames(receptacleNames);
+				for (String receptacleName : receptacleNames) {
+//					if (providerComponentName.equals(componentName)) {
+//						connectionState.addService(name, providerComponentName, receptacleName);
+//						Log.d(this.getClass().getName(), "persist this service state");
+//					}
+				}
+			}
+			
+			// Notify the component
+			loader.stop();
+			
+			// Unload the component
+			
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return connectionState;
+	}
+	
+	private void loadComponent(String componentName) {
 		// After starting the component, it's necessary to re-build its state, if there is a state
 		
 	}

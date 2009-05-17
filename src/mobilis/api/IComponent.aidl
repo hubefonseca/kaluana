@@ -1,13 +1,14 @@
 package mobilis.api;
 
 import mobilis.api.IReceptacle;
+import mobilis.api.IService;
 
 interface IComponent {
 
 	/*
 	* Internal
 	*/
-	void bind(String serviceName, IBinder service);
+	void bindService(String serviceName, IBinder service);
 	
 	String getName();
 	
@@ -38,10 +39,16 @@ interface IComponent {
 	 */
 	void getServiceNames(out List<String> serviceNames);
 	
+	String getServiceInterface(String serviceName);
+	
 	void getReceptacleNames(out List<String> receptacleNames);
 	
-	IBinder getService(String serviceName);
+	IService getService(String serviceName);
 	
 	IReceptacle getReceptacle(String receptacleName);
+	
+	void bindReceptacle(String receptacleName, IService service);
+	
+	IService getBoundService(String receptacleName);
 	
 }

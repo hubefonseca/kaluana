@@ -1,15 +1,18 @@
 package mobilis.api;
 
+import mobilis.api.IService;
+import mobilis.context.location.ISemanticLocationService;
+
 interface IReceptacle {
 	
-	void setName(String name);
+	void setName(String receptacleName);
 	
 	String getName();
 	
-	void connectToService(IBinder service);	
+	void connectToService(IService serviceImpl);
 	
 	void setClassName(String className);
 	
-	IBinder getConnection();
+	IService getConnection();
 	
 }

@@ -3,9 +3,12 @@ package mobilis.app;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobilis.api.IReceptacle;
+import mobilis.api.IService;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.ILocalLoader;
+import mobilis.context.location.ISemanticLocationService;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +17,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class NavigatorApp extends Activity implements IComponentManagerListener {
 
@@ -64,11 +68,14 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
-		
 		navigatorLoader = componentManager.getComponent("mobilis.examples.navigator");
 		locationProviderLoader = componentManager.getComponent("mobilis.context.location");
 		
 		try {
+			IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
+			
+			navigatorLoader.bindReceptacle("semanticLocation", semanticLocationProvider, "semanticLocation", locationProviderLoader.getName());
+			
 			navigatorLoader.start();
 			locationProviderLoader.start();
 		} catch (Exception e) {

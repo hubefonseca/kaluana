@@ -1,10 +1,7 @@
 package mobilis.impl;
 
-import java.lang.reflect.Method;
-
 import mobilis.api.IReceptacle;
-import mobilis.examples.pingpong.IPingService;
-import mobilis.examples.pingpong.IPongService;
+import mobilis.api.IService;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -12,34 +9,13 @@ import android.util.Log;
 public class Receptacle implements IReceptacle {
 
 	private String receptacleName;
-	private String interfaceName;
-	private IBinder serviceImpl;
+	private String interfaceName;	
+
+	private IService service;
 	
 	@Override
 	public void setClassName(String className) throws RemoteException { 
 		this.interfaceName = className;
-	}
-	
-	@Override
-	public void connectToService(IBinder service) 
-			throws RemoteException {
-		try {
-			Log.d(this.getClass().getName(), "Connecting receptacle " + interfaceName + " to service.");
-			
-			Class clazz = Class.forName(interfaceName);
-			Class[] clazzes = clazz.getDeclaredClasses();
-			/**
-			 * It's expected that the first declared class inside the interface
-			 * is its Stub.
-			 */
-			Method m = clazzes[0].getMethod("asInterface", new Class[]{android.os.IBinder.class});
-			Object[] obj = new Object[]{service};
-			serviceImpl = (IBinder)m.invoke(m, obj);
-		
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -58,8 +34,32 @@ public class Receptacle implements IReceptacle {
 	}
 
 	@Override
-	public IBinder getConnection() throws RemoteException {
-		return serviceImpl;
+	public IService getConnection() throws RemoteException {
+		
+//		Class clazz = Class.forName(interfaceName);
+//		Class[] clazzes = clazz.getDeclaredClasses();
+//		
+//		/**
+//		 * It's expected that the first declared class inside the interface
+//		 * is its Stub.
+//		 */
+//		Method m = clazzes[0].getMethod("asInterface", new Class[]{android.os.IBinder.class});
+//		Object[] obj = new Object[]{serviceImpl};
+//		
+//		Object o = m.invoke(m, obj);
+//		return (IBinder)o;
+		
+		return service;
 	}
 
+	@Override
+	/**
+	 * Binds serviceImpl to service implementation instance.
+	 */
+	public void connectToService(IService service) 
+			throws RemoteException {
+		Log.d(this.getClass().getName(), "Connecting receptacle " + interfaceName + " to " + service.getName());
+		this.service = service;
+	}
+	
 }

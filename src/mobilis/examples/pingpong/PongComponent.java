@@ -1,6 +1,7 @@
 package mobilis.examples.pingpong;
 
 import mobilis.api.IReceptacle;
+import mobilis.api.IService;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -20,7 +21,8 @@ public class PongComponent extends mobilis.impl.Component {
 		
 		IReceptacle r = this.getReceptacle("ping");
 		
-		pingService = (IPingService)r.getConnection();
+		IService service = r.getConnection();
+		pingService = IPingService.Stub.asInterface(service.getServiceImpl());
 		
 		int i = 0;
 		while (i++ < 3) {

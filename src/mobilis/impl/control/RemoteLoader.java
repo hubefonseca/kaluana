@@ -13,6 +13,7 @@ import java.util.List;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.ILocalLoader;
 import mobilis.api.control.IRemoteLoader;
+import mobilis.context.location.ISemanticLocationService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -35,14 +36,7 @@ public class RemoteLoader implements IRemoteLoader {
 	public RemoteLoader(ContextWrapper contextWrapper) {
 		this.contextWrapper = contextWrapper;
 	}
-
-	@Override
-	public void loadBestComponent(String contextRepresentation,
-			IComponentManager listener) throws RemoteException {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	@Override
 	public int loadComponent(String componentName,
 			IComponentManager listener) throws RemoteException {
@@ -120,6 +114,8 @@ public class RemoteLoader implements IRemoteLoader {
 			try {
 				localLoader = ILocalLoader.Stub.asInterface(service);
 
+				Log.d(this.getClass().getName(), localLoader.getName() + ": Registering component's services and receptacles...");
+				
 				localLoader.registerReceptacles();
 				localLoader.registerServices();
 
@@ -137,7 +133,9 @@ public class RemoteLoader implements IRemoteLoader {
 				for (String serviceName : serviceNames) {
 					LocalServiceConnection mLocalServiceConnection = new LocalServiceConnection(); 
 					
-					Intent intent = new Intent(serviceName);
+					String serviceInterface = localLoader.getServiceInterface(serviceName);
+					
+					Intent intent = new Intent(serviceInterface);
 					mLocalServiceConnection.setServiceName(serviceName);
 					contextWrapper.bindService(intent, mLocalServiceConnection, Context.BIND_AUTO_CREATE);
 				}
@@ -160,7 +158,7 @@ public class RemoteLoader implements IRemoteLoader {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				try {
-					localLoader.bind(serviceName, service);
+					localLoader.bindService(serviceName, service);
 					
 					if (--counter == 0) {
 						// All the services are bound

@@ -86,7 +86,7 @@ public class LoaderCollection {
 		
 		ILocalLoader loader = null;
 		if (l != null && l.size() > 0) {
-			loader= l.get(0);
+			loader = l.get(0);
 		}
 		return loader;
 	}

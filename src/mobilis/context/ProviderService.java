@@ -22,7 +22,6 @@ public class ProviderService extends Service {
 		private IAdaptationManager adaptationManager = null;
 		private IContextListener cl = null;
 		private LocationManager mLocationManager = null;
-//		private LocationProvider mLocationProvider = null;
 		
 		@Override
 		public void start()

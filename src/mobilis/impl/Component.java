@@ -3,46 +3,48 @@ package mobilis.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import mobilis.api.IReceptacle;
+import mobilis.api.IService;
+import mobilis.context.location.ISemanticLocationService;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public abstract class Component implements mobilis.api.IComponent,
 										mobilis.api.adaptation.IAdaptable {
 		
 	/**
 	 * This map stores the references between service names and 
-	 * their interfaces, which will be used to return a implementation
+	 * their interface and implementation, which will be used to return the implementation
 	 * to the service consumer
 	 */
-	private HashMap<String, IBinder> services;
-	
-	/**
-	 * This map stores the interfaces class names related to
-	 * each service name
-	 */
-	private HashMap<String, String> servicesInterfaces;
+	private HashMap<String, IService> services;
 	
 	/**
 	 * This list stores the receptacles that can be connected to other
 	 * components
 	 */
-	private List<IReceptacle> receptacles;
+	private HashMap<String, IReceptacle> receptacles;
 	
 	protected ContextWrapper contextWrapper;
 	
 	public Component() {
-		services = new HashMap<String, IBinder>();
-		receptacles = new ArrayList<IReceptacle>();
-		servicesInterfaces = new HashMap<String, String>();
+		services = new HashMap<String, IService>();
+		receptacles = new HashMap<String, IReceptacle>();
 	}
 
 	@Override
+	/**
+	 * To bind this registered service to an implementation, use
+	 * bindService() at loader level
+	 */
 	public void registerService(String serviceName, String interfaceName) throws RemoteException {
-		servicesInterfaces.put(serviceName, interfaceName);
+		IService service = new Service();
+		service.setInterfaceName(interfaceName);
+		service.setComponentName(getName());
+		services.put(serviceName, service);
 	}
 
 	@Override
@@ -50,39 +52,35 @@ public abstract class Component implements mobilis.api.IComponent,
 		Receptacle receptacle = new Receptacle();
 		receptacle.setName(receptacleName);
 		receptacle.setClassName(interfaceName);
-		receptacles.add(receptacle);
+		receptacles.put(receptacleName, receptacle);
 	}
 	
 	@Override
-	public IBinder getService(String serviceName) throws RemoteException {
-		IBinder service = services.get(serviceName);
+	public IService getService(String serviceName) throws RemoteException {
+		IService service = services.get(serviceName);
 		return service;
 	}
 
 	@Override
 	public IReceptacle getReceptacle(String receptacleName)
-			throws RemoteException {
-		for (IReceptacle receptacle : receptacles) {
-			if (receptacle.getName().equals(receptacleName)) {
-				return receptacle;
-			}
-		}
-		return null;
+			throws RemoteException {		
+		return receptacles.get(receptacleName);
 	}
 
 	@Override
 	public void getServiceNames(List<String> serviceNames)
 	throws RemoteException {
-		for (Entry<String, String> serviceInterface : servicesInterfaces.entrySet()) {
-			serviceNames.add(serviceInterface.getValue());
+		for (String serviceName : services.keySet()) {
+			serviceNames.add(serviceName);
 		}
 	}
 	
 	@Override
 	public void getReceptacleNames(List<String> receptacleNames)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		for (String receptacleName : receptacles.keySet()) {
+			receptacleNames.add(receptacleName);
+		}
 	}
 	
 	@Override
@@ -100,14 +98,46 @@ public abstract class Component implements mobilis.api.IComponent,
 		this.contextWrapper = contextWrapper;
 	}
 	
-	public void bind(String name, IBinder service) {
-		String serviceName = null;
-		for (Entry<String, String> entry : servicesInterfaces.entrySet()) {
-			if (entry.getValue().equals(name)) {
-				serviceName = entry.getKey();
-			}
+	public void bindService(String serviceName, IBinder binder) {
+		try {
+			IService service = services.get(serviceName);
+			assert (service != null);
+			
+			service.setServiceImpl(binder);
+			services.put(serviceName, service);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		services.put(serviceName, service);
+	}
+	
+	@Override
+	public void bindReceptacle(String receptacleName, IService service) 
+			throws RemoteException {
+		try {
+			if (service == null) {
+				Log.d(this.getClass().getName(), "null service");
+			}
+			
+			IReceptacle receptacle = getReceptacle(receptacleName);
+			receptacle.connectToService(service);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public IService getBoundService(String receptacleName)
+			throws RemoteException {
+		IReceptacle receptacle = getReceptacle(receptacleName);
+		return receptacle.getConnection();
+	}
+	
+	@Override
+	public String getServiceInterface(String serviceName)
+			throws RemoteException {
+		return services.get(serviceName).getInterfaceName();
 	}
 	
 	@Override

@@ -7,6 +7,4 @@ interface IRemoteLoader {
 
 	int loadComponent(in String componentName, in IComponentManager listener);
 
-	void loadBestComponent(in String contextRepresentation, in IComponentManager listener);
-	
 }

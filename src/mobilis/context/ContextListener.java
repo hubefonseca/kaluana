@@ -58,6 +58,10 @@ public class ContextListener implements IContextListener, LocationListener {
 
 				loc = response.toString();
 				
+				if (loc.equals("")) {
+					loc = "loc";
+					Log.e(this.getClass().getName(), "Location not found! Using default value: " + loc);
+				}
 				Log.d(this.getClass().getName(), "Location: " + loc);
 				
 			} catch (MalformedURLException e) {

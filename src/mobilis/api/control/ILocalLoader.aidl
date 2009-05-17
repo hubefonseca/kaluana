@@ -2,6 +2,7 @@ package mobilis.api.control;
 
 import mobilis.api.IReceptacle;
 import mobilis.api.IComponent;
+import mobilis.api.IService;
 
 interface ILocalLoader {
 
@@ -12,7 +13,7 @@ interface ILocalLoader {
 	
 	String getCategory();
 	
-	void bind(String serviceName, IBinder service);
+	void bindService(String serviceName, IBinder binder);
 	
 	void start();
 	
@@ -30,10 +31,16 @@ interface ILocalLoader {
 	 */
 	void getServiceNames(out List<String> serviceNames);
 	
+	String getServiceInterface(String serviceName);
+	
 	void getReceptacleNames(out List<String> receptacleNames);
 	
 	IBinder getService(String serviceName);
 	
 	IReceptacle getReceptacle(String receptacleName);
+	
+	void bindReceptacle(String receptacleName, IBinder binder, String serviceName, String providerComponentName);
+	
+	IService getBoundService(String receptacleName);
 	
 }
