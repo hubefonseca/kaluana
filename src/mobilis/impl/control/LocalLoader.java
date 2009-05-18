@@ -2,8 +2,8 @@ package mobilis.impl.control;
 
 import java.util.List;
 
-import mobilis.api.IReceptacle;
-import mobilis.api.IService;
+import mobilis.api.ReceptacleInfo;
+import mobilis.api.ServiceInfo;
 import mobilis.api.control.ILocalLoader;
 import mobilis.impl.Component;
 import android.content.ContextWrapper;
@@ -18,23 +18,15 @@ import android.os.RemoteException;
 public class LocalLoader extends ILocalLoader.Stub {
 	
 	private Component component;
-	private ContextWrapper contextWrapper;
 	
 	public LocalLoader(Component component, ContextWrapper contextWrapper) {
+		component.setContextWrapper(contextWrapper);
 		this.component = component;
-		this.contextWrapper = contextWrapper;
 	}
 	
 	@Override
 	public String getName() throws RemoteException {
 		return component.getName();
-	}
-
-	@Override
-	public IReceptacle getReceptacle(String arg0)
-			throws RemoteException {
-		IReceptacle receptacle = component.getReceptacle(arg0);
-		return receptacle;
 	}
 	
 	@Override
@@ -45,7 +37,7 @@ public class LocalLoader extends ILocalLoader.Stub {
 
 	@Override
 	public IBinder getService(String arg0) throws RemoteException {
-		return component.getService(arg0).getServiceImpl();
+		return component.getService(arg0);
 	}
 
 	@Override
@@ -70,7 +62,6 @@ public class LocalLoader extends ILocalLoader.Stub {
 
 	@Override
 	public void start() throws RemoteException {
-		component.setContextWrapper(contextWrapper);
 		component.start();
 	}
 	
@@ -84,27 +75,24 @@ public class LocalLoader extends ILocalLoader.Stub {
 			throws RemoteException {
 		component.bindService(serviceName, binder);
 	}
-
+	
 	@Override
-	public String getServiceInterface(String arg0)
+	public ServiceInfo getServiceInfo(String serviceName)
 			throws RemoteException {
-		return component.getServiceInterface(arg0);
+		return component.getServiceInfo(serviceName);
 	}
 
 	@Override
-	public IService getBoundService(String receptacleName)
-			throws RemoteException {
-		return component.getBoundService(receptacleName);
+	public void bindReceptacle(ReceptacleInfo receptacleInfo, IBinder service,
+			ServiceInfo serviceInfo) throws RemoteException {
+		component.bindReceptacle(receptacleInfo, service, serviceInfo);
 	}
 
 	@Override
-	public void bindReceptacle(String receptacleName, IBinder binder, String serviceName, String providerComponentName) 
+	public ReceptacleInfo getReceptacleInfo(String receptacleName)
 			throws RemoteException {
-		IService service = new mobilis.impl.Service();
-		service.setComponentName(providerComponentName);
-		service.setName(serviceName);
-		service.setServiceImpl(binder);
-		component.bindReceptacle(receptacleName, service);
+		ReceptacleInfo receptacleInfo = component.getReceptacleInfo(receptacleName);
+		return receptacleInfo;
 	}
 	
 }

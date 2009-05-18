@@ -13,7 +13,6 @@ import java.util.List;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.ILocalLoader;
 import mobilis.api.control.IRemoteLoader;
-import mobilis.context.location.ISemanticLocationService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -133,7 +132,7 @@ public class RemoteLoader implements IRemoteLoader {
 				for (String serviceName : serviceNames) {
 					LocalServiceConnection mLocalServiceConnection = new LocalServiceConnection(); 
 					
-					String serviceInterface = localLoader.getServiceInterface(serviceName);
+					String serviceInterface = localLoader.getServiceInfo(serviceName).getInterfaceName();
 					
 					Intent intent = new Intent(serviceInterface);
 					mLocalServiceConnection.setServiceName(serviceName);

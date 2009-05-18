@@ -1,8 +1,8 @@
 package mobilis.api.control;
 
-import mobilis.api.IReceptacle;
 import mobilis.api.IComponent;
-import mobilis.api.IService;
+import mobilis.api.ServiceInfo;
+import mobilis.api.ReceptacleInfo;
 
 interface ILocalLoader {
 
@@ -31,16 +31,14 @@ interface ILocalLoader {
 	 */
 	void getServiceNames(out List<String> serviceNames);
 	
-	String getServiceInterface(String serviceName);
-	
 	void getReceptacleNames(out List<String> receptacleNames);
 	
 	IBinder getService(String serviceName);
 	
-	IReceptacle getReceptacle(String receptacleName);
+	ServiceInfo getServiceInfo(String serviceName);
 	
-	void bindReceptacle(String receptacleName, IBinder binder, String serviceName, String providerComponentName);
+	ReceptacleInfo getReceptacleInfo(String receptacleName);
 	
-	IService getBoundService(String receptacleName);
+	void bindReceptacle(in ReceptacleInfo receptacleInfo, in IBinder service, in ServiceInfo serviceInfo);
 	
 }

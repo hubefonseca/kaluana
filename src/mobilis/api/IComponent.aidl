@@ -1,7 +1,7 @@
 package mobilis.api;
 
-import mobilis.api.IReceptacle;
-import mobilis.api.IService;
+import mobilis.api.ReceptacleInfo;
+import mobilis.api.ServiceInfo;
 
 interface IComponent {
 
@@ -39,16 +39,16 @@ interface IComponent {
 	 */
 	void getServiceNames(out List<String> serviceNames);
 	
-	String getServiceInterface(String serviceName);
-	
 	void getReceptacleNames(out List<String> receptacleNames);
 	
-	IService getService(String serviceName);
+	IBinder getService(String serviceName);
 	
-	IReceptacle getReceptacle(String receptacleName);
+	ServiceInfo getServiceInfo(String serviceName);
 	
-	void bindReceptacle(String receptacleName, IService service);
+	ReceptacleInfo getReceptacleInfo(String receptacleName);
 	
-	IService getBoundService(String receptacleName);
+	void bindReceptacle(in ReceptacleInfo receptacleInfo, in IBinder service, in ServiceInfo serviceInfo);
+	
+	IBinder getBoundService(String receptacleName);
 	
 }

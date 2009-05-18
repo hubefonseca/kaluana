@@ -1,8 +1,6 @@
 package mobilis.examples.pingpong;
 
-import mobilis.api.IReceptacle;
-import mobilis.api.IService;
-import mobilis.context.location.ISemanticLocationService;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -21,10 +19,8 @@ public class PingComponent extends mobilis.impl.Component {
 		// TODO Auto-generated method stub
 		Log.d(this.getClass().getName(), "Servico instanciado no ping component");
 		
-		IReceptacle r = this.getReceptacle("pong");
-		
-		IService service = r.getConnection();
-		pongService = IPongService.Stub.asInterface(service.getServiceImpl());
+		IBinder service = getBoundService("pong");
+		pongService = IPongService.Stub.asInterface(service);
 		
 		int i = 0;
 		while (i++ < 3) {

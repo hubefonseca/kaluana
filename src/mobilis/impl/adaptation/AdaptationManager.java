@@ -3,7 +3,8 @@ package mobilis.impl.adaptation;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobilis.api.IService;
+import mobilis.api.ReceptacleInfo;
+import mobilis.api.ServiceInfo;
 import mobilis.api.adaptation.IAdaptationManager;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.ILocalLoader;
@@ -177,7 +178,9 @@ public class AdaptationManager implements IAdaptationManager {
 	}
 
 	private void replaceComponents(String oldComponentName, String newComponentName) {
-		ConnectionState connectionState = unloadComponent(oldComponentName);
+		
+		ComponentState connectionState = getComponentState(oldComponentName);
+		unloadComponent(oldComponentName);
 		
 //		for (ReceptacleState rec : connectionState.receptacles.values()) {
 //			Log.d(this.getClass().getName(), "provider: " + rec.getComponentName());
@@ -186,8 +189,8 @@ public class AdaptationManager implements IAdaptationManager {
 		// load new component
 	}
 	
-	private ConnectionState unloadComponent(String componentName) {
-		ConnectionState connectionState = new ConnectionState();
+	private ComponentState getComponentState(String componentName) {
+		ComponentState componentState = new ComponentState();
 		try {
 			ILocalLoader loader = componentManager.getByName(componentName);
 			
@@ -195,11 +198,15 @@ public class AdaptationManager implements IAdaptationManager {
 			List<String> receptacleNames = new ArrayList<String>();
 			loader.getReceptacleNames(receptacleNames);
 			for (String receptacleName : receptacleNames) {
-				IService service = loader.getBoundService(receptacleName);
-				connectionState.addReceptacle(receptacleName, service);
-				// Tem que buscar o nome do componente a partir do loader 
-				// (passar o IService entre diferentes processos é impossível)
-				Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component ...");
+				ReceptacleInfo receptacleInfo = loader.getReceptacleInfo(receptacleName);
+				ServiceInfo connectedServiceInfo = receptacleInfo.getServiceInfo();
+				
+				Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is bound: " + receptacleInfo.isBound());
+				
+				if (connectedServiceInfo != null) {
+					Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component " + connectedServiceInfo.getComponentName());
+					componentState.addReceptacle(receptacleInfo);
+				}
 			}
 			
 			// Find out to each receptacles the services are bound
@@ -210,16 +217,33 @@ public class AdaptationManager implements IAdaptationManager {
 				receptacleNames = new ArrayList<String>();
 				loader.getReceptacleNames(receptacleNames);
 				for (String receptacleName : receptacleNames) {
-//					if (providerComponentName.equals(componentName)) {
-//						connectionState.addService(name, providerComponentName, receptacleName);
-//						Log.d(this.getClass().getName(), "persist this service state");
-//					}
+					ReceptacleInfo receptacleInfo = loader.getReceptacleInfo(receptacleName);
+					ServiceInfo connectedServiceInfo = receptacleInfo.getServiceInfo();
+					if (connectedServiceInfo != null) {
+						if (connectedServiceInfo.getComponentName().equals(componentName)) {
+							Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component " + connectedServiceInfo.getComponentName());
+							
+							componentState.addService(connectedServiceInfo, receptacleInfo);
+						}
+					}
 				}
 			}
 			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return componentState;
+	}
+	
+	private void unloadComponent(String componentName) {
+		try {
+			ILocalLoader loader = componentManager.getByName(componentName);
+			
 			// Notify the component
 			loader.stop();
-			
+
 			// Unload the component
 			
 			
@@ -227,8 +251,6 @@ public class AdaptationManager implements IAdaptationManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return connectionState;
 	}
 	
 	private void loadComponent(String componentName) {

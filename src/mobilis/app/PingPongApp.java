@@ -3,8 +3,8 @@ package mobilis.app;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobilis.api.IReceptacle;
-import mobilis.api.IService;
+import mobilis.api.ReceptacleInfo;
+import mobilis.api.ServiceInfo;
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.ILocalLoader;
@@ -16,6 +16,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class PingPongApp extends Activity implements IComponentManagerListener {
 
@@ -66,22 +67,28 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
-		IBinder servicePing = null;
-		IReceptacle recaptaclePing = null;
-		IReceptacle receptaclePong = null;
-		IBinder servicePong = null;
 		
 		pingComponentLoader = componentManager.getComponent("mobilis.examples.ping");
 		pongComponentLoader = componentManager.getComponent("mobilis.examples.pong");
 		
-		servicePing = pingComponentLoader.getService("ping");
-		recaptaclePing = pingComponentLoader.getReceptacle("pong");
+		IBinder pingService = pingComponentLoader.getService("ping");
+		IBinder pongService = pongComponentLoader.getService("pong");
+
+		ServiceInfo pingServiceInfo = pingComponentLoader.getServiceInfo("ping");
+		ServiceInfo pongServiceInfo = pongComponentLoader.getServiceInfo("pong");
 		
-		servicePong = pongComponentLoader.getService("pong");
-		receptaclePong = pongComponentLoader.getReceptacle("ping");
-//		
-//		pingComponentLoader.bindReceptacle()
-//		
+		ReceptacleInfo pingReceptacleInfo = pongComponentLoader.getReceptacleInfo("ping");
+		ReceptacleInfo pongReceptacleInfo = pingComponentLoader.getReceptacleInfo("pong");
+		
+		Log.d(this.getClass().getName(), "ping service info: " + pingServiceInfo);
+		Log.d(this.getClass().getName(), "pong service info: " + pongServiceInfo);
+		
+		Log.d(this.getClass().getName(), "ping service: " + pingService);
+		Log.d(this.getClass().getName(), "pong service: " + pongService);
+		
+		pingComponentLoader.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
+		pongComponentLoader.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
+		
 		pingComponentLoader.start();
 		pongComponentLoader.start();
 	}
