@@ -27,4 +27,6 @@ interface IComponentManager {
 	
 	void unloaded(in String componentName);
 	
+	void addListener(IComponentManagerListener listener);
+	
 }

@@ -126,4 +126,20 @@ public class LoaderCollection {
 		}
 		return names;
 	}
+	
+	public List<ILocalLoader> get(String category) {
+		return loaders.get(category);
+	}
+	
+	public boolean isRequestFinished(List<String> componentNames) {
+		boolean requestComplete = true;
+		for (String name : componentNames) {
+			if (!containsCategory(name) && !contains(name)) {
+				requestComplete = false;
+				break;
+			}
+		}
+		return requestComplete;
+	}
+	
 }

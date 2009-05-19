@@ -1,5 +1,6 @@
 package mobilis.impl.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -20,23 +21,27 @@ public class ComponentManager extends Service {
 	private LoaderCollection loadedComponents;
 	
 	private IRemoteLoader remoteLoader;
-	private IComponentManagerListener componentManagerListener;
+	
+	private List<IComponentManagerListener> listeners;
 	
 	/**
 	 * This structure stores, for each request to load components, the components
 	 * that the caller wants to load
 	 */
-	private HashMap<Long, List<String>> callRequests;
+	private HashMap<Long, List<String>> requests;
 
 	private final IComponentManager.Stub mComponentManager = new IComponentManager.Stub() {
 
 		@Override
 		public void init(IComponentManagerListener listener) 
 				throws RemoteException {
-			remoteLoader = new RemoteLoader(getContextWrapper());
+			remoteLoader = new RemoteLoader(getContextWrapper(), this);
 			loadedComponents = new LoaderCollection();
-			callRequests = new HashMap<Long, List<String>>();
-			componentManagerListener = listener;
+			requests = new HashMap<Long, List<String>>();
+
+			// Adds the component manager listener to the listeners list
+			listeners = new ArrayList<IComponentManagerListener>();
+			listeners.add(listener);
 			
 			// Start Adaptation Manager
 			AdaptationManager adaptationManager = new AdaptationManager(getContextWrapper(), this);
@@ -51,40 +56,44 @@ public class ComponentManager extends Service {
 
 		@Override
 		/**
-		 * This method receives a list with the category of each component that has to be loaded
+		 * This method receives a list with the category of each component that shall be loaded
 		 */
 		public void loadComponents(List<String> categories, long callId)
-				throws RemoteException {
-			callRequests.put(callId, categories);
+				throws RemoteException {			
+			requests.put(callId, categories);
 			for (String category : categories) {
-				remoteLoader.loadComponent(category, this);
+				Log.i(this.getClass().getName(), "loading: " + category);
+				remoteLoader.loadComponent(category);
 			}
 		}
 
 		@Override
 		public void loaded(ILocalLoader loader) throws RemoteException {
 			
+			Log.i(this.getClass().getName(), "adding: " + loader.getName());
 			// Manage component dependencies before deliver it to caller
 			loadedComponents.add(loader.getCategory(), loader);
 			
-			List<String> componentNames;
-			long callId;
-			for (Entry<Long, List<String>> entry : callRequests.entrySet()) {
-				componentNames = entry.getValue();
-				callId = entry.getKey();
-				boolean requestComplete = true;
-				for (String name : componentNames) {
-					if (!loadedComponents.containsCategory(name) && !loadedComponents.contains(name)) {
-						requestComplete = false;
-						break;
-					}
-				}
-				if (requestComplete) {
-					Log.d(this.getClass().getName(), "request complete");
-					componentManagerListener.componentsLoaded(callId);
-					callRequests.remove(callId);
+			for (String cat : loadedComponents.keySet()) {
+				Log.d(this.getClass().getName(), "category: " + cat);
+				List<ILocalLoader> l = loadedComponents.get(cat);
+				for (ILocalLoader lo : l) {
+					Log.d(this.getClass().getName(), "loader: " + lo.getName());
 				}
 			}
+			
+			// Verify if any request is finished
+			for (Long request : requests.keySet()) {
+				List<String> componentNames = requests.get(request);
+				if (loadedComponents.isRequestFinished(componentNames)) {
+					Log.d(this.getClass().getName(), "request " + request + " is finished!");
+					for (IComponentManagerListener listener : listeners) {
+						listener.componentsLoaded(request);
+					}
+					requests.remove(request);
+				}
+			}
+			
 		}
 
 		@Override
@@ -112,6 +121,12 @@ public class ComponentManager extends Service {
 		public void unloadComponent(String componentName)
 				throws RemoteException {
 			Log.d(this.getClass().getName(), componentName + " unload requested");			
+		}
+
+		@Override
+		public void addListener(IComponentManagerListener listener)
+				throws RemoteException {
+			listeners.add(listener);
 		}
 		
 	};

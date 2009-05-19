@@ -2,11 +2,13 @@ package mobilis.impl.adaptation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import mobilis.api.ReceptacleInfo;
 import mobilis.api.ServiceInfo;
 import mobilis.api.adaptation.IAdaptationManager;
 import mobilis.api.control.IComponentManager;
+import mobilis.api.control.IComponentManagerListener;
 import mobilis.api.control.ILocalLoader;
 import mobilis.context.IProviderService;
 import android.content.ComponentName;
@@ -19,11 +21,13 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class AdaptationManager implements IAdaptationManager {
+public class AdaptationManager implements IAdaptationManager, IComponentManagerListener {
 
 	private ContextWrapper contextWrapper;
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
+	
+	private int callId = 10000;
 	
 	public AdaptationManager(ContextWrapper contextWrapper, IComponentManager.Stub componentManager) {
 		this.componentManager = componentManager;
@@ -31,6 +35,12 @@ public class AdaptationManager implements IAdaptationManager {
 		
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
 		this.contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		
+		try {
+			this.componentManager.addListener(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -176,17 +186,33 @@ public class AdaptationManager implements IAdaptationManager {
 			}
 		}
 	}
+	
 
 	private void replaceComponents(String oldComponentName, String newComponentName) {
 		
-		ComponentState connectionState = getComponentState(oldComponentName);
+		ComponentState componentState = getComponentState(oldComponentName);
+		
+		for (ReceptacleInfo rec : componentState.getReceptacles()) {
+			Log.d(this.getClass().getName(), "receptacle: " + rec.getName() + ", provider: " + rec.getComponentName());
+		}
+		for (Entry<ServiceInfo, List<ReceptacleInfo>> entry : componentState.getServices().entrySet()) {
+			
+			Log.d(this.getClass().getName(), "service: " + entry.getKey().getName());
+			for (ReceptacleInfo rec : componentState.getReceptacles()) {
+				Log.d(this.getClass().getName(), "connected to: " + rec.getName() + ", consumer: " + rec.getComponentName());
+			}
+		}
+		
+		
+		// unload component
 		unloadComponent(oldComponentName);
 		
-//		for (ReceptacleState rec : connectionState.receptacles.values()) {
-//			Log.d(this.getClass().getName(), "provider: " + rec.getComponentName());
-//		}
-		
 		// load new component
+		loadComponent(newComponentName);
+		
+		// set new component state
+		setComponentState(newComponentName, componentState);
+		
 	}
 	
 	private ComponentState getComponentState(String componentName) {
@@ -205,7 +231,10 @@ public class AdaptationManager implements IAdaptationManager {
 				
 				if (connectedServiceInfo != null) {
 					Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component " + connectedServiceInfo.getComponentName());
-					componentState.addReceptacle(receptacleInfo);
+					if (connectedServiceInfo.equals(componentName)) {
+						// Service is provided by this component
+						componentState.addReceptacle(receptacleInfo);
+					}
 				}
 			}
 			
@@ -237,6 +266,16 @@ public class AdaptationManager implements IAdaptationManager {
 		return componentState;
 	}
 	
+	/**
+	 * Connects component's services and receptacles, based on a ComponentState object
+	 * @param componentName
+	 * @param componentState
+	 */
+	private void setComponentState(String componentName, ComponentState componentState) {
+		// After starting the component, it's necessary to re-build its state, if there is a state
+		
+	}
+	
 	private void unloadComponent(String componentName) {
 		try {
 			ILocalLoader loader = componentManager.getByName(componentName);
@@ -254,8 +293,15 @@ public class AdaptationManager implements IAdaptationManager {
 	}
 	
 	private void loadComponent(String componentName) {
-		// After starting the component, it's necessary to re-build its state, if there is a state
-		
+		try {
+			Log.i(this.getClass().getName(), "loading: " + componentName);
+			List<String> componentNames = new ArrayList<String>();
+			componentNames.add(componentName);
+			componentManager.loadComponents(componentNames, callId);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -266,6 +312,15 @@ public class AdaptationManager implements IAdaptationManager {
 
 	private AdaptationManager getContextWrapper() {
 		return this;
+	}
+
+	@Override
+	public void componentsLoaded(long callId) throws RemoteException {
+		Log.d(this.getClass().getName(), "componentsLoaded called: " + callId);
+		if (callId == this.callId) {
+			Log.d(this.getClass().getName(), "Component loaded!!");
+			callId++;
+		}
 	}
 
 }

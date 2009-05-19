@@ -24,6 +24,8 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 
 	private IComponentManager componentManager;
 
+	private static final int CALL_ID = 5000;
+	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,7 +46,7 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 				List<String> componentNames = new ArrayList<String>();
 				componentNames.add("mobilis.examples.navigator");
 				componentNames.add("mobilis.context.location");
-				componentManager.loadComponents(componentNames, 0);
+				componentManager.loadComponents(componentNames, CALL_ID);
 				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -57,7 +59,6 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 			// TODO Auto-generated method stub
 			
 		}
-		
 	};
 	
 	public NavigatorApp getComponentManagerListener() {
@@ -66,20 +67,22 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
-		navigatorLoader = componentManager.getComponent("mobilis.examples.navigator");
-		locationProviderLoader = componentManager.getComponent("mobilis.context.location");
-		
-		try {
-			IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
-			ServiceInfo semanticLocationProviderInfo = locationProviderLoader.getServiceInfo("semanticLocation");
-			ReceptacleInfo semanticLocationReceptacleInfo = navigatorLoader.getReceptacleInfo("semanticLocation");
+		if (callId == CALL_ID) {
+			navigatorLoader = componentManager.getComponent("mobilis.examples.navigator");
+			locationProviderLoader = componentManager.getComponent("mobilis.context.location");
 			
-			navigatorLoader.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
-			
-			navigatorLoader.start();
-			locationProviderLoader.start();
-		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
+				ServiceInfo semanticLocationProviderInfo = locationProviderLoader.getServiceInfo("semanticLocation");
+				ReceptacleInfo semanticLocationReceptacleInfo = navigatorLoader.getReceptacleInfo("semanticLocation");
+				
+				navigatorLoader.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
+				
+				navigatorLoader.start();
+				locationProviderLoader.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

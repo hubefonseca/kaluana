@@ -5,6 +5,6 @@ import mobilis.api.control.IComponentManager;
 
 interface IRemoteLoader {
 
-	int loadComponent(in String componentName, in IComponentManager listener);
+	int loadComponent(in String componentName);
 
 }
