@@ -1,6 +1,7 @@
 package mobilis.impl.adaptation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -27,7 +28,8 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
 	
-	private int callId = 10000;
+	private long callId = 10000;
+	private HashMap<Long, String> requests;
 	
 	public AdaptationManager(ContextWrapper contextWrapper, IComponentManager.Stub componentManager) {
 		this.componentManager = componentManager;
@@ -36,6 +38,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
 		this.contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		
+		requests = new HashMap<Long, String>();
 		try {
 			this.componentManager.addListener(this);
 		} catch (Exception e) {
@@ -204,22 +207,21 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 		}
 		
 		
-		// unload component
+		// unload current component
 		unloadComponent(oldComponentName);
 		
 		// load new component
 		loadComponent(newComponentName);
 		
 		// set new component state
-		setComponentState(newComponentName, componentState);
-		
+		setComponentState(newComponentName, componentState);		
 	}
 	
 	private ComponentState getComponentState(String componentName) {
 		ComponentState componentState = new ComponentState();
 		try {
 			ILocalLoader loader = componentManager.getByName(componentName);
-			
+
 			// Find out to which services the receptacles are bound
 			List<String> receptacleNames = new ArrayList<String>();
 			loader.getReceptacleNames(receptacleNames);
@@ -272,7 +274,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 	 * @param componentState
 	 */
 	private void setComponentState(String componentName, ComponentState componentState) {
-		// After starting the component, it's necessary to re-build its state, if there is a state
+		// After starting the component, it's necessary to re-build its state, if there is one
 		
 	}
 	
@@ -283,8 +285,8 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			// Notify the component
 			loader.stop();
 
-			// Unload the component
-			
+			// Disconnect all the components services and the component loader service
+			componentManager.unloadComponent(componentName);
 			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -295,9 +297,14 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 	private void loadComponent(String componentName) {
 		try {
 			Log.i(this.getClass().getName(), "loading: " + componentName);
+			requests.put(callId, componentName);
+			
 			List<String> componentNames = new ArrayList<String>();
 			componentNames.add(componentName);
+			
 			componentManager.loadComponents(componentNames, callId);
+			Log.d(this.getClass().getName(), "load component: " + callId + ", " + componentName);
+			callId++;
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -316,10 +323,12 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 
 	@Override
 	public void componentsLoaded(long callId) throws RemoteException {
-		Log.d(this.getClass().getName(), "componentsLoaded called: " + callId);
-		if (callId == this.callId) {
-			Log.d(this.getClass().getName(), "Component loaded!!");
-			callId++;
+		if (requests.containsKey(callId)) {
+			String componentName = requests.get(callId);
+			Log.d(this.getClass().getName(), "componentLoaded: " + callId + ", " + componentName);
+			ILocalLoader loader = componentManager.getByName(componentName);
+			loader.start();
+			requests.remove(callId);
 		}
 	}
 

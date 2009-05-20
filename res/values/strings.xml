@@ -2,5 +2,4 @@
 <resources>
     <string name="hello">Mobilis startup</string>
     <string name="app_name">Mobilis</string>
-    <string name="puc">Welcome to PUC-Rio!</string>
 </resources>

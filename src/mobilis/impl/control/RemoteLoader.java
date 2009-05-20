@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import mobilis.api.control.IComponentManager;
@@ -32,9 +33,13 @@ public class RemoteLoader implements IRemoteLoader {
 	private IComponentManager listener;
 	private ContextWrapper contextWrapper;
 
+	private HashMap<String, List<ServiceConnection>> serviceLoaders;
+	
 	public RemoteLoader(ContextWrapper contextWrapper, IComponentManager listener) {
 		this.contextWrapper = contextWrapper;
 		this.listener = listener;
+		
+		serviceLoaders = new HashMap<String, List<ServiceConnection>>();
 	}
 	
 	@Override
@@ -42,18 +47,15 @@ public class RemoteLoader implements IRemoteLoader {
 		Log.d(this.getClass().getName(), "searching for component " + componentName + "...");
 
 		RemoteServiceConnection mRemoteServiceConnection = new RemoteServiceConnection();
-		
-		Intent intent = new Intent(componentName);
-		if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() > 0) {
-			contextWrapper.bindService(intent, mRemoteServiceConnection, Context.BIND_AUTO_CREATE);
-		} else {
-			// If no service found, there isn`t any component like
-			// that on the device. Then, try to download it from web
 
-			Log.d(this.getClass().getName(), "component not found locally. trying to download...");
-			try {
-				synchronized (this) {
+		synchronized (this) {
+			// Search for the component loader service
+			Intent intent = new Intent(componentName);
 
+			if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() == 0) {
+				// If no loader is found, try to download component
+				try {
+					Log.d(this.getClass().getName(), "component not found locally. trying to download...");
 					URL url = new URL("http://10.0.2.2:8080/android/install");
 					HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 					conn.setDoOutput(true);
@@ -73,34 +75,48 @@ public class RemoteLoader implements IRemoteLoader {
 						c = in.read();
 					}
 					in.close();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
-				if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() > 0) {
-					contextWrapper.bindService(intent, mRemoteServiceConnection, Context.BIND_AUTO_CREATE);
-				} else {
-					// No component found
-					Log.d(this.getClass().getName(), "component not found");
-					return 1;
-				}
+			}
 
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() > 0) {
+				contextWrapper.bindService(intent, mRemoteServiceConnection, Context.BIND_AUTO_CREATE);
+			} else {
+				// No component found
+				Log.d(this.getClass().getName(), "component not found");
+				return 1;
 			}
 		}
-
 		return 0;
 	}
 
+	@Override
+	public int unloadComponent(String componentName) throws RemoteException {
+		List<ServiceConnection> services = serviceLoaders.get(componentName);
+		for (ServiceConnection serviceConnection : services) {
+			Log.i(this.getClass().getName(), "unloading service: " + serviceConnection);
+			contextWrapper.unbindService(serviceConnection);
+		}
+		return 0;
+	}
+	
 	@Override
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * This class corresponds to the connection to a LocalLoader service, and through this
+	 * connection the component is achieved by other processes 
+	 * @author Hubert
+	 *
+	 */
 	class RemoteServiceConnection implements ServiceConnection {
 
 		ILocalLoader localLoader;
@@ -108,10 +124,13 @@ public class RemoteLoader implements IRemoteLoader {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			try {
+			try {				
 				localLoader = ILocalLoader.Stub.asInterface(service);
 
 				Log.i(this.getClass().getName(), "remote loader: " + localLoader.getName());
+
+				// Stores the connection to this loader, so its possible to unbind it
+				addService(localLoader.getName(), this);
 				
 				localLoader.registerReceptacles();
 				localLoader.registerServices();
@@ -144,10 +163,15 @@ public class RemoteLoader implements IRemoteLoader {
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-
+			Log.i(this.getClass().getName(), "Component stopped!");
 		}
 
+		/**
+		 * This class corresponds to a Mobilis service connection, to each service
+		 * provided by a Mobilis component
+		 * @author Hubert
+		 *
+		 */
 		class LocalServiceConnection implements ServiceConnection {
 
 			private String serviceName = null;
@@ -156,6 +180,9 @@ public class RemoteLoader implements IRemoteLoader {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				try {
 					localLoader.bindService(serviceName, service);
+					
+					// Stores the connection to the Mobilis service as well, so its possible to unbind it
+					addService(localLoader.getName(), this);
 					
 					Log.i(this.getClass().getName(), "local loader: " + localLoader.getName());
 					
@@ -171,14 +198,22 @@ public class RemoteLoader implements IRemoteLoader {
 
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
-				// TODO Auto-generated method stub
-
+				Log.i(this.getClass().getName(), "Service stopped: " + serviceName);
 			}
 
 			public void setServiceName(String name) {
 				this.serviceName = name;
 			}
 		};
-	};
+	}
 
+	private void addService(String componentName, ServiceConnection serviceConnection) {
+		List<ServiceConnection> services = serviceLoaders.get(componentName);
+		if (services == null) {
+			services = new ArrayList<ServiceConnection>();
+		}
+		services.add(serviceConnection);
+		serviceLoaders.put(componentName, services);
+	}
+	
 }

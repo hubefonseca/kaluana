@@ -3,7 +3,6 @@ package mobilis.impl.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import mobilis.api.control.IComponentManager;
 import mobilis.api.control.IComponentManagerListener;
@@ -59,7 +58,7 @@ public class ComponentManager extends Service {
 		 * This method receives a list with the category of each component that shall be loaded
 		 */
 		public void loadComponents(List<String> categories, long callId)
-				throws RemoteException {			
+				throws RemoteException {
 			requests.put(callId, categories);
 			for (String category : categories) {
 				Log.i(this.getClass().getName(), "loading: " + category);
@@ -70,17 +69,22 @@ public class ComponentManager extends Service {
 		@Override
 		public void loaded(ILocalLoader loader) throws RemoteException {
 			
-			Log.i(this.getClass().getName(), "adding: " + loader.getName());
-			// Manage component dependencies before deliver it to caller
 			loadedComponents.add(loader.getCategory(), loader);
 			
-			for (String cat : loadedComponents.keySet()) {
-				Log.d(this.getClass().getName(), "category: " + cat);
-				List<ILocalLoader> l = loadedComponents.get(cat);
-				for (ILocalLoader lo : l) {
-					Log.d(this.getClass().getName(), "loader: " + lo.getName());
-				}
-			}
+//			// Início debug
+//			Log.i(this.getClass().getName(), "adding: " + loader.getName());
+//			for (String cat : loadedComponents.keySet()) {
+//				Log.d(this.getClass().getName(), "category: " + cat);
+//				List<ILocalLoader> l = loadedComponents.get(cat);
+//				for (ILocalLoader lo : l) {
+//					Log.d(this.getClass().getName(), "loader: " + lo.getName());
+//				}
+//			}
+//			// Fim debug
+			
+			
+			// Manage component dependencies before deliver it to caller
+			
 			
 			// Verify if any request is finished
 			for (Long request : requests.keySet()) {
@@ -98,8 +102,8 @@ public class ComponentManager extends Service {
 
 		@Override
 		public void unloaded(String componentName) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			Log.i(this.getClass().getName(), "Component unloaded: " + componentName);
+			loadedComponents.remove(componentName);
 		}
 
 		@Override
@@ -120,7 +124,7 @@ public class ComponentManager extends Service {
 		@Override
 		public void unloadComponent(String componentName)
 				throws RemoteException {
-			Log.d(this.getClass().getName(), componentName + " unload requested");			
+			remoteLoader.unloadComponent(componentName);
 		}
 
 		@Override
