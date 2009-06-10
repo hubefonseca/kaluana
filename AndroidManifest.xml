@@ -8,6 +8,7 @@
 	<application android:icon="@drawable/mobilis"
 		android:label="@string/app_name">
 		<uses-library android:name="com.google.android.maps" />
+		<uses-library android:name="android.test.runner" />
 		<activity android:label="@string/app_name" android:name=".NavigatorApp">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -58,4 +59,6 @@
 			</intent-filter>
 		</service>
 	</application>
+	<instrumentation android:name="android.test.InstrumentationTestRunner"
+		android:targetPackage="mobilis.app" android:label="Mobilis Control Tests" />
 </manifest>

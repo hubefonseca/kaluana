@@ -10,6 +10,7 @@ import mobilis.api.control.ILocalLoader;
 import mobilis.api.control.IRemoteLoader;
 import mobilis.impl.adaptation.AdaptationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -18,10 +19,10 @@ import android.util.Log;
 public class ComponentManager extends Service {
 
 	private LoaderCollection loadedComponents;
-	
 	private IRemoteLoader remoteLoader;
-	
 	private List<IComponentManagerListener> listeners;
+	private Context applicationContext = null;
+	private AdaptationManager adaptationManager;
 	
 	/**
 	 * This structure stores, for each request to load components, the components
@@ -34,7 +35,7 @@ public class ComponentManager extends Service {
 		@Override
 		public void init(IComponentManagerListener listener) 
 				throws RemoteException {
-			remoteLoader = new RemoteLoader(getContextWrapper(), this);
+			remoteLoader = new RemoteLoader(getContext(), this);
 			loadedComponents = new LoaderCollection();
 			requests = new HashMap<Long, List<String>>();
 
@@ -43,7 +44,7 @@ public class ComponentManager extends Service {
 			listeners.add(listener);
 			
 			// Start Adaptation Manager
-			AdaptationManager adaptationManager = new AdaptationManager(getContextWrapper(), this);
+			adaptationManager = new AdaptationManager(getContext(), this);
 		}
 		
 		@Override
@@ -53,10 +54,11 @@ public class ComponentManager extends Service {
 			return loader;
 		}
 
-		@Override
+		
 		/**
 		 * This method receives a list with the category of each component that shall be loaded
 		 */
+		@Override
 		public void loadComponents(List<String> categories, long callId)
 				throws RemoteException {
 			requests.put(callId, categories);
@@ -68,23 +70,9 @@ public class ComponentManager extends Service {
 
 		@Override
 		public void loaded(ILocalLoader loader) throws RemoteException {
-			
 			loadedComponents.add(loader.getCategory(), loader);
 			
-//			// Início debug
-//			Log.i(this.getClass().getName(), "adding: " + loader.getName());
-//			for (String cat : loadedComponents.keySet()) {
-//				Log.d(this.getClass().getName(), "category: " + cat);
-//				List<ILocalLoader> l = loadedComponents.get(cat);
-//				for (ILocalLoader lo : l) {
-//					Log.d(this.getClass().getName(), "loader: " + lo.getName());
-//				}
-//			}
-//			// Fim debug
-			
-			
 			// Manage component dependencies before deliver it to caller
-			
 			
 			// Verify if any request is finished
 			for (Long request : requests.keySet()) {
@@ -140,8 +128,16 @@ public class ComponentManager extends Service {
 		return mComponentManager;
 	}
 	
-	private ComponentManager getContextWrapper() {
-		return this;
+	public Context getContext() {
+		return (applicationContext != null) ? applicationContext : getApplicationContext();
 	}
-
+	
+	public void setContext(Context context) {
+		this.applicationContext = context;
+	}
+	
+	public AdaptationManager getAdaptationManager() {
+		return adaptationManager;
+	}
+	
 }

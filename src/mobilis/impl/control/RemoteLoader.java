@@ -16,7 +16,6 @@ import mobilis.api.control.ILocalLoader;
 import mobilis.api.control.IRemoteLoader;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -31,12 +30,12 @@ import android.util.Log;
 public class RemoteLoader implements IRemoteLoader {
 
 	private IComponentManager listener;
-	private ContextWrapper contextWrapper;
+	private Context applicationContext;
 
 	private HashMap<String, List<ServiceConnection>> serviceLoaders;
 	
-	public RemoteLoader(ContextWrapper contextWrapper, IComponentManager listener) {
-		this.contextWrapper = contextWrapper;
+	public RemoteLoader(Context applicationContext, IComponentManager listener) {
+		this.applicationContext = applicationContext;
 		this.listener = listener;
 		
 		serviceLoaders = new HashMap<String, List<ServiceConnection>>();
@@ -52,7 +51,7 @@ public class RemoteLoader implements IRemoteLoader {
 			// Search for the component loader service
 			Intent intent = new Intent(componentName);
 
-			if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() == 0) {
+			if (applicationContext.getPackageManager().queryIntentServices(intent, 0).size() == 0) {
 				// If no loader is found, try to download component
 				try {
 					Log.d(this.getClass().getName(), "component not found locally. trying to download...");
@@ -82,10 +81,12 @@ public class RemoteLoader implements IRemoteLoader {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else {
+				Log.d(this.getClass().getName(), "component found locally");
 			}
 
-			if (contextWrapper.getPackageManager().queryIntentServices(intent, 0).size() > 0) {
-				contextWrapper.bindService(intent, mRemoteServiceConnection, Context.BIND_AUTO_CREATE);
+			if (applicationContext.getPackageManager().queryIntentServices(intent, 0).size() > 0) {
+				applicationContext.bindService(intent, mRemoteServiceConnection, Context.BIND_AUTO_CREATE);
 			} else {
 				// No component found
 				Log.d(this.getClass().getName(), "component not found");
@@ -100,7 +101,7 @@ public class RemoteLoader implements IRemoteLoader {
 		List<ServiceConnection> services = serviceLoaders.get(componentName);
 		for (ServiceConnection serviceConnection : services) {
 			Log.i(this.getClass().getName(), "unloading service: " + serviceConnection);
-			contextWrapper.unbindService(serviceConnection);
+			applicationContext.unbindService(serviceConnection);
 		}
 		return 0;
 	}
@@ -153,7 +154,7 @@ public class RemoteLoader implements IRemoteLoader {
 					
 					Intent intent = new Intent(serviceInterface);
 					mLocalServiceConnection.setServiceName(serviceName);
-					contextWrapper.bindService(intent, mLocalServiceConnection, Context.BIND_AUTO_CREATE);
+					applicationContext.bindService(intent, mLocalServiceConnection, Context.BIND_AUTO_CREATE);
 				}
 
 			} catch (RemoteException e) {

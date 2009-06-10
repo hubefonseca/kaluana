@@ -14,7 +14,6 @@ import mobilis.api.control.ILocalLoader;
 import mobilis.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ResolveInfo;
@@ -24,19 +23,22 @@ import android.util.Log;
 
 public class AdaptationManager implements IAdaptationManager, IComponentManagerListener {
 
-	private ContextWrapper contextWrapper;
+	private Context androidContext;
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
 	
 	private long callId = 10000;
 	private HashMap<Long, String> requests;
 	
-	public AdaptationManager(ContextWrapper contextWrapper, IComponentManager.Stub componentManager) {
+	/**
+	 * Creates an adaptation manager
+	 */
+	public AdaptationManager(Context androidContextWrapper, IComponentManager.Stub componentManager) {
 		this.componentManager = componentManager;
-		this.contextWrapper = contextWrapper;
+		this.androidContext = androidContextWrapper;
 		
 		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
-		this.contextWrapper.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		this.androidContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		
 		requests = new HashMap<Long, String>();
 		try {
@@ -64,8 +66,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-			
+			Log.d(this.getClass().getName(), "Adaptation manager disconnected");
 		}
 		
 	};
@@ -94,12 +95,12 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 		
 		// Search for more specific components
 		Intent intent = new Intent(domain);
-		for (ResolveInfo availableCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+		for (ResolveInfo availableCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
 			if (!componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
 				// The available component is not loaded. Verify if it can replace another one
 				String category = availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.lastIndexOf("."));
 				intent = new Intent(category);
-				for (ResolveInfo categoryCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+				for (ResolveInfo categoryCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
 					if (componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
 						// There are components registered to the same category - candidates to be replaced
 						candidatesToGetMoreSpecific.add(categoryCompInfo.serviceInfo.name);
@@ -110,7 +111,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 				domain = context.getLocation();
 				while (domain != null) {
 					intent = new Intent(domain);
-					for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+					for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
 						if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
 							if (candidatesToGetMoreSpecific.contains(domainCompInfo.serviceInfo.name)) {
 								candidate = domainCompInfo.serviceInfo.name;
@@ -134,7 +135,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			}
 		}
 		
-		// Search for less specific components to replace the specific ones		
+		// Search for less specific components to replace the specific ones
 		
 		// Verify if the loaded components that don't belong to this domain belong to a more generic one
 		// If not, browse for other component on the same category
@@ -144,7 +145,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 		domain = context.getLocation();
 		while (domain != null) {
 			intent = new Intent(domain);
-			for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+			for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
 				if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
 					candidatesToGetLessSpecific.remove(domainCompInfo.serviceInfo.name);
 				}
@@ -154,7 +155,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			} else {
 				domain = null;
 			}
-			// não tá tirando o locationProviderComponent da lista de candidatos quando entra na puc.... :(
+			// n‹o t‡ tirando o locationProviderComponent da lista de candidatos quando entra na puc.... :(
 		}
 		
 		for (String name : candidatesToGetLessSpecific) {
@@ -164,9 +165,9 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			candidate = null;
 			while (domain != null) {
 				intent = new Intent(domain);
-				for (ResolveInfo domainCompInfo : contextWrapper.getPackageManager().queryIntentServices(intent, 0)) {
+				for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
 					Intent categoryIntent = new Intent(category);
-					for (ResolveInfo catCompInfo : contextWrapper.getPackageManager().queryIntentServices(categoryIntent, 0)) {
+					for (ResolveInfo catCompInfo : androidContext.getPackageManager().queryIntentServices(categoryIntent, 0)) {
 						if (!componentManager.isLoaded(catCompInfo.serviceInfo.name)) {	
 							if (domainCompInfo.serviceInfo.name.equals(catCompInfo.serviceInfo.name)) {
 								// The candidate has same category and less specific domain
