@@ -73,7 +73,7 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 	
 	/**
 	 * There are two cases for adaptation:
-	 * 1 - User enters a more specific domain
+	 * 1 - User enters a more specific domain and a less specific or a invalid component is replaced
 	 * 2 - User leaves a specific domain and browses for a more general component
 	 */
 	@Override
