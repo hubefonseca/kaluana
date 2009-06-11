@@ -3,6 +3,7 @@ package mobilis.api.control;
 import mobilis.api.IComponent;
 import mobilis.api.ServiceInfo;
 import mobilis.api.ReceptacleInfo;
+import mobilis.api.ComponentInfo;
 
 interface ILocalLoader {
 
@@ -18,6 +19,10 @@ interface ILocalLoader {
 	void start();
 	
 	void stop();
+	
+	ComponentInfo getInternalState();
+	
+	void setInternalState(in ComponentInfo componentInfo);
 	
 	/*
 	 * Must be implemented by component developer

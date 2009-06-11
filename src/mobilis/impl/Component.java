@@ -3,6 +3,7 @@ package mobilis.impl;
 import java.util.HashMap;
 import java.util.List;
 
+import mobilis.api.ComponentInfo;
 import mobilis.api.ReceptacleInfo;
 import mobilis.api.ServiceInfo;
 import android.content.ContextWrapper;
@@ -162,6 +163,10 @@ public abstract class Component implements mobilis.api.IComponent,
 
 	@Override
 	public void stop() throws RemoteException {};
+	
+	public ComponentInfo getInternalState() { return null; };
+	
+	public void setInternalState(ComponentInfo state) {};
 	
 }
 

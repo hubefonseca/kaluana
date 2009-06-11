@@ -100,7 +100,7 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public List<String> getAllNames() throws RemoteException {
+		public List<String> getLoadedComponentNames() throws RemoteException {
 			return loadedComponents.getAllNames();
 		}
 

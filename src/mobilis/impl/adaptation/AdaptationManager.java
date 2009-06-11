@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import mobilis.api.ComponentInfo;
 import mobilis.api.ReceptacleInfo;
 import mobilis.api.ServiceInfo;
 import mobilis.api.adaptation.IAdaptationManager;
@@ -21,25 +22,30 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class AdaptationManager implements IAdaptationManager, IComponentManagerListener {
+public class AdaptationManager implements IAdaptationManager,
+		IComponentManagerListener {
 
-	private Context androidContext;
+	private Context applicationContext;
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
-	
+
 	private long callId = 10000;
 	private HashMap<Long, String> requests;
-	
+	private HashMap<String, ComponentInfo> componentsInfo = new HashMap<String, ComponentInfo>();
+
 	/**
 	 * Creates an adaptation manager
 	 */
-	public AdaptationManager(Context androidContextWrapper, IComponentManager.Stub componentManager) {
+	public AdaptationManager(Context androidContextWrapper,
+			IComponentManager.Stub componentManager) {
 		this.componentManager = componentManager;
-		this.androidContext = androidContextWrapper;
-		
-		Intent intent = new Intent(mobilis.context.IProviderService.class.getName());
-		this.androidContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		
+		this.applicationContext = androidContextWrapper;
+
+		Intent intent = new Intent(mobilis.context.IProviderService.class
+				.getName());
+		this.applicationContext.bindService(intent, mServiceConnection,
+				Context.BIND_AUTO_CREATE);
+
 		requests = new HashMap<Long, String>();
 		try {
 			this.componentManager.addListener(this);
@@ -47,20 +53,21 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			e.printStackTrace();
 		}
 	}
-	
+
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			contextProvider = IProviderService.Stub.asInterface(service);
-			
-			Log.d(this.getClass().getName(), "Location provider service connected!");
-			
+
+			Log.d(this.getClass().getName(),
+					"Location provider service connected!");
+
 			try {
 				contextProvider.registerAdaptationManager(getContextWrapper());
 				contextProvider.start();
-			} catch(RemoteException e) {
-				
+			} catch (RemoteException e) {
+
 			}
 		}
 
@@ -68,54 +75,74 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 		public void onServiceDisconnected(ComponentName name) {
 			Log.d(this.getClass().getName(), "Adaptation manager disconnected");
 		}
-		
+
 	};
-	
+
 	/**
-	 * There are two cases for adaptation:
-	 * 1 - User enters a more specific domain and a less specific or a invalid component is replaced
-	 * 2 - User leaves a specific domain and browses for a more general component
+	 * There are two cases that start an adaptation: 1 - The component is
+	 * inadequate 2 - The component is invalid
 	 */
 	@Override
-	public void onContextChange(mobilis.context.Context context) throws RemoteException {
+	public void onContextChange(mobilis.context.Context context)
+			throws RemoteException {
 		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
-		
+
 		String domain = context.getLocation();
-		
-		List<String> candidatesToGetMoreSpecific = new ArrayList<String>();
-		List<String> candidatesToGetLessSpecific = new ArrayList<String>();
-		String candidate = null;
-		
-		// If a loaded component can not operate on this context, 
-		// search for less specific components
-		List<String> componentNames = componentManager.getAllNames();
-		for (String name : componentNames) {
-			candidatesToGetLessSpecific.add(name);
-		}
-		
-		// Search for more specific components
-		Intent intent = new Intent(domain);
-		for (ResolveInfo availableCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
-			if (!componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
-				// The available component is not loaded. Verify if it can replace another one
-				String category = availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.lastIndexOf("."));
-				intent = new Intent(category);
-				for (ResolveInfo categoryCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
-					if (componentManager.isLoaded(availableCompInfo.serviceInfo.name)) {
-						// There are components registered to the same category - candidates to be replaced
-						candidatesToGetMoreSpecific.add(categoryCompInfo.serviceInfo.name);
+
+		// All loaded components
+		for (String componentName : componentManager.getLoadedComponentNames()) {
+			ILocalLoader componentLoader = componentManager
+					.getByName(componentName);
+			String category = componentLoader.getCategory();
+
+			boolean valid = false;
+			List<String> candidatesForDomain = new ArrayList<String>();
+
+			Intent intentDomain = new Intent(domain);
+			for (ResolveInfo availableCompInfo : applicationContext
+					.getPackageManager().queryIntentServices(intentDomain, 0)) {
+				if (availableCompInfo.serviceInfo.name.contains(componentName)) {
+					// Component is working (registered to current domain)
+					valid = true;
+				} else {
+					if (!componentManager
+							.isLoaded(availableCompInfo.serviceInfo.name)) {
+						// Here are stored all categories' components to current
+						// domain
+						candidatesForDomain
+								.add(availableCompInfo.serviceInfo.name);
 					}
 				}
-				
-				// Browse for loaded components with less specific domain
-				domain = context.getLocation();
+			}
+
+			if (!valid) {
+				List<String> candidatesForCategory = new ArrayList<String>();
+
+				// Browse for same category components that are not loaded
+				Intent intentCategory = new Intent(category);
+				for (ResolveInfo availableCompInfo : applicationContext
+						.getPackageManager().queryIntentServices(
+								intentCategory, 0)) {
+					if (!componentManager
+							.isLoaded(availableCompInfo.serviceInfo.name)) {
+						// Here are stored all domains' components to current
+						// category
+						candidatesForCategory
+								.add(availableCompInfo.serviceInfo.name);
+					}
+				}
+
+				String candidate = null;
 				while (domain != null) {
-					intent = new Intent(domain);
-					for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
-						if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
-							if (candidatesToGetMoreSpecific.contains(domainCompInfo.serviceInfo.name)) {
-								candidate = domainCompInfo.serviceInfo.name;
-							}
+					intentDomain = new Intent(domain);
+					for (ResolveInfo availableCompInfo : applicationContext
+							.getPackageManager().queryIntentServices(
+									intentDomain, 0)) {
+						if (candidate == null
+								&& candidatesForCategory
+										.contains(availableCompInfo.serviceInfo.name)) {
+							candidate = availableCompInfo.serviceInfo.name;
+							candidate = candidate.substring(0, candidate.lastIndexOf("Loader"));
 						}
 					}
 					if (domain.indexOf(".") >= 0) {
@@ -124,100 +151,53 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 						domain = null;
 					}
 				}
-			} else {
-				Log.d(this.getClass().getName(), availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.indexOf("Loader")) + " is loaded and operating well");
-				candidatesToGetLessSpecific.remove(availableCompInfo.serviceInfo.name.substring(0, availableCompInfo.serviceInfo.name.indexOf("Loader")));
-			}
-			
-			if (candidate != null) {
-				Log.d(this.getClass().getName(), candidate + " must be replaced by " + availableCompInfo.serviceInfo.name + "(more specific)");
-				replaceComponents(candidate, availableCompInfo.serviceInfo.name);
-			}
-		}
-		
-		// Search for less specific components to replace the specific ones
-		
-		// Verify if the loaded components that don't belong to this domain belong to a more generic one
-		// If not, browse for other component on the same category
-		// Discover the candidate to replace the component
-			// For every component, find its category
-			// Browse for components on less specific domains on the same category
-		domain = context.getLocation();
-		while (domain != null) {
-			intent = new Intent(domain);
-			for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
-				if (componentManager.isLoaded(domainCompInfo.serviceInfo.name)) {
-					candidatesToGetLessSpecific.remove(domainCompInfo.serviceInfo.name);
-				}
-			}
-			if (domain.indexOf(".") >= 0) {
-				domain = domain.substring(0, domain.lastIndexOf("."));
-			} else {
-				domain = null;
-			}
-			// n‹o t‡ tirando o locationProviderComponent da lista de candidatos quando entra na puc.... :(
-		}
-		
-		for (String name : candidatesToGetLessSpecific) {
-			String category = componentManager.getByName(name).getCategory();
-			
-			domain = context.getLocation();
-			candidate = null;
-			while (domain != null) {
-				intent = new Intent(domain);
-				for (ResolveInfo domainCompInfo : androidContext.getPackageManager().queryIntentServices(intent, 0)) {
-					Intent categoryIntent = new Intent(category);
-					for (ResolveInfo catCompInfo : androidContext.getPackageManager().queryIntentServices(categoryIntent, 0)) {
-						if (!componentManager.isLoaded(catCompInfo.serviceInfo.name)) {	
-							if (domainCompInfo.serviceInfo.name.equals(catCompInfo.serviceInfo.name)) {
-								// The candidate has same category and less specific domain
-								candidate = catCompInfo.serviceInfo.name.substring(0, catCompInfo.serviceInfo.name.lastIndexOf("Loader"));
-							}
-						}
-					}
-				}
-				if (domain.indexOf(".") >= 0) {
-					domain = domain.substring(0, domain.lastIndexOf("."));
+
+				if (candidate != null) {
+					Log.d(this.getClass().getName(), componentName
+							+ " must be replaced by " + candidate);
+					replaceComponents(componentName, candidate);
 				} else {
-					domain = null;
+					Log
+							.d(this.getClass().getName(),
+									"There is no candidate to replace "
+											+ componentName);
 				}
 			}
-			if (candidate != null) {
-				Log.d(this.getClass().getName(), name + " must be replaced by " + candidate + "(less specific)");
-				replaceComponents(name, candidate);
-			} else {
-				Log.d(this.getClass().getName(), "There is no candidate to replace " + name);
-			}
+
 		}
 	}
-	
 
-	private void replaceComponents(String oldComponentName, String newComponentName) {
-		
+	private void replaceComponents(String oldComponentName,
+			String newComponentName) {
+
 		ComponentState componentState = getComponentState(oldComponentName);
-		
+
 		for (ReceptacleInfo rec : componentState.getReceptacles()) {
-			Log.d(this.getClass().getName(), "receptacle: " + rec.getName() + ", provider: " + rec.getComponentName());
+			Log.d(this.getClass().getName(), "receptacle: " + rec.getName()
+					+ ", provider: " + rec.getComponentName());
 		}
-		for (Entry<ServiceInfo, List<ReceptacleInfo>> entry : componentState.getServices().entrySet()) {
-			
-			Log.d(this.getClass().getName(), "service: " + entry.getKey().getName());
+		for (Entry<ServiceInfo, List<ReceptacleInfo>> entry : componentState
+				.getServices().entrySet()) {
+
+			Log.d(this.getClass().getName(), "service: "
+					+ entry.getKey().getName());
 			for (ReceptacleInfo rec : componentState.getReceptacles()) {
-				Log.d(this.getClass().getName(), "connected to: " + rec.getName() + ", consumer: " + rec.getComponentName());
+				Log.d(this.getClass().getName(), "connected to: "
+						+ rec.getName() + ", consumer: "
+						+ rec.getComponentName());
 			}
 		}
-		
-		
+
 		// unload current component
-		unloadComponent(oldComponentName);
-		
+		unloadComponent(oldComponentName, newComponentName);
+
 		// load new component
 		loadComponent(newComponentName);
-		
+
 		// set new component state
-		setComponentState(newComponentName, componentState);		
+		setComponentState(newComponentName, componentState);
 	}
-	
+
 	private ComponentState getComponentState(String componentName) {
 		ComponentState componentState = new ComponentState();
 		try {
@@ -227,91 +207,114 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 			List<String> receptacleNames = new ArrayList<String>();
 			loader.getReceptacleNames(receptacleNames);
 			for (String receptacleName : receptacleNames) {
-				ReceptacleInfo receptacleInfo = loader.getReceptacleInfo(receptacleName);
-				ServiceInfo connectedServiceInfo = receptacleInfo.getServiceInfo();
-				
-				Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is bound: " + receptacleInfo.isBound());
-				
+				ReceptacleInfo receptacleInfo = loader
+						.getReceptacleInfo(receptacleName);
+				ServiceInfo connectedServiceInfo = receptacleInfo
+						.getServiceInfo();
+
+				Log.d(this.getClass().getName(), "receptacle " + receptacleName
+						+ " is bound: " + receptacleInfo.isBound());
+
 				if (connectedServiceInfo != null) {
-					Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component " + connectedServiceInfo.getComponentName());
+					Log.d(this.getClass().getName(), "receptacle "
+							+ receptacleName + " is connected to component "
+							+ connectedServiceInfo.getComponentName());
 					if (connectedServiceInfo.equals(componentName)) {
 						// Service is provided by this component
 						componentState.addReceptacle(receptacleInfo);
 					}
 				}
 			}
-			
+
 			// Find out to each receptacles the services are bound
-			List<String> componentNames = componentManager.getAllNames();
+			List<String> componentNames = componentManager.getLoadedComponentNames();
 			for (String name : componentNames) {
 				loader = componentManager.getByName(name);
-				
+
 				receptacleNames = new ArrayList<String>();
 				loader.getReceptacleNames(receptacleNames);
 				for (String receptacleName : receptacleNames) {
-					ReceptacleInfo receptacleInfo = loader.getReceptacleInfo(receptacleName);
-					ServiceInfo connectedServiceInfo = receptacleInfo.getServiceInfo();
+					ReceptacleInfo receptacleInfo = loader
+							.getReceptacleInfo(receptacleName);
+					ServiceInfo connectedServiceInfo = receptacleInfo
+							.getServiceInfo();
 					if (connectedServiceInfo != null) {
-						if (connectedServiceInfo.getComponentName().equals(componentName)) {
-							Log.d(this.getClass().getName(), "receptacle " + receptacleName + " is connected to component " + connectedServiceInfo.getComponentName());
-							
-							componentState.addService(connectedServiceInfo, receptacleInfo);
+						if (connectedServiceInfo.getComponentName().equals(
+								componentName)) {
+							Log.d(this.getClass().getName(), "receptacle "
+									+ receptacleName
+									+ " is connected to component "
+									+ connectedServiceInfo.getComponentName());
+
+							componentState.addService(connectedServiceInfo,
+									receptacleInfo);
 						}
 					}
 				}
 			}
-			
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return componentState;
 	}
-	
+
 	/**
-	 * Connects component's services and receptacles, based on a ComponentState object
+	 * Connects component's services and receptacles, based on a ComponentState
+	 * object
+	 * 
 	 * @param componentName
 	 * @param componentState
 	 */
-	private void setComponentState(String componentName, ComponentState componentState) {
-		// After starting the component, it's necessary to re-build its state, if there is one
-		
+	private void setComponentState(String componentName,
+			ComponentState componentState) {
+		// After loading the component, it's necessary to re-build its state,
+		// if there is one
+
 	}
-	
-	private void unloadComponent(String componentName) {
+
+	private void unloadComponent(String componentName, String newComponentName) {
 		try {
 			ILocalLoader loader = componentManager.getByName(componentName);
+
+			ComponentInfo internalState = loader.getInternalState();
+			if (internalState != null) {
+				componentsInfo.put(newComponentName, internalState);
+			}
 			
 			// Notify the component
 			loader.stop();
 
-			// Disconnect all the components services and the component loader service
+			// Disconnect all the components services and the component loader
+			// service
 			componentManager.unloadComponent(componentName);
-			
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void loadComponent(String componentName) {
 		try {
 			Log.i(this.getClass().getName(), "loading: " + componentName);
 			requests.put(callId, componentName);
-			
+
 			List<String> componentNames = new ArrayList<String>();
 			componentNames.add(componentName);
-			
+
 			componentManager.loadComponents(componentNames, callId);
-			Log.d(this.getClass().getName(), "load component: " + callId + ", " + componentName);
+			Log.d(this.getClass().getName(), "load component: " + callId + ", "
+					+ componentName);
 			callId++;
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub
@@ -326,8 +329,13 @@ public class AdaptationManager implements IAdaptationManager, IComponentManagerL
 	public void componentsLoaded(long callId) throws RemoteException {
 		if (requests.containsKey(callId)) {
 			String componentName = requests.get(callId);
-			Log.d(this.getClass().getName(), "componentLoaded: " + callId + ", " + componentName);
+			Log.d(this.getClass().getName(), "componentLoaded: " + callId
+					+ ", " + componentName);
 			ILocalLoader loader = componentManager.getByName(componentName);
+			ComponentInfo internalState = componentsInfo.get(componentName);
+			if (internalState != null) {
+				loader.setInternalState(internalState);
+			}
 			loader.start();
 			requests.remove(callId);
 		}

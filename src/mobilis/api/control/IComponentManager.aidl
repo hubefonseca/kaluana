@@ -16,7 +16,7 @@ interface IComponentManager {
 
 	void init(IComponentManagerListener listener);
 	
-	List<String> getAllNames();
+	List<String> getLoadedComponentNames();
 	
 	ILocalLoader getByName(String name);
 	

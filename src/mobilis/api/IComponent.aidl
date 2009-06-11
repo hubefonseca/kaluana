@@ -2,6 +2,7 @@ package mobilis.api;
 
 import mobilis.api.ReceptacleInfo;
 import mobilis.api.ServiceInfo;
+import mobilis.api.ComponentInfo;
 
 interface IComponent {
 
@@ -15,6 +16,10 @@ interface IComponent {
 	void start();
 	
 	void stop();
+	
+	ComponentInfo getInternalState();
+	
+	void setInternalState(in ComponentInfo componentInfo);
 	
 	/*
 	 * Must be implemented by component developer

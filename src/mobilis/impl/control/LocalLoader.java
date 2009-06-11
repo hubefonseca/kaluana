@@ -2,6 +2,7 @@ package mobilis.impl.control;
 
 import java.util.List;
 
+import mobilis.api.ComponentInfo;
 import mobilis.api.ReceptacleInfo;
 import mobilis.api.ServiceInfo;
 import mobilis.api.control.ILocalLoader;
@@ -69,7 +70,17 @@ public class LocalLoader extends ILocalLoader.Stub {
 	public void stop() throws RemoteException {
 		component.stop();
 	}
+	
+	@Override
+	public ComponentInfo getInternalState() throws RemoteException {
+		return component.getInternalState();
+	}
 
+	@Override
+	public void setInternalState(ComponentInfo componentInfo) throws RemoteException {
+		component.setInternalState(componentInfo);
+	}
+	
 	@Override
 	public void bindService(String serviceName, IBinder binder)
 			throws RemoteException {
