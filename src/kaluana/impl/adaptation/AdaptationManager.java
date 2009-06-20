@@ -141,7 +141,8 @@ public class AdaptationManager implements IAdaptationManager,
 								&& candidatesForCategory
 										.contains(availableCompInfo.serviceInfo.name)) {
 							candidate = availableCompInfo.serviceInfo.name;
-							candidate = candidate.substring(0, candidate.lastIndexOf("Loader"));
+							candidate = candidate.substring(0, candidate
+									.lastIndexOf("Loader"));
 						}
 					}
 					if (domain.indexOf(".") >= 0) {
@@ -169,7 +170,7 @@ public class AdaptationManager implements IAdaptationManager,
 	private void replaceComponents(String oldComponentName,
 			String newComponentName) {
 
-		ComponentState componentState = getComponentState(oldComponentName);
+		ExternalState componentState = getComponentState(oldComponentName);
 
 		for (ReceptacleInfo rec : componentState.getReceptacles()) {
 			Log.d(this.getClass().getName(), "receptacle: " + rec.getName()
@@ -197,8 +198,8 @@ public class AdaptationManager implements IAdaptationManager,
 		setComponentState(newComponentName, componentState);
 	}
 
-	private ComponentState getComponentState(String componentName) {
-		ComponentState componentState = new ComponentState();
+	private ExternalState getComponentState(String componentName) {
+		ExternalState componentState = new ExternalState();
 		try {
 			ILocalLoader loader = componentManager.getByName(componentName);
 
@@ -226,7 +227,8 @@ public class AdaptationManager implements IAdaptationManager,
 			}
 
 			// Find out to each receptacles the services are bound
-			List<String> componentNames = componentManager.getLoadedComponentNames();
+			List<String> componentNames = componentManager
+					.getLoadedComponentNames();
 			for (String name : componentNames) {
 				loader = componentManager.getByName(name);
 
@@ -268,7 +270,7 @@ public class AdaptationManager implements IAdaptationManager,
 	 * @param componentState
 	 */
 	private void setComponentState(String componentName,
-			ComponentState componentState) {
+			ExternalState componentState) {
 		// After loading the component, it's necessary to re-build its state,
 		// if there is one
 
@@ -282,7 +284,7 @@ public class AdaptationManager implements IAdaptationManager,
 			if (internalState != null) {
 				componentsInfo.put(newComponentName, internalState);
 			}
-			
+
 			// Notify the component
 			loader.stop();
 

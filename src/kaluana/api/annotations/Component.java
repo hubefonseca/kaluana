@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Use this annotation to declare a class as a Kaluana component.
  * Set its category by the field category.
+ * Component's name will be the class name (except the package)
  * @author hubertfonseca
  *
  */

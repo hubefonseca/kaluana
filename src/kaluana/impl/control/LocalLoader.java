@@ -1,6 +1,5 @@
 package kaluana.impl.control;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import kaluana.impl.adaptation.InternalState;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 /**
  * This class represents the Stub implementation on each LocalLoader service 
@@ -31,8 +29,18 @@ public class LocalLoader extends ILocalLoader.Stub {
 	}
 	
 	@Override
-	public String getName() throws RemoteException {
-		return component.getName();
+	public String getSimpleName() throws RemoteException {
+		return component.getSimpleName();
+	}
+	
+	@Override
+	public String getFullName() throws RemoteException {
+		return component.getFullName();
+	}
+	
+	@Override
+	public String getCategory() throws RemoteException {
+		return component.getCategory();
 	}
 	
 	@Override
@@ -69,15 +77,6 @@ public class LocalLoader extends ILocalLoader.Stub {
 				component.registerService(field.getName(), field.getType().getName());
 			}
 		}
-	}
-	
-	@Override
-	public String getCategory() throws RemoteException {
-		Annotation annotation = component.getClass().getAnnotation(kaluana.api.annotations.Component.class);
-		if (annotation == null) {
-			Log.e(this.getClass().getName(), "Component should be annotated with @Component annotation");
-		}	
-		return ((kaluana.api.annotations.Component)annotation).category();
 	}
 
 	@Override
@@ -121,8 +120,7 @@ public class LocalLoader extends ILocalLoader.Stub {
 	@Override
 	public ReceptacleInfo getReceptacleInfo(String receptacleName)
 			throws RemoteException {
-		ReceptacleInfo receptacleInfo = component.getReceptacleInfo(receptacleName);
-		return receptacleInfo;
+		return component.getReceptacleInfo(receptacleName);
 	}
 	
 }

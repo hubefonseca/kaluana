@@ -1,5 +1,6 @@
 package kaluana.impl;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,9 +10,9 @@ import kaluana.impl.adaptation.InternalState;
 import android.content.ContextWrapper;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
-public abstract class Component implements kaluana.api.IComponent,
-		kaluana.api.adaptation.IAdaptable {
+public abstract class Component implements kaluana.api.IComponent {
 
 	/**
 	 * This map stores the references between service names and their
@@ -37,23 +38,37 @@ public abstract class Component implements kaluana.api.IComponent,
 		receptacles = new HashMap<ReceptacleInfo, IBinder>();
 	}
 
+	@Override
+	public String getSimpleName() throws RemoteException {
+		return this.getClass().getSimpleName();
+	}
+	
+	@Override
+	public String getFullName() throws RemoteException {
+		return getCategory() + "." + getSimpleName();
+	}
+	
+	@Override
+	public String getCategory() throws RemoteException {
+		Annotation annotation = this.getClass().getAnnotation(kaluana.api.annotations.Component.class);
+		if (annotation == null) {
+			Log.e(this.getClass().getName(), "Component should be annotated with @Component annotation");
+		}	
+		return ((kaluana.api.annotations.Component)annotation).category();
+	}
+	
 	public void registerService(String serviceName, String interfaceName)
 			throws RemoteException {
 		ServiceInfo serviceInfo = new ServiceInfo(serviceName, interfaceName,
-				getName());
+				getFullName());
 		services.put(serviceInfo, null);
 	}
 
 	public void registerReceptacle(String receptacleName, String interfaceName)
 			throws RemoteException {
 		ReceptacleInfo receptacleInfo = new ReceptacleInfo(receptacleName,
-				interfaceName, getName());
+				interfaceName, getFullName());
 		receptacles.put(receptacleInfo, null);
-	}
-	
-	public void registerDependency(String componentName) throws RemoteException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -97,11 +112,6 @@ public abstract class Component implements kaluana.api.IComponent,
 			return receptacleInfo;
 		}
 		return null;
-	}
-
-	@Override
-	public String getName() {
-		return this.getClass().getName();
 	}
 
 	public void setContextWrapper(ContextWrapper contextWrapper) {

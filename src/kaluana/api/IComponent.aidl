@@ -6,6 +6,12 @@ import kaluana.impl.adaptation.InternalState;
 
 interface IComponent {
 
+	String getSimpleName();
+	
+	String getFullName();
+	
+	String getCategory();
+
 	void getServiceNames(out List<String> serviceNames);
 	
 	void getReceptacleNames(out List<String> receptacleNames);
@@ -23,8 +29,6 @@ interface IComponent {
 	InternalState getInternalState();
 	
 	void setInternalState(in InternalState componentInfo);
-	
-	String getName();
 	
 	void start();
 	

@@ -10,7 +10,9 @@ interface ILocalLoader {
 	/*
 	 * Called by the middleware
 	 */
-	String getName();
+	String getSimpleName();
+	
+	String getFullName();
 	
 	String getCategory();
 	
@@ -24,9 +26,6 @@ interface ILocalLoader {
 	
 	void setInternalState(in InternalState internalState);
 	
-	/*
-	 * Must be implemented by component developer
-	 */
 	void registerServices();
 	
 	void registerReceptacles();

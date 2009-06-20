@@ -24,7 +24,7 @@ import android.util.Log;
 
 /**
  *  
- * @author Hubert
+ * @author hubertfonseca
  *
  */
 public class RemoteLoader implements IRemoteLoader {
@@ -115,7 +115,7 @@ public class RemoteLoader implements IRemoteLoader {
 	/**
 	 * This class corresponds to the connection to a LocalLoader service, and through this
 	 * connection the component is achieved by other processes 
-	 * @author Hubert
+	 * @author hubertfonseca
 	 *
 	 */
 	class RemoteServiceConnection implements ServiceConnection {
@@ -128,10 +128,10 @@ public class RemoteLoader implements IRemoteLoader {
 			try {				
 				localLoader = ILocalLoader.Stub.asInterface(service);
 
-				Log.i(this.getClass().getName(), "remote loader: " + localLoader.getName());
+				Log.i(this.getClass().getName(), "remote loader: " + localLoader.getFullName());
 
 				// Stores the connection to this loader, so its possible to unbind it
-				addService(localLoader.getName(), this);
+				addService(localLoader.getFullName(), this);
 				
 				localLoader.registerReceptacles();
 				localLoader.registerServices();
@@ -140,7 +140,7 @@ public class RemoteLoader implements IRemoteLoader {
 				localLoader.getServiceNames(serviceNames);
 				serviceCounter = serviceNames.size();
 				
-				Log.i(this.getClass().getName(), localLoader.getName() + ": Remote loader bound! " + serviceCounter + " services to bind on this component");
+				Log.i(this.getClass().getName(), localLoader.getFullName() + ": Remote loader bound! " + serviceCounter + " services to bind on this component");
 				
 				if (serviceCounter == 0) {
 					// No services to bind
@@ -170,7 +170,7 @@ public class RemoteLoader implements IRemoteLoader {
 		/**
 		 * This class corresponds to a Mobilis service connection, to each service
 		 * provided by a Mobilis component
-		 * @author Hubert
+		 * @author hubertfonseca
 		 *
 		 */
 		class LocalServiceConnection implements ServiceConnection {
@@ -183,12 +183,12 @@ public class RemoteLoader implements IRemoteLoader {
 					localLoader.bindService(serviceName, service);
 					
 					// Stores the connection to the Mobilis service as well, so its possible to unbind it
-					addService(localLoader.getName(), this);
+					addService(localLoader.getFullName(), this);
 					
-					Log.i(this.getClass().getName(), "local loader: " + localLoader.getName());
+					Log.i(this.getClass().getName(), "local loader: " + localLoader.getFullName());
 					
 					if (--serviceCounter == 0) {
-						// All the services are bound
+						// All component's services are bound
 						listener.loaded(localLoader);
 					}
 				} catch (RemoteException e) {

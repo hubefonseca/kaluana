@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Mobilis startup</string>
+    <string name="hello">Kaluana startup. Welcome to the component based adaptation system.</string>
     <string name="app_name">Mobilis</string>
 </resources>

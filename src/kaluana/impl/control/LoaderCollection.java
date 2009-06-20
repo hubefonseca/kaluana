@@ -39,7 +39,7 @@ public class LoaderCollection {
 					if (name.endsWith("Loader")) {
 						name = name.substring(0, name.lastIndexOf("Loader"));
 					}
-					if (name.equals(loader.getName())) {
+					if (name.equals(loader.getFullName())) {
 						l.remove(loader);
 						if (l.size() == 0) {
 							loaders.remove(entry.getKey());
@@ -62,7 +62,7 @@ public class LoaderCollection {
 					if (name.endsWith("Loader")) {
 						name = name.substring(0, name.lastIndexOf("Loader"));
 					}
-					if (loader.getName().equals(name)) {
+					if (loader.getFullName().equals(name)) {
 						return loader;
 					}
 				} catch (RemoteException e) {
@@ -100,7 +100,7 @@ public class LoaderCollection {
 					if (name.endsWith("Loader")) {
 						name = name.substring(0, name.lastIndexOf("Loader"));
 					}
-					if (name.equals(loader.getName())) {
+					if (name.equals(loader.getFullName())) {
 						return true;
 					}
 				} catch (RemoteException e) {
@@ -118,7 +118,7 @@ public class LoaderCollection {
 			l = entry.getValue();
 			for (ILocalLoader loader : l) {
 				try {
-					names.add(loader.getName());
+					names.add(loader.getFullName());
 				} catch (RemoteException e) {
 					Log.e(this.getClass().getName(), e.getMessage(), e);
 				}
