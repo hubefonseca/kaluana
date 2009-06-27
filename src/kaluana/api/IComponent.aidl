@@ -24,8 +24,6 @@ interface IComponent {
 	
 	void bindReceptacle(in ReceptacleInfo receptacleInfo, in IBinder service, in ServiceInfo serviceInfo);
 	
-	IBinder getBoundService(String receptacleName);
-	
 	InternalState getInternalState();
 	
 	void setInternalState(in InternalState componentInfo);

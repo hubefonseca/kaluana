@@ -10,10 +10,9 @@ public class PingComponentLoader extends Service {
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return mComponentManager;
+		return mLocalLoader;
 	}
 
-	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new PingComponent(), this);
+	private final ILocalLoader.Stub mLocalLoader = new LocalLoader(new PingComponent(), this);
 	
 }

@@ -10,9 +10,9 @@ public class LocationProviderComponentLoader extends Service {
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return mComponentManager;
+		return mLocalLoader;
 	}
 
-	private final ILocalLoader.Stub mComponentManager = new LocalLoader(new LocationProviderComponent(), this);
+	private final ILocalLoader.Stub mLocalLoader = new LocalLoader(new LocationProviderComponent(), this);
 	
 }

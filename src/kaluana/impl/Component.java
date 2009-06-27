@@ -1,6 +1,8 @@
 package kaluana.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -135,17 +137,61 @@ public abstract class Component implements kaluana.api.IComponent {
 			ServiceInfo serviceInfo) throws RemoteException {
 		receptacleInfo.setServiceInfo(serviceInfo);
 		receptacles.put(receptacleInfo, service);
-	}
-
-	@Override
-	public IBinder getBoundService(String receptacleName)
-			throws RemoteException {
-		for (ReceptacleInfo receptacleInfo : receptacles.keySet()) {
-			if (receptacleInfo.getName().equals(receptacleName)) {
-				return receptacles.get(receptacleInfo);
-			}
+		
+		String receptacleName = receptacleInfo.getName();
+		Class clazz = null;
+		Class[] clazzes = null;
+		Method asInterface = null;
+		Method setter = null;
+		String interfaceName = receptacleInfo.getInterfaceName();
+		
+		try {
+			clazz = Class.forName(interfaceName);
+			clazzes = clazz.getDeclaredClasses();
+			/**
+			* It's expected that the first declared class inside the interface
+			* is its Stub.
+			*/
+			asInterface = clazzes[0].getMethod("asInterface", new Class[]{android.os.IBinder.class});
+			
+		} catch (ClassNotFoundException e) {
+			Log.e(this.getClass().getName(), "Client doesn't know interface " + interfaceName);
+		} catch (SecurityException e) {
+			Log.e(this.getClass().getName(), "Service does not implement " + interfaceName);
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			Log.e(this.getClass().getName(), "Implementation for " + interfaceName + " is not a service or Stub isn't its first declared field");
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return null;
+		
+		String methodName = "set" + receptacleName.substring(0, 1).toUpperCase();
+		if (receptacleName.length() > 1) {
+			methodName += receptacleName.substring(1);
+		}
+		
+		try {
+			setter = this.getClass().getMethod(methodName, new Class[]{clazz});
+			Object boundService = asInterface.invoke(asInterface, new Object[]{service});
+			setter.invoke(this, new Object[]{boundService});
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			Log.e(this.getClass().getName(), "Is setter method present for all receptacles?");
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
