@@ -139,8 +139,8 @@ public abstract class Component implements kaluana.api.IComponent {
 		receptacles.put(receptacleInfo, service);
 		
 		String receptacleName = receptacleInfo.getName();
-		Class clazz = null;
-		Class[] clazzes = null;
+		Class<?> clazz = null;
+		Class<?>[] clazzes = null;
 		Method asInterface = null;
 		Method setter = null;
 		String interfaceName = receptacleInfo.getInterfaceName();
