@@ -16,7 +16,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 public class PingPongApp extends Activity implements IComponentManagerListener {
 
@@ -44,7 +43,7 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 				componentManager.init(getThis());
 				List<String> componentNames = new ArrayList<String>();
 				componentNames.add("kaluana.examples.ping");
-				componentNames.add("kaluana.examples.pong");
+//				componentNames.add("kaluana.examples.pong");
 				componentManager.loadComponents(componentNames, 123123);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -78,12 +77,6 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		
 		ReceptacleInfo pingReceptacleInfo = pongComponentLoader.getReceptacleInfo("ping");
 		ReceptacleInfo pongReceptacleInfo = pingComponentLoader.getReceptacleInfo("pong");
-		
-		Log.d(this.getClass().getName(), "ping service info: " + pingServiceInfo);
-		Log.d(this.getClass().getName(), "pong service info: " + pongServiceInfo);
-		
-		Log.d(this.getClass().getName(), "ping service: " + pingService);
-		Log.d(this.getClass().getName(), "pong service: " + pongService);
 		
 		pingComponentLoader.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
 		pongComponentLoader.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);

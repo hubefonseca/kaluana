@@ -11,7 +11,7 @@ import android.util.Log;
 
 @Component(category="kaluana.examples.ping")
 @Adaptable
-@Dependencies({@Dependency(name="pongDependency", componentCategory="kaluana.examples.ping")})
+@Dependencies({@Dependency(name="pongDependency", componentCategory="kaluana.examples.pong")})
 public class PingComponent extends kaluana.impl.Component {
 	
 	@Service

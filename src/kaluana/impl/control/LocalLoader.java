@@ -5,6 +5,8 @@ import java.util.List;
 
 import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
+import kaluana.api.annotations.Dependencies;
+import kaluana.api.annotations.Dependency;
 import kaluana.api.annotations.Receptacle;
 import kaluana.api.annotations.Service;
 import kaluana.api.control.ILocalLoader;
@@ -121,6 +123,17 @@ public class LocalLoader extends ILocalLoader.Stub {
 	public ReceptacleInfo getReceptacleInfo(String receptacleName)
 			throws RemoteException {
 		return component.getReceptacleInfo(receptacleName);
+	}
+	
+	@Override
+	public void getDependencies(List<String> dependencies)
+			throws RemoteException {
+		Dependencies componentDependencies = component.getClass().getAnnotation(Dependencies.class);
+		if (componentDependencies != null) {
+			for (Dependency dep : componentDependencies.value()) {
+				dependencies.add(dep.componentCategory());
+			}
+		}
 	}
 	
 }

@@ -29,6 +29,8 @@ interface ILocalLoader {
 	void registerServices();
 	
 	void registerReceptacles();
+	
+	void getDependencies(out List<String> dependencies);
 
 	/*
 	 * Should be called by component user

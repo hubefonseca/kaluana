@@ -18,6 +18,8 @@ import android.util.Log;
 
 public class ContextListener implements IContextListener, LocationListener {
 
+	int i = 0;
+	
 	private IAdaptationManager adaptationManager;
 	
 	@Override
@@ -71,7 +73,7 @@ public class ContextListener implements IContextListener, LocationListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+		
 			context.setLatitude(location.getLatitude());
 			context.setLongitude(location.getLongitude());
 			context.setLocation(loc);

@@ -3,6 +3,7 @@ package kaluana.impl.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
@@ -72,11 +73,25 @@ public class ComponentManager extends Service {
 		public void loaded(ILocalLoader loader) throws RemoteException {
 			loadedComponents.add(loader.getCategory(), loader);
 			
-			// Manage component dependencies before deliver it to caller
+			// Manage component dependencies
+			List<String> dependencies = new ArrayList<String>();
+			loader.getDependencies(dependencies);
+			
+			List<String> componentNames;
+			for (String dependency : dependencies) {
+				for (Entry<Long, List<String>> entry : requests.entrySet()) {
+					componentNames = entry.getValue();
+					if (componentNames.contains(loader.getCategory()) && !componentNames.contains(dependency)) {
+						remoteLoader.loadComponent(dependency);
+						componentNames.add(dependency);
+						requests.put(entry.getKey(), componentNames);
+					}
+				}
+			}
 			
 			// Verify if any request is finished
 			for (Long request : requests.keySet()) {
-				List<String> componentNames = requests.get(request);
+				componentNames = requests.get(request);
 				if (loadedComponents.isRequestFinished(componentNames)) {
 					Log.d(this.getClass().getName(), "request " + request + " is finished!");
 					for (IComponentManagerListener listener : listeners) {

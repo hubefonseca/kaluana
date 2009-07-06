@@ -7,18 +7,18 @@ import android.os.RemoteException;
 
 public class PingService extends Service {
 
-	private static int counter = 0;
+	private static int counter = 1000;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mPingImpl;
 	}
-	
+	 
 	private final IPingService.Stub mPingImpl = new IPingService.Stub() {
 		
     	@Override
 		public int ping() throws RemoteException {
-			return counter++;
+			return counter--;
 		}
 
     };
