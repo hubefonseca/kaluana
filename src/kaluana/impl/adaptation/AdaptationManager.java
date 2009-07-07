@@ -28,8 +28,6 @@ public class AdaptationManager implements IAdaptationManager,
 	private IProviderService contextProvider;
 	private IComponentManager.Stub componentManager;
 
-	private long callId = 10000;
-	private HashMap<Long, String> requests;
 	private HashMap<String, InternalState> componentsInfo = new HashMap<String, InternalState>();
 
 	/**
@@ -40,17 +38,8 @@ public class AdaptationManager implements IAdaptationManager,
 		this.componentManager = componentManager;
 		this.applicationContext = androidContextWrapper;
 
-		Intent intent = new Intent(kaluana.context.IProviderService.class
-				.getName());
-		this.applicationContext.bindService(intent, mServiceConnection,
-				Context.BIND_AUTO_CREATE);
-
-		requests = new HashMap<Long, String>();
-		try {
-			this.componentManager.addListener(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Intent intent = new Intent(kaluana.context.IProviderService.class.getName());
+		this.applicationContext.bindService(intent, mServiceConnection,	Context.BIND_AUTO_CREATE);
 	}
 
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -301,15 +290,11 @@ public class AdaptationManager implements IAdaptationManager,
 	private void loadComponent(String componentName) {
 		try {
 			Log.i(this.getClass().getName(), "loading: " + componentName);
-			requests.put(callId, componentName);
-
+			
 			List<String> componentNames = new ArrayList<String>();
 			componentNames.add(componentName);
 
-			componentManager.loadComponents(componentNames, callId);
-			Log.d(this.getClass().getName(), "load component: " + callId + ", "
-					+ componentName);
-			callId++;
+			componentManager.loadComponents(componentNames, getListener());
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -322,23 +307,25 @@ public class AdaptationManager implements IAdaptationManager,
 		return null;
 	}
 
+	private IComponentManagerListener getListener() {
+		return this;
+	}
+	
 	private AdaptationManager getContextWrapper() {
 		return this;
 	}
 
 	@Override
-	public void componentsLoaded(long callId) throws RemoteException {
-		if (requests.containsKey(callId)) {
-			String componentName = requests.get(callId);
-			Log.d(this.getClass().getName(), "componentLoaded: " + callId
-					+ ", " + componentName);
+	public void componentsLoaded(List<String> components) throws RemoteException {
+		
+		for (String componentName : components) {
+			Log.d(this.getClass().getName(), "component " + componentName + " is loaded");
 			ILocalLoader loader = componentManager.getByName(componentName);
 			InternalState internalState = componentsInfo.get(componentName);
 			if (internalState != null) {
 				loader.setInternalState(internalState);
 			}
 			loader.start();
-			requests.remove(callId);
 		}
 	}
 

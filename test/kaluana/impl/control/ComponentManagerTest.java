@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.util.Log;
 
 public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 
@@ -29,29 +30,19 @@ public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 	}
 	
 	@SmallTest
-	public void testInit() {
-		// Makes Component Manager point to a real context instance
-		getService().setContext(getSystemContext());
-		
-		try {
-			componentManager.init(new ComponentManagerListener());
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@SmallTest
 	public void testLoadComponents() {
 		// Makes Component Manager point to a real context instance
 		getService().setContext(getSystemContext());
 		
 		try {
-			componentManager.init(new ComponentManagerListener());
 			List<String> componentNames = new ArrayList<String>();
 			componentNames.add("kaluana.examples.ping");
 			componentNames.add("kaluana.examples.pong");
-			componentManager.loadComponents(componentNames, 123123);
+			componentManager.loadComponents(componentNames, new ComponentManagerListener());
+			
+			componentNames = new ArrayList<String>();
+			componentNames.add("kaluana.examples.pong");
+			componentManager.loadComponents(componentNames, new ComponentManagerListener());
 			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -69,7 +60,12 @@ public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 	public class ComponentManagerListener implements IComponentManagerListener {
 
 		@Override
-		public void componentsLoaded(long callId) throws RemoteException {
+		public void componentsLoaded(List<String> components) throws RemoteException {
+			
+			for (String c : components) {
+				Log.i(this.getClass().getName(), "component loaded: " + c);
+			}
+			
 			pingComponentLoader = componentManager.getComponent("kaluana.examples.ping");
 			pongComponentLoader = componentManager.getComponent("kaluana.examples.pong");
 			

@@ -40,11 +40,10 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
-				componentManager.init(getThis());
 				List<String> componentNames = new ArrayList<String>();
 				componentNames.add("kaluana.examples.ping");
 //				componentNames.add("kaluana.examples.pong");
-				componentManager.loadComponents(componentNames, 123123);
+				componentManager.loadComponents(componentNames, getListener());
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,13 +58,13 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		
 	};
 	
-	public PingPongApp getThis() {
+	public PingPongApp getListener() {
 		return this;
 	}
 
 	@Override
-	public void componentsLoaded(long callId) throws RemoteException {
-		
+	public void componentsLoaded(List<String> components)
+			throws RemoteException {
 		pingComponentLoader = componentManager.getComponent("kaluana.examples.ping");
 		pongComponentLoader = componentManager.getComponent("kaluana.examples.pong");
 		
@@ -82,9 +81,9 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		pongComponentLoader.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
 		
 		pingComponentLoader.start();
-		pongComponentLoader.start();
+		pongComponentLoader.start();	
 	}
-
+	
 	@Override
 	public IBinder asBinder() {
 		// TODO Auto-generated method stub

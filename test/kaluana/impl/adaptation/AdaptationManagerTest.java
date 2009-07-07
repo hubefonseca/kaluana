@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.util.Log;
 
 public class AdaptationManagerTest extends ServiceTestCase<ComponentManager> {
 
@@ -29,10 +30,9 @@ public class AdaptationManagerTest extends ServiceTestCase<ComponentManager> {
 		// Makes Component Manager point to a real context instance
 		getService().setContext(getSystemContext());
 		try {
-			componentManager.init(new ComponentManagerListener());
 			List<String> componentNames = new ArrayList<String>();
 			componentNames.add("mobilis.examples.navigator");
-			componentManager.loadComponents(componentNames, 123123);
+			componentManager.loadComponents(componentNames, new ComponentManagerListener());
 			
 			try {
 				Thread.sleep(1000);
@@ -66,10 +66,11 @@ public class AdaptationManagerTest extends ServiceTestCase<ComponentManager> {
 	public class ComponentManagerListener implements IComponentManagerListener {
 
 		@Override
-		public void componentsLoaded(long callId) throws RemoteException {
-
+		public void componentsLoaded(List<String> components)
+				throws RemoteException {
+			Log.d(this.getClass().getName(), "Components loaded!");
 		}
-
+		
 		@Override
 		public IBinder asBinder() {
 			// TODO Auto-generated method stub

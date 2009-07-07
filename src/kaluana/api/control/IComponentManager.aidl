@@ -8,14 +8,12 @@ interface IComponentManager {
 	
 	boolean isLoaded(in String componentName);
 	
-	void loadComponents(in List<String> categories, in long callId);
+	void loadComponents(in List<String> categories, in IComponentManagerListener listener);
 	
 	void unloadComponent(in String componentName);
 	
 	ILocalLoader getComponent(in String category);
 
-	void init(IComponentManagerListener listener);
-	
 	List<String> getLoadedComponentNames();
 	
 	ILocalLoader getByName(String name);
@@ -26,7 +24,5 @@ interface IComponentManager {
 	void loaded(ILocalLoader component);
 	
 	void unloaded(in String componentName);
-	
-	void addListener(IComponentManagerListener listener);
 	
 }

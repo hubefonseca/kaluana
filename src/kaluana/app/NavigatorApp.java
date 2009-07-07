@@ -23,8 +23,6 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 	private ILocalLoader locationProviderLoader;
 
 	private IComponentManager componentManager;
-
-	private static final int CALL_ID = 5000;
 	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +40,10 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
-				componentManager.init(getComponentManagerListener());
 				List<String> componentsToLoad = new ArrayList<String>();
 				componentsToLoad.add("kaluana.examples.navigator");
 				componentsToLoad.add("kaluana.context.location");
-				componentManager.loadComponents(componentsToLoad, CALL_ID);
+				componentManager.loadComponents(componentsToLoad, getListener());
 				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -61,29 +58,28 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 		}
 	};
 	
-	public NavigatorApp getComponentManagerListener() {
+	public NavigatorApp getListener() {
 		return this;
 	}
-
+	
 	@Override
-	public void componentsLoaded(long callId) throws RemoteException {
-		if (callId == CALL_ID) {
-			navigatorLoader = componentManager.getComponent("kaluana.examples.navigator");
-			locationProviderLoader = componentManager.getComponent("kaluana.context.location");
+	public void componentsLoaded(List<String> components)
+			throws RemoteException {
+		navigatorLoader = componentManager.getComponent("kaluana.examples.navigator");
+		locationProviderLoader = componentManager.getComponent("kaluana.context.location");
+		
+		try {
+			IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
+			ServiceInfo semanticLocationProviderInfo = locationProviderLoader.getServiceInfo("semanticLocation");
+			ReceptacleInfo semanticLocationReceptacleInfo = navigatorLoader.getReceptacleInfo("semanticLocation");
 			
-			try {
-				IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
-				ServiceInfo semanticLocationProviderInfo = locationProviderLoader.getServiceInfo("semanticLocation");
-				ReceptacleInfo semanticLocationReceptacleInfo = navigatorLoader.getReceptacleInfo("semanticLocation");
-				
-				navigatorLoader.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
-				
-				navigatorLoader.start();
-				locationProviderLoader.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+			navigatorLoader.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
+			
+			navigatorLoader.start();
+			locationProviderLoader.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 
 	@Override
