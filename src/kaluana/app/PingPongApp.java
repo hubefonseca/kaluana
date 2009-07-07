@@ -7,7 +7,7 @@ import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,8 +19,8 @@ import android.os.RemoteException;
 
 public class PingPongApp extends Activity implements IComponentManagerListener {
 
-	private ILocalLoader pingComponentLoader;
-	private ILocalLoader pongComponentLoader;
+	private IConfigService pingComponentConfig;
+	private IConfigService pongComponentConfig;
 
 	private IComponentManager componentManager;
 
@@ -65,23 +65,23 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 	@Override
 	public void componentsLoaded(List<String> components)
 			throws RemoteException {
-		pingComponentLoader = componentManager.getComponent("kaluana.examples.ping");
-		pongComponentLoader = componentManager.getComponent("kaluana.examples.pong");
+		pingComponentConfig = componentManager.getComponent("kaluana.examples.ping");
+		pongComponentConfig = componentManager.getComponent("kaluana.examples.pong");
 		
-		IBinder pingService = pingComponentLoader.getService("ping");
-		IBinder pongService = pongComponentLoader.getService("pong");
+		IBinder pingService = pingComponentConfig.getService("ping");
+		IBinder pongService = pongComponentConfig.getService("pong");
 
-		ServiceInfo pingServiceInfo = pingComponentLoader.getServiceInfo("ping");
-		ServiceInfo pongServiceInfo = pongComponentLoader.getServiceInfo("pong");
+		ServiceInfo pingServiceInfo = pingComponentConfig.getServiceInfo("ping");
+		ServiceInfo pongServiceInfo = pongComponentConfig.getServiceInfo("pong");
 		
-		ReceptacleInfo pingReceptacleInfo = pongComponentLoader.getReceptacleInfo("ping");
-		ReceptacleInfo pongReceptacleInfo = pingComponentLoader.getReceptacleInfo("pong");
+		ReceptacleInfo pingReceptacleInfo = pongComponentConfig.getReceptacleInfo("ping");
+		ReceptacleInfo pongReceptacleInfo = pingComponentConfig.getReceptacleInfo("pong");
 		
-		pingComponentLoader.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
-		pongComponentLoader.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
+		pingComponentConfig.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
+		pongComponentConfig.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
 		
-		pingComponentLoader.start();
-		pongComponentLoader.start();	
+		pingComponentConfig.start();
+		pongComponentConfig.start();	
 	}
 	
 	@Override

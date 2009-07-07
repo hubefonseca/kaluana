@@ -35,7 +35,7 @@
 				<action android:name="kaluana.context.IProviderService"></action>
 			</intent-filter>
 		</service>
-		<service android:name="kaluana.context.location.LocationProviderComponentLoader">
+		<service android:name="kaluana.context.location.LocationProviderComponentConfig">
 			<intent-filter>
 				<action android:name="kaluana.context.location"></action>
 				<action android:name="loc"></action>
@@ -46,13 +46,13 @@
 				<action android:name="kaluana.context.location.ISemanticLocationService"></action>
 			</intent-filter>
 		</service>
-		<service android:name="kaluana.examples.pingpong.PingComponentLoader">
+		<service android:name="kaluana.examples.pingpong.PingComponentConfig">
 			<intent-filter>
 				<action android:name="kaluana.examples.ping"></action>
 				<action android:name="loc"></action>
 			</intent-filter>
 		</service>
-		<service android:name="kaluana.examples.pingpong.PongComponentLoader">
+		<service android:name="kaluana.examples.pingpong.PongComponentConfig">
 			<intent-filter>
 				<action android:name="kaluana.examples.pong"></action>
 				<action android:name="loc"></action>

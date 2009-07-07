@@ -10,7 +10,7 @@ import kaluana.api.ServiceInfo;
 import kaluana.api.adaptation.IAdaptationManager;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import kaluana.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
@@ -79,7 +79,7 @@ public class AdaptationManager implements IAdaptationManager,
 
 		// All loaded components
 		for (String componentName : componentManager.getLoadedComponentNames()) {
-			ILocalLoader componentLoader = componentManager
+			IConfigService componentLoader = componentManager
 					.getByName(componentName);
 			String category = componentLoader.getCategory();
 
@@ -190,7 +190,7 @@ public class AdaptationManager implements IAdaptationManager,
 	private ExternalState getComponentState(String componentName) {
 		ExternalState componentState = new ExternalState();
 		try {
-			ILocalLoader loader = componentManager.getByName(componentName);
+			IConfigService loader = componentManager.getByName(componentName);
 
 			// Find out to which services the receptacles are bound
 			List<String> receptacleNames = new ArrayList<String>();
@@ -267,7 +267,7 @@ public class AdaptationManager implements IAdaptationManager,
 
 	private void unloadComponent(String componentName, String newComponentName) {
 		try {
-			ILocalLoader loader = componentManager.getByName(componentName);
+			IConfigService loader = componentManager.getByName(componentName);
 
 			InternalState internalState = loader.getInternalState();
 			if (internalState != null) {
@@ -320,7 +320,7 @@ public class AdaptationManager implements IAdaptationManager,
 		
 		for (String componentName : components) {
 			Log.d(this.getClass().getName(), "component " + componentName + " is loaded");
-			ILocalLoader loader = componentManager.getByName(componentName);
+			IConfigService loader = componentManager.getByName(componentName);
 			InternalState internalState = componentsInfo.get(componentName);
 			if (internalState != null) {
 				loader.setInternalState(internalState);

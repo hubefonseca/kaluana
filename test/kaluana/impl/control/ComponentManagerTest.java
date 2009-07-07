@@ -7,7 +7,7 @@ import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -19,8 +19,8 @@ public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 
 	IComponentManager componentManager;
 	
-	private ILocalLoader pingComponentLoader;
-	private ILocalLoader pongComponentLoader;
+	private IConfigService pingComponentConfig;
+	private IConfigService pongComponentConfig;
 	
 	public ComponentManagerTest() {
 		super(ComponentManager.class);
@@ -66,35 +66,35 @@ public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 				Log.i(this.getClass().getName(), "component loaded: " + c);
 			}
 			
-			pingComponentLoader = componentManager.getComponent("kaluana.examples.ping");
-			pongComponentLoader = componentManager.getComponent("kaluana.examples.pong");
+			pingComponentConfig = componentManager.getComponent("kaluana.examples.ping");
+			pongComponentConfig = componentManager.getComponent("kaluana.examples.pong");
 			
-			assertNotNull("ping component loader is null", pingComponentLoader);
-			assertNotNull("pong component loader is null", pongComponentLoader);
+			assertNotNull("ping component loader is null", pingComponentConfig);
+			assertNotNull("pong component loader is null", pongComponentConfig);
 			
-			IBinder pingService = pingComponentLoader.getService("ping");
-			IBinder pongService = pongComponentLoader.getService("pong");
+			IBinder pingService = pingComponentConfig.getService("ping");
+			IBinder pongService = pongComponentConfig.getService("pong");
 
 			assertNotNull("ping service is null", pingService);
 			assertNotNull("pong service is null", pongService);
 			
-			ServiceInfo pingServiceInfo = pingComponentLoader.getServiceInfo("ping");
-			ServiceInfo pongServiceInfo = pongComponentLoader.getServiceInfo("pong");
+			ServiceInfo pingServiceInfo = pingComponentConfig.getServiceInfo("ping");
+			ServiceInfo pongServiceInfo = pongComponentConfig.getServiceInfo("pong");
 			
 			assertNotNull("ping service info is null", pingServiceInfo);
 			assertNotNull("pong service info is null", pongServiceInfo);
 			
-			ReceptacleInfo pingReceptacleInfo = pongComponentLoader.getReceptacleInfo("ping");
-			ReceptacleInfo pongReceptacleInfo = pingComponentLoader.getReceptacleInfo("pong");
+			ReceptacleInfo pingReceptacleInfo = pongComponentConfig.getReceptacleInfo("ping");
+			ReceptacleInfo pongReceptacleInfo = pingComponentConfig.getReceptacleInfo("pong");
 			
 			assertNotNull("ping receptacle info is null", pingReceptacleInfo);
 			assertNotNull("pong receptacle info is null", pongReceptacleInfo);
 			
-			pingComponentLoader.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
-			pongComponentLoader.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
+			pingComponentConfig.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
+			pongComponentConfig.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
 			
-			pingComponentLoader.start();
-			pongComponentLoader.start();
+			pingComponentConfig.start();
+			pongComponentConfig.start();
 		}
 
 		@Override

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import kaluana.api.control.IComponentManager;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import kaluana.api.control.IRemoteLoader;
 import android.content.ComponentName;
 import android.content.Context;
@@ -120,13 +120,13 @@ public class RemoteLoader implements IRemoteLoader {
 	 */
 	class RemoteServiceConnection implements ServiceConnection {
 
-		ILocalLoader localLoader;
+		IConfigService localLoader;
 		int serviceCounter = 0;
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			try {				
-				localLoader = ILocalLoader.Stub.asInterface(service);
+				localLoader = IConfigService.Stub.asInterface(service);
 
 				Log.i(this.getClass().getName(), "remote loader: " + localLoader.getFullName());
 

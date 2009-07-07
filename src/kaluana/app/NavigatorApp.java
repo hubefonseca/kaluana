@@ -7,7 +7,7 @@ import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,8 +19,8 @@ import android.os.RemoteException;
 
 public class NavigatorApp extends Activity implements IComponentManagerListener {
 
-	private ILocalLoader navigatorLoader;
-	private ILocalLoader locationProviderLoader;
+	private IConfigService navigatorConfig;
+	private IConfigService locationProviderConfig;
 
 	private IComponentManager componentManager;
 	
@@ -65,18 +65,18 @@ public class NavigatorApp extends Activity implements IComponentManagerListener 
 	@Override
 	public void componentsLoaded(List<String> components)
 			throws RemoteException {
-		navigatorLoader = componentManager.getComponent("kaluana.examples.navigator");
-		locationProviderLoader = componentManager.getComponent("kaluana.context.location");
+		navigatorConfig = componentManager.getComponent("kaluana.examples.navigator");
+		locationProviderConfig = componentManager.getComponent("kaluana.context.location");
 		
 		try {
-			IBinder semanticLocationProvider = locationProviderLoader.getService("semanticLocation");
-			ServiceInfo semanticLocationProviderInfo = locationProviderLoader.getServiceInfo("semanticLocation");
-			ReceptacleInfo semanticLocationReceptacleInfo = navigatorLoader.getReceptacleInfo("semanticLocation");
+			IBinder semanticLocationProvider = locationProviderConfig.getService("semanticLocation");
+			ServiceInfo semanticLocationProviderInfo = locationProviderConfig.getServiceInfo("semanticLocation");
+			ReceptacleInfo semanticLocationReceptacleInfo = navigatorConfig.getReceptacleInfo("semanticLocation");
 			
-			navigatorLoader.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
+			navigatorConfig.bindReceptacle(semanticLocationReceptacleInfo, semanticLocationProvider, semanticLocationProviderInfo);
 			
-			navigatorLoader.start();
-			locationProviderLoader.start();
+			navigatorConfig.start();
+			locationProviderConfig.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		

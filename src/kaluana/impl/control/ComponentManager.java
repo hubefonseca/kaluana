@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.ILocalLoader;
+import kaluana.api.control.IConfigService;
 import kaluana.api.control.IRemoteLoader;
 import kaluana.impl.adaptation.AdaptationManager;
 import android.app.Service;
@@ -19,7 +19,7 @@ import android.util.Log;
 
 public class ComponentManager extends Service {
 
-	private LoaderCollection loadedComponents = null;
+	private ConfigServiceCollection loadedComponents = null;
 	private IRemoteLoader remoteLoader = null;
 	private Context applicationContext = null;
 	private AdaptationManager adaptationManager = null;
@@ -34,9 +34,9 @@ public class ComponentManager extends Service {
 	private final IComponentManager.Stub mComponentManager = new IComponentManager.Stub() {
 
 		@Override
-		public ILocalLoader getComponent(String category)
+		public IConfigService getComponent(String category)
 				throws RemoteException {
-			ILocalLoader loader = loadedComponents.getByCategory(category);
+			IConfigService loader = loadedComponents.getByCategory(category);
 			return loader;
 		}
 
@@ -49,7 +49,7 @@ public class ComponentManager extends Service {
 				throws RemoteException {
 			if (!initialized) {
 				remoteLoader = new RemoteLoader(getContext(), this);
-				loadedComponents = new LoaderCollection();
+				loadedComponents = new ConfigServiceCollection();
 				requests = new HashMap<IComponentManagerListener, List<String>>();
 				
 				// Start Adaptation Manager
@@ -66,15 +66,16 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public void loaded(ILocalLoader loader) throws RemoteException {
+		public void loaded(IConfigService loader) throws RemoteException {
 			loadedComponents.add(loader.getCategory(), loader);
-
+			
+			List<String> componentNames;
+			IComponentManagerListener listener;
+		
 			// Manage component dependencies
 			List<String> dependencies = new ArrayList<String>();
 			loader.getDependencies(dependencies);
 			
-			List<String> componentNames;
-			IComponentManagerListener listener;
 			for (String dependency : dependencies) {
 				for (Entry<IComponentManagerListener, List<String>> entry : requests.entrySet()) {
 					listener = entry.getKey();
@@ -89,14 +90,18 @@ public class ComponentManager extends Service {
 			}
 			
 			// Verify whether there are finished requests
+			List<IComponentManagerListener> toRemove = new ArrayList<IComponentManagerListener>();
 			for (Entry<IComponentManagerListener, List<String>> entry : requests.entrySet()) {
 				listener = entry.getKey();
 				componentNames = entry.getValue();
 				if (loadedComponents.isRequestFinished(componentNames)) {
 					Log.d(this.getClass().getName(), "request is finished: notifying " + listener.getClass());
 					listener.componentsLoaded(componentNames);
-					requests.remove(listener);
+					toRemove.add(listener);
 				}
+			}
+			for (IComponentManagerListener l : toRemove) {
+				requests.remove(l);
 			}
 		}
 
@@ -117,7 +122,7 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public ILocalLoader getByName(String name) throws RemoteException {
+		public IConfigService getByName(String name) throws RemoteException {
 			return loadedComponents.getByName(name);
 		}
 

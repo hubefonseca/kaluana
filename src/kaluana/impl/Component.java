@@ -214,5 +214,17 @@ public abstract class Component implements kaluana.api.IComponent {
 
 	public void setInternalState(InternalState state) {
 	};
+	
+	@Override
+	public void onActive() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onInactive() throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

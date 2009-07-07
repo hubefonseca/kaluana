@@ -32,4 +32,8 @@ interface IComponent {
 	
 	void stop();
 	
+	void onActive();
+	
+	void onInactive();
+	
 }
