@@ -216,14 +216,20 @@ public abstract class Component implements kaluana.api.IComponent {
 	};
 	
 	@Override
+	/**
+	 * This method will be called at the end of component 
+	 * activation process. Override it to set specific behavior
+	 */
 	public void onActive() throws RemoteException {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
+	/**
+	 * This method will be called at the end of component 
+	 * inactivation process. Override it to set specific behavior
+	 */
 	public void onInactive() throws RemoteException {
-		// TODO Auto-generated method stub
 		
 	}
 

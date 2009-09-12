@@ -31,6 +31,7 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		
 		Intent intent = new Intent(kaluana.api.control.IComponentManager.class.getName());
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {

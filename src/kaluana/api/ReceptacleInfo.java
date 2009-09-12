@@ -8,6 +8,8 @@ public class ReceptacleInfo implements Parcelable, Comparable<ReceptacleInfo> {
 	private String name;
 	private String interfaceName;
 	private String componentName;
+	
+	// Reference to bound service, if connected
 	private ServiceInfo serviceInfo;
 
 	public static final Parcelable.Creator<ReceptacleInfo> CREATOR = new Parcelable.Creator<ReceptacleInfo>() {

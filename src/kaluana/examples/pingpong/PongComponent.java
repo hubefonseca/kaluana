@@ -1,6 +1,5 @@
 package kaluana.examples.pingpong;
 
-import kaluana.api.annotations.Adaptable;
 import kaluana.api.annotations.Component;
 import kaluana.api.annotations.Receptacle;
 import kaluana.api.annotations.Service;
@@ -8,7 +7,6 @@ import android.os.RemoteException;
 import android.util.Log;
 
 @Component(category="kaluana.examples.pong")
-@Adaptable
 public class PongComponent extends kaluana.impl.Component {
 
 	@Service

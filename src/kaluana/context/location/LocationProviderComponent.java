@@ -15,6 +15,8 @@ public class LocationProviderComponent extends kaluana.impl.Component {
 	public void start() throws RemoteException {
 		Log.i(this.getClass().getName(), "Location Provider Component started!");
 		
+		// teste
+		
 	}
 	
 	@Override
