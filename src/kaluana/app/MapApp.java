@@ -17,13 +17,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-public class PingPongApp extends Activity implements IComponentManagerListener {
+public class MapApp extends Activity implements IComponentManagerListener {
 
-	private IConfigService pingComponentConfig;
-	private IConfigService pongComponentConfig;
+	private IConfigService mapLoader;
+	private IConfigService pubsubLoader;
 
 	private IComponentManager componentManager;
-
+	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,7 +31,6 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		
 		Intent intent = new Intent(kaluana.api.control.IComponentManager.class.getName());
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -41,10 +40,11 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
-				List<String> componentNames = new ArrayList<String>();
-				componentNames.add("kaluana.examples.ping");
-				componentNames.add("kaluana.examples.pong");
-				componentManager.loadComponents(componentNames, getListener());
+				List<String> componentsToLoad = new ArrayList<String>();
+				componentsToLoad.add("kaluana.examples.map");
+				componentsToLoad.add("kaluana.examples.pubsub");
+				componentManager.loadComponents(componentsToLoad, getListener());
+				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -56,38 +56,34 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 			// TODO Auto-generated method stub
 			
 		}
-		
 	};
 	
-	public PingPongApp getListener() {
+	public MapApp getListener() {
 		return this;
 	}
 
 	@Override
 	public void componentsLoaded(List<String> components)
 			throws RemoteException {
-		pingComponentConfig = componentManager.getComponent("kaluana.examples.ping");
-		pongComponentConfig = componentManager.getComponent("kaluana.examples.pong");		
+		mapLoader = componentManager.getComponent("kaluana.examples.map");
+		pubsubLoader = componentManager.getComponent("kaluana.examples.pubsub");
 		
-		IBinder pingService = pingComponentConfig.getService("ping");
-		IBinder pongService = pongComponentConfig.getService("pong");
-
-		ServiceInfo pingServiceInfo = pingComponentConfig.getServiceInfo("ping");
-		ServiceInfo pongServiceInfo = pongComponentConfig.getServiceInfo("pong");
-		
-		ReceptacleInfo pingReceptacleInfo = pongComponentConfig.getReceptacleInfo("ping");
-		ReceptacleInfo pongReceptacleInfo = pingComponentConfig.getReceptacleInfo("pong");
-		
-		pingComponentConfig.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
-		pongComponentConfig.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
-		
-		pingComponentConfig.start();
-		pongComponentConfig.start();	
+		try {
+			IBinder pubsubService = pubsubLoader.getService("pubSub");
+			ServiceInfo pubsubServiceInfo = pubsubLoader.getServiceInfo("pubSub");
+			ReceptacleInfo mapReceptacleInfo = mapLoader.getReceptacleInfo("pubSub");
+			
+			mapLoader.bindReceptacle(mapReceptacleInfo, pubsubService, pubsubServiceInfo);
+			
+			pubsubLoader.start();
+			mapLoader.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
-	
+
 	@Override
-	public IBinder asBinder() {
-		// TODO Auto-generated method stub
+	public IBinder asBinder() { 
 		return null;
 	}
 	
