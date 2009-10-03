@@ -5,18 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import kaluana.api.IContainer;
 import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.adaptation.IAdaptationManager;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.IConfigService;
 import kaluana.context.IProviderService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ResolveInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -67,93 +66,13 @@ public class AdaptationManager implements IAdaptationManager,
 	};
 
 	/**
-	 * There are two cases that start an adaptation: 1 - The component is
-	 * inadequate 2 - The component is invalid
+	 * TODO: the old adaptation mechanism should be replaced by a component
+	 * based adaptation manager
 	 */
 	@Override
 	public void onContextChange(kaluana.context.Context context)
 			throws RemoteException {
-		Log.d(this.getClass().getName(), "new place: " + context.getLocation());
-
-		String domain = context.getLocation();
-
-		// All loaded components
-		for (String componentName : componentManager.getLoadedComponentNames()) {
-			IConfigService componentLoader = componentManager
-					.getByName(componentName);
-			String category = componentLoader.getCategory();
-
-			boolean valid = false;
-			List<String> candidatesForDomain = new ArrayList<String>();
-
-			Intent intentDomain = new Intent(domain);
-			for (ResolveInfo availableCompInfo : applicationContext
-					.getPackageManager().queryIntentServices(intentDomain, 0)) {
-				if (availableCompInfo.serviceInfo.name.contains(componentName)) {
-					// Component is working (registered to current domain)
-					valid = true;
-				} else {
-					if (!componentManager
-							.isLoaded(availableCompInfo.serviceInfo.name)) {
-						// Here are stored all categories' components to current
-						// domain
-						candidatesForDomain
-								.add(availableCompInfo.serviceInfo.name);
-					}
-				}
-			}
-
-			if (!valid) {
-				List<String> candidatesForCategory = new ArrayList<String>();
-
-				// Browse for same category components that are not loaded
-				Intent intentCategory = new Intent(category);
-				for (ResolveInfo availableCompInfo : applicationContext
-						.getPackageManager().queryIntentServices(
-								intentCategory, 0)) {
-					if (!componentManager
-							.isLoaded(availableCompInfo.serviceInfo.name)) {
-						// Here are stored all domains' components to current
-						// category
-						candidatesForCategory
-								.add(availableCompInfo.serviceInfo.name);
-					}
-				}
-
-				String candidate = null;
-				while (domain != null) {
-					intentDomain = new Intent(domain);
-					for (ResolveInfo availableCompInfo : applicationContext
-							.getPackageManager().queryIntentServices(
-									intentDomain, 0)) {
-						if (candidate == null
-								&& candidatesForCategory
-										.contains(availableCompInfo.serviceInfo.name)) {
-							candidate = availableCompInfo.serviceInfo.name;
-							candidate = candidate.substring(0, candidate
-									.lastIndexOf("Loader"));
-						}
-					}
-					if (domain.indexOf(".") >= 0) {
-						domain = domain.substring(0, domain.lastIndexOf("."));
-					} else {
-						domain = null;
-					}
-				}
-
-				if (candidate != null) {
-					Log.d(this.getClass().getName(), componentName
-							+ " must be replaced by " + candidate);
-					replaceComponents(componentName, candidate);
-				} else {
-					Log
-							.d(this.getClass().getName(),
-									"There is no candidate to replace "
-											+ componentName);
-				}
-			}
-
-		}
+		
 	}
 
 	private void replaceComponents(String oldComponentName,
@@ -190,7 +109,7 @@ public class AdaptationManager implements IAdaptationManager,
 	private ExternalState getComponentState(String componentName) {
 		ExternalState componentState = new ExternalState();
 		try {
-			IConfigService loader = componentManager.getByName(componentName);
+			IContainer loader = componentManager.getComponent(componentName);
 
 			// Find out to which services the receptacles are bound
 			List<String> receptacleNames = new ArrayList<String>();
@@ -219,7 +138,7 @@ public class AdaptationManager implements IAdaptationManager,
 			List<String> componentNames = componentManager
 					.getLoadedComponentNames();
 			for (String name : componentNames) {
-				loader = componentManager.getByName(name);
+				loader = componentManager.getComponent(name);
 
 				receptacleNames = new ArrayList<String>();
 				loader.getReceptacleNames(receptacleNames);
@@ -267,7 +186,7 @@ public class AdaptationManager implements IAdaptationManager,
 
 	private void unloadComponent(String componentName, String newComponentName) {
 		try {
-			IConfigService loader = componentManager.getByName(componentName);
+			IContainer loader = componentManager.getComponent(componentName);
 
 			InternalState internalState = loader.getInternalState();
 			if (internalState != null) {
@@ -320,7 +239,7 @@ public class AdaptationManager implements IAdaptationManager,
 		
 		for (String componentName : components) {
 			Log.d(this.getClass().getName(), "component " + componentName + " is loaded");
-			IConfigService loader = componentManager.getByName(componentName);
+			IContainer loader = componentManager.getComponent(componentName);
 			InternalState internalState = componentsInfo.get(componentName);
 			if (internalState != null) {
 				loader.setInternalState(internalState);

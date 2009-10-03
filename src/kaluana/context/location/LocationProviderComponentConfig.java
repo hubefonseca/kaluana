@@ -1,7 +1,7 @@
 package kaluana.context.location;
 
-import kaluana.api.control.IConfigService;
-import kaluana.impl.control.ConfigService;
+import kaluana.api.IContainer;
+import kaluana.impl.Container;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -13,6 +13,6 @@ public class LocationProviderComponentConfig extends Service {
 		return mConfig;
 	}
 
-	private final IConfigService.Stub mConfig = new ConfigService(new LocationProviderComponent(), this);
+	private final IContainer.Stub mConfig = new Container(new LocationProviderComponent(), this);
 	
 }

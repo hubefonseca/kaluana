@@ -3,11 +3,11 @@ package kaluana.impl.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import kaluana.api.IContainer;
 import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.IConfigService;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -19,8 +19,8 @@ public class ComponentManagerTest extends ServiceTestCase<ComponentManager> {
 
 	IComponentManager componentManager;
 	
-	private IConfigService pingComponentConfig;
-	private IConfigService pongComponentConfig;
+	private IContainer pingComponentConfig;
+	private IContainer pongComponentConfig;
 	
 	public ComponentManagerTest() {
 		super(ComponentManager.class);

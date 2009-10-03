@@ -1,6 +1,5 @@
 package kaluana.impl;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,16 +46,7 @@ public abstract class Component implements kaluana.api.IComponent {
 	
 	@Override
 	public String getFullName() throws RemoteException {
-		return getCategory() + "." + getSimpleName();
-	}
-	
-	@Override
-	public String getCategory() throws RemoteException {
-		Annotation annotation = this.getClass().getAnnotation(kaluana.api.annotations.Component.class);
-		if (annotation == null) {
-			Log.e(this.getClass().getName(), "Component should be annotated with @Component annotation");
-		}	
-		return ((kaluana.api.annotations.Component)annotation).category();
+		return getClass().getName();
 	}
 	
 	public void registerService(String serviceName, String interfaceName)

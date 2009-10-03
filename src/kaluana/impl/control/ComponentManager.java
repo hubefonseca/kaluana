@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import kaluana.api.IContainer;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
 import kaluana.api.control.IComponentRepository;
-import kaluana.api.control.IConfigService;
+import kaluana.impl.ContainerCollection;
 import kaluana.impl.adaptation.AdaptationManager;
 import android.app.Service;
 import android.content.Context;
@@ -19,7 +20,7 @@ import android.util.Log;
 
 public class ComponentManager extends Service {
 
-	private ConfigServiceCollection loadedComponents = null;
+	private ContainerCollection loadedComponents = null;
 	private IComponentRepository componentRepository = null;
 	private Context applicationContext = null;
 	private AdaptationManager adaptationManager = null;
@@ -34,9 +35,9 @@ public class ComponentManager extends Service {
 	private final IComponentManager.Stub mComponentManager = new IComponentManager.Stub() {
 
 		@Override
-		public IConfigService getComponent(String category)
+		public IContainer getComponent(String componentName)
 				throws RemoteException {
-			IConfigService loader = loadedComponents.getByCategory(category);
+			IContainer loader = loadedComponents.get(componentName);
 			return loader;
 		}
 
@@ -45,13 +46,13 @@ public class ComponentManager extends Service {
 		 * shall be loaded
 		 */
 		@Override
-		public void loadComponents(List<String> categories,
+		public void loadComponents(List<String> names,
 				IComponentManagerListener listener) throws RemoteException {
 			
 			if (!initialized) {
 				componentRepository = new ComponentRepository(getContext(),
 						this);
-				loadedComponents = new ConfigServiceCollection();
+				loadedComponents = new ContainerCollection();
 				requests = new HashMap<IComponentManagerListener, List<String>>();
 
 				// Start Adaptation Manager
@@ -60,34 +61,29 @@ public class ComponentManager extends Service {
 				initialized = true;
 			}
 
-			requests.put(listener, categories);
-			for (String category : categories) {
-				Log
-						.i(this.getClass().getName(), "loading: " + category
-								+ "...");
-				componentRepository.loadComponent(category);
+			requests.put(listener, names);
+			for (String name : names) {
+				Log.i(this.getClass().getName(), "loading: " + name + "...");
+				componentRepository.loadComponent(name);
 			}
 		}
 
 		@Override
-		public void loaded(IConfigService configService) throws RemoteException {
-			loadedComponents.add(configService.getCategory(), configService);
+		public void loaded(IContainer container) throws RemoteException {
+			loadedComponents.put(container.getFullName(), container);
 
 			List<String> componentNames;
 			IComponentManagerListener listener;
 			
-			// TODO: Manage component dependencies from their interfaces (instead of categories)
-
 			// Verify whether there are finished requests
 			List<IComponentManagerListener> toRemove = new ArrayList<IComponentManagerListener>();
 			for (Entry<IComponentManagerListener, List<String>> entry : requests
 					.entrySet()) {
 				listener = entry.getKey();
 				componentNames = entry.getValue();
+				
 				if (loadedComponents.isRequestFinished(componentNames)) {
-					Log.d(this.getClass().getName(),
-							"request is finished: notifying "
-									+ listener.getClass());
+					Log.d(this.getClass().getName(), "request is finished: notifying " + listener.getClass());
 					listener.componentsLoaded(componentNames);
 					toRemove.add(listener);
 				}
@@ -95,8 +91,6 @@ public class ComponentManager extends Service {
 			for (IComponentManagerListener l : toRemove) {
 				requests.remove(l);
 			}
-			
-			
 		}
 
 		@Override
@@ -117,14 +111,21 @@ public class ComponentManager extends Service {
 		}
 
 		@Override
-		public IConfigService getByName(String name) throws RemoteException {
-			return loadedComponents.getByName(name);
-		}
-
-		@Override
 		public void unloadComponent(String componentName)
 				throws RemoteException {
 			componentRepository.unloadComponent(componentName);
+		}
+
+		@Override
+		public void registerComponent(String componentName)
+				throws RemoteException {
+			componentRepository.registerComponent(componentName);
+		}
+
+		@Override
+		public void unregisterComponent(String componentName)
+				throws RemoteException {
+			componentRepository.unregisterComponent(componentName);
 		}
 
 	};

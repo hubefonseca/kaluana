@@ -3,11 +3,13 @@ package kaluana.app;
 import java.util.ArrayList;
 import java.util.List;
 
+import kaluana.api.IContainer;
 import kaluana.api.ReceptacleInfo;
 import kaluana.api.ServiceInfo;
 import kaluana.api.control.IComponentManager;
 import kaluana.api.control.IComponentManagerListener;
-import kaluana.api.control.IConfigService;
+import kaluana.examples.pingpong.PingComponent;
+import kaluana.examples.pingpong.PongComponent;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,11 +18,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class PingPongApp extends Activity implements IComponentManagerListener {
 
-	private IConfigService pingComponentConfig;
-	private IConfigService pongComponentConfig;
+	private IContainer pingComponentContainer;
+	private IContainer pongComponentContainer;
 
 	private IComponentManager componentManager;
 
@@ -31,7 +34,6 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 		
 		Intent intent = new Intent(kaluana.api.control.IComponentManager.class.getName());
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		
 	}
 	
 	public ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -41,10 +43,14 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 			try {
 				componentManager = IComponentManager.Stub.asInterface(service);
 				
+				// Application should not know the components name or implementation
+				// and should search for a component by other criteria than its name
+				// This demo is for example purpose only
 				List<String> componentNames = new ArrayList<String>();
-				componentNames.add("kaluana.examples.ping");
-				componentNames.add("kaluana.examples.pong");
+				componentNames.add(PingComponent.class.getName());
+				componentNames.add(PongComponent.class.getName());
 				componentManager.loadComponents(componentNames, getListener());
+				
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -66,23 +72,25 @@ public class PingPongApp extends Activity implements IComponentManagerListener {
 	@Override
 	public void componentsLoaded(List<String> components)
 			throws RemoteException {
-		pingComponentConfig = componentManager.getComponent("kaluana.examples.ping");
-		pongComponentConfig = componentManager.getComponent("kaluana.examples.pong");		
+		Log.d(this.getClass().getName(), "components loaded!");
 		
-		IBinder pingService = pingComponentConfig.getService("ping");
-		IBinder pongService = pongComponentConfig.getService("pong");
+		pingComponentContainer = componentManager.getComponent("kaluana.examples.pingpong.PingComponent");
+		pongComponentContainer = componentManager.getComponent("kaluana.examples.pingpong.PongComponent");
+		
+		IBinder pingService = pingComponentContainer.getService("ping");
+		IBinder pongService = pongComponentContainer.getService("pong");
 
-		ServiceInfo pingServiceInfo = pingComponentConfig.getServiceInfo("ping");
-		ServiceInfo pongServiceInfo = pongComponentConfig.getServiceInfo("pong");
+		ServiceInfo pingServiceInfo = pingComponentContainer.getServiceInfo("ping");
+		ServiceInfo pongServiceInfo = pongComponentContainer.getServiceInfo("pong");
 		
-		ReceptacleInfo pingReceptacleInfo = pongComponentConfig.getReceptacleInfo("ping");
-		ReceptacleInfo pongReceptacleInfo = pingComponentConfig.getReceptacleInfo("pong");
+		ReceptacleInfo pingReceptacleInfo = pongComponentContainer.getReceptacleInfo("ping");
+		ReceptacleInfo pongReceptacleInfo = pingComponentContainer.getReceptacleInfo("pong");
 		
-		pingComponentConfig.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
-		pongComponentConfig.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
+		pingComponentContainer.bindReceptacle(pongReceptacleInfo, pongService, pongServiceInfo);
+		pongComponentContainer.bindReceptacle(pingReceptacleInfo, pingService, pingServiceInfo);
 		
-		pingComponentConfig.start();
-		pongComponentConfig.start();	
+		pingComponentContainer.start();
+		pongComponentContainer.start();	
 	}
 	
 	@Override

@@ -6,7 +6,7 @@ import kaluana.api.annotations.Service;
 import android.os.RemoteException;
 import android.util.Log;
 
-@Component(category="kaluana.examples.pong")
+@Component
 public class PongComponent extends kaluana.impl.Component {
 
 	@Service

@@ -9,4 +9,8 @@ interface IComponentRepository {
 	
 	int unloadComponent(in String componentName);
 
+	void registerComponent(String componentName);
+	
+	void unregisterComponent(String componentName);
+	
 }

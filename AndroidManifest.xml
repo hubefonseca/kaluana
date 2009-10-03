@@ -46,20 +46,18 @@
 				<action android:name="kaluana.context.location.ISemanticLocationService"></action>
 			</intent-filter>
 		</service>
-		<service android:name="kaluana.examples.pingpong.PingComponentConfig">
+		<service android:name="kaluana.examples.pingpong.PingComponentContainer">
 			<intent-filter>
-				<action android:name="kaluana.examples.ping"></action>
-				<action android:name="loc"></action>
+				<action android:name="kaluana.examples.pingpong.PingComponent"></action>
 			</intent-filter>
 		</service>
-		<service android:name="kaluana.examples.pingpong.PongComponentConfig">
+		<service android:name="kaluana.examples.pingpong.PongComponentContainer">
 			<intent-filter>
-				<action android:name="kaluana.examples.pong"></action>
-				<action android:name="loc"></action>
+				<action android:name="kaluana.examples.pingpong.PongComponent"></action>
 			</intent-filter>
 		</service>
 	</application>
 	<instrumentation android:name="android.test.InstrumentationTestRunner"
-		android:targetPackage="kaluana.app" android:label="Mobilis Control Tests" />
+		android:targetPackage="kaluana.app" android:label="Kaluana Control Tests" />
 	<uses-sdk android:minSdkVersion="3" />
 </manifest>

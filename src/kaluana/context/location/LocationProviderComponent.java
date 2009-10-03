@@ -5,7 +5,7 @@ import kaluana.api.annotations.Service;
 import android.os.RemoteException;
 import android.util.Log;
 
-@Component(category="kaluana.context.location")
+@Component
 public class LocationProviderComponent extends kaluana.impl.Component {
 
 	@Service

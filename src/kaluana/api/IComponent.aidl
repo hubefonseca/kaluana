@@ -9,8 +9,6 @@ interface IComponent {
 	String getSimpleName();
 	
 	String getFullName();
-	
-	String getCategory();
 
 	void getServiceNames(out List<String> serviceNames);
 	

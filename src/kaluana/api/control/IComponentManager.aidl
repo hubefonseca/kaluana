@@ -1,7 +1,7 @@
 package kaluana.api.control;
 
 import kaluana.api.IComponent;
-import kaluana.api.control.IConfigService;
+import kaluana.api.IContainer;
 import kaluana.api.control.IComponentManagerListener;
 
 interface IComponentManager {
@@ -12,16 +12,21 @@ interface IComponentManager {
 	
 	void unloadComponent(in String componentName);
 	
-	IConfigService getComponent(in String category);
+	IContainer getComponent(in String componentName);
 
 	List<String> getLoadedComponentNames();
 	
-	IConfigService getByName(String name);
+	/**
+	 * Called by component's developer
+	 */
+	void registerComponent(String componentName);
+	
+	void unregisterComponent(String componentName);
 	
 	/**
-	 * Callback interfaces
+	 * Callback interfaces to notify application
 	 */
-	void loaded(IConfigService component);
+	void loaded(IContainer component);
 	
 	void unloaded(in String componentName);
 	
